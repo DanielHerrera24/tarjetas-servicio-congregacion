@@ -11,18 +11,19 @@
 #content-to-print {
   width: 100%;
   max-width: 1024px;
-  margin: 0 auto;
+  margin: 0;
 }
 
 @media print {
   body {
     width: 100%;
     max-width: 1024px;
-    margin: auto;
+    margin: 0;
   }
 
   .persona {
     page-break-after: always;
+    margin: 0;
   }
 
   /* Asegura que cada persona ocupe toda la página A4 */

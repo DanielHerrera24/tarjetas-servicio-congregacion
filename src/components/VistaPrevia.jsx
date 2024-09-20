@@ -67,7 +67,7 @@ function VistaPrevia() {
   const generatePDF = () => {
     const element = document.getElementById("content-to-print");
     const opt = {
-      margin: 0.1,
+      margin: [0.2, 0.1, 0.2, 0.1],
       filename: "tarjetas-servicio-grupo.pdf",
       image: { type: "jpeg", quality: 1.0 },
       html2canvas: { scale: 2, useCORS: true },
@@ -105,9 +105,9 @@ function VistaPrevia() {
         {personas.map((persona) => (
           <li
             key={persona.id}
-            className="persona rounded-md bg-white text-sm flex flex-col mt-3 mb-8"
+            className="persona rounded-md bg-white text-sm flex flex-col mt-8"
           >
-            <div className="flex justify-center my-4">
+            <div className="flex justify-center mb-3">
               <h2 className="font-bold text-xl">
                 REGISTRO DE PUBLICADOR DE LA CONGREGACIÓN
               </h2>
