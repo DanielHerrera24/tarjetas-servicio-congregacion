@@ -295,12 +295,14 @@ function Grupos() {
             >
               Crear Nuevo Grupo
             </button>
-            <button
+            {user?.uid === "5wyoaagTbJOyE6ybQlxjH5Ue8tX2" && (
+              <button
               onClick={() => setShowDeleteModal(true)}
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             >
               Eliminar Grupo
             </button>
+            )}
           </div>
 
           <ul className="flex flex-wrap justify-center gap-4 gap-y-8">
