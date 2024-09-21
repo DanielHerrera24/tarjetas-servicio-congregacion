@@ -323,6 +323,8 @@ function Grupos() {
     }
   };
 
+  const capitalizedCongregacionId = congregacionId.charAt(0).toUpperCase() + congregacionId.slice(1);
+
   return (
     <div className="flex flex-col gap-4 items-center">
       <ToastContainer />
@@ -339,7 +341,7 @@ function Grupos() {
       ) : (
         <>
           <h2 className="text-3xl font-semibold mb-6 text-black">
-            Grupos congregación {congregacionId}
+            Grupos congregación {capitalizedCongregacionId}
           </h2>
           {user?.uid === "5wyoaagTbJOyE6ybQlxjH5Ue8tX2" && (
             <div className="flex gap-2 items-center">
