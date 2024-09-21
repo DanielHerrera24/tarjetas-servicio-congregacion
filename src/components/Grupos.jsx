@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaUserCheck, FaUsers, FaUserTie } from "react-icons/fa";
 import { SyncLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -32,6 +32,11 @@ function Grupos() {
   const [showYearModal, setShowYearModal] = useState(false);
   const location = useLocation(); // Obtener el año desde la ubicación
   const { congregacionId } = useParams();
+  const [counts, setCounts] = useState({
+    precursores: 0,
+    ministeriales: 0,
+    ancianos: 0,
+  });
 
   const fetchGrupos = async () => {
     try {
@@ -41,19 +46,97 @@ function Grupos() {
         congregacionId,
         "grupos"
       );
-      const q = query(gruposCollection, orderBy("nombre", "asc")); // Ordenar por el campo 'nombre'
+      const q = query(gruposCollection, orderBy("nombre", "asc"));
       const grupoSnapshot = await getDocs(q);
       const grupoList = grupoSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
+
+      // Contar los hermanos en cada grupo
+      let totalPrecursores = 0;
+      let totalMinisteriales = 0;
+      let totalAncianos = 0;
+
+      for (const grupo of grupoList) {
+        const hermanosCollection = collection(
+          db,
+          "congregaciones",
+          congregacionId,
+          "grupos",
+          grupo.id,
+          "hermanos"
+        );
+        const hermanosSnapshot = await getDocs(hermanosCollection);
+        const hermanosList = hermanosSnapshot.docs.map((doc) => doc.data());
+
+        totalPrecursores += hermanosList.filter((h) => h.regular).length; // Ajusta según tus propiedades
+        totalMinisteriales += hermanosList.filter((h) => h.ministerial).length;
+        totalAncianos += hermanosList.filter((h) => h.anciano).length;
+      }
+
+      setCounts({
+        precursores: totalPrecursores,
+        ministeriales: totalMinisteriales,
+        ancianos: totalAncianos,
+      });
+
       setGrupos(grupoList);
     } catch (error) {
       console.error("Error al obtener los grupos:", error.message, error.code);
     } finally {
-      setLoading(false); // Termina el loading cuando los datos se han cargado
+      setLoading(false);
     }
   };
+
+  const fetchCounts = async () => {
+    try {
+      const gruposCollection = collection(
+        db,
+        "congregaciones",
+        congregacionId,
+        "grupos"
+      );
+      const gruposSnapshot = await getDocs(gruposCollection);
+
+      let precursorCount = 0;
+      let ministerialCount = 0;
+      let ancianoCount = 0;
+
+      for (const grupoDoc of gruposSnapshot.docs) {
+        const hermanosCollection = collection(
+          db,
+          "congregaciones",
+          congregacionId,
+          "grupos",
+          grupoDoc.id,
+          "hermanos"
+        );
+        const hermanosSnapshot = await getDocs(hermanosCollection);
+
+        hermanosSnapshot.docs.forEach((hermanoDoc) => {
+          const hermanoData = hermanoDoc.data();
+          if (hermanoData.precursor) precursorCount++;
+          if (hermanoData.ministerial) ministerialCount++;
+          if (hermanoData.anciano) ancianoCount++;
+        });
+      }
+
+      return { precursorCount, ministerialCount, ancianoCount };
+    } catch (error) {
+      console.error("Error al contar hermanos:", error.message, error.code);
+    }
+  };
+
+  useEffect(() => {
+    const getCounts = async () => {
+      const counts = await fetchCounts();
+      // Aquí puedes establecer los estados para los conteos si es necesario
+      console.log(counts); // Para verificar los conteos
+    };
+
+    getCounts();
+  }, [congregacionId]);
 
   useEffect(() => {
     fetchGrupos();
@@ -297,11 +380,11 @@ function Grupos() {
             </button>
             {user?.uid === "5wyoaagTbJOyE6ybQlxjH5Ue8tX2" && (
               <button
-              onClick={() => setShowDeleteModal(true)}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Eliminar Grupo
-            </button>
+                onClick={() => setShowDeleteModal(true)}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Eliminar Grupo
+              </button>
             )}
           </div>
 
@@ -318,6 +401,32 @@ function Grupos() {
               </li>
             ))}
           </ul>
+
+          <div className="p-4 bg-white rounded-lg shadow-md mt-4">
+            <h3 className="text-xl font-semibold mb-2 flex items-center">
+              Nombramientos:
+            </h3>
+            <div className="flex items-center mb-1">
+              <FaUsers className="text-purple-500 mr-2" />
+              <p className="text-lg">
+                Ancianos: <span className="font-bold">{counts.ancianos}</span>
+              </p>
+            </div>
+            <div className="flex items-center mb-1">
+              <FaUserTie className="text-blue-500 mr-2" />
+              <p className="text-lg">
+                Siervos Ministeriales:{" "}
+                <span className="font-bold">{counts.ministeriales}</span>
+              </p>
+            </div>
+            <div className="flex items-center mb-1">
+              <FaUserCheck className="text-yellow-500 mr-2" />
+              <p className="text-lg">
+                Precursores Regulares:{" "}
+                <span className="font-bold">{counts.precursores}</span>
+              </p>
+            </div>
+          </div>
         </>
       )}
 

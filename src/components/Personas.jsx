@@ -604,18 +604,18 @@ function Personas() {
                   </button>
                   {showFilterMenu && (
                     <div className="absolute right-0 mt-0 w-56 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-                      <div className="p-4">
+                      <div className="flex flex-col gap-1 p-4">
                         <label className="flex items-center">
-                          <FaUserCheck className="mr-2 text-yellow-500" />
+                          <FaUsers className="mr-2 text-purple-500" />
                           <input
                             type="checkbox"
-                            checked={filterRegular}
-                            onChange={(e) => setFilterRegular(e.target.checked)}
+                            checked={filterAnciano}
+                            onChange={(e) => setFilterAnciano(e.target.checked)}
                             className="mr-2"
                           />
-                          Precursor Regular
+                          Anciano
                         </label>
-                        <label className="flex items-center mt-2">
+                        <label className="flex items-center">
                           <FaUserTie className="mr-2 text-blue-500" />
                           <input
                             type="checkbox"
@@ -627,15 +627,15 @@ function Personas() {
                           />
                           Siervo Ministerial
                         </label>
-                        <label className="flex items-center mt-2">
-                          <FaUsers className="mr-2 text-purple-500" />
+                        <label className="flex items-center">
+                          <FaUserCheck className="mr-2 text-yellow-500" />
                           <input
                             type="checkbox"
-                            checked={filterAnciano}
-                            onChange={(e) => setFilterAnciano(e.target.checked)}
+                            checked={filterRegular}
+                            onChange={(e) => setFilterRegular(e.target.checked)}
                             className="mr-2"
                           />
-                          Anciano
+                          Precursor Regular
                         </label>
                       </div>
                     </div>
