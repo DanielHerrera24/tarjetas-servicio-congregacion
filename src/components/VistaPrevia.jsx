@@ -4,7 +4,7 @@ import { db } from "../firebase";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import "../App.css";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaFileDownload } from "react-icons/fa";
 
 function VistaPrevia() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ function VistaPrevia() {
         console.error("El ID del grupo o el año no están definidos.");
         return;
       }
-  
+
       try {
         const personasCollection = collection(
           db,
@@ -38,10 +38,9 @@ function VistaPrevia() {
           ...doc.data(),
           genero: doc.data().genero || {},
           registros: doc.data().registros || {},
-          totalHoras: Object.values(doc.data().registros?.[selectedYear] || {}).reduce(
-            (acc, registro) => acc + (registro.horas || 0),
-            0
-          ),
+          totalHoras: Object.values(
+            doc.data().registros?.[selectedYear] || {}
+          ).reduce((acc, registro) => acc + (registro.horas || 0), 0),
         }));
 
         // Ordenar personas: Sup y Aux al principio
@@ -55,12 +54,11 @@ function VistaPrevia() {
 
         // Establecer el estado con Sup y Aux al principio
         setPersonas([...superintendente, ...auxiliar, ...miembros]);
-
       } catch (error) {
         console.log("Error al obtener las tarjetas: ", error);
       }
     };
-  
+
     fetchPersonas();
   }, [grupoId, selectedYear, congregacionId]);
 
@@ -83,19 +81,20 @@ function VistaPrevia() {
   return (
     <>
       <div className="sticky top-14 z-10 flex w-full sm:mt-0 -mt-[32px] sm:justify-between justify-end pr-4 sm:pr-0 pb-3">
-      <button
-        onClick={() => navigate(-1)}
-        className="hidden sm:block absolute top-2 left-2 bg-white shadow-lg border border-black rounded-full p-3 text-red-500"
-      >
-        <FaArrowLeft size={24} /> {/* Flecha hacia atrás */}
-      </button>
+        <button
+          onClick={() => navigate(-1)}
+          className="hidden sm:block absolute top-2 left-2 bg-white shadow-lg border border-black rounded-full p-3 text-red-500"
+        >
+          <FaArrowLeft size={24} /> {/* Flecha hacia atrás */}
+        </button>
       </div>
       <div className="bg-white sticky top-0 sm:mt-0 -mt-16 sm:top-12 px-6 py-4 shadow-xl rounded-xl">
         <button
           onClick={generatePDF}
-          className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg"
+          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg"
         >
           Descargar en PDF
+          <FaFileDownload />
         </button>
       </div>
       <div
@@ -225,7 +224,9 @@ function VistaPrevia() {
                 <thead>
                   <tr className="text-black border-r-2 border-l-2 border-t-2 border-b border-black font-bold text-sm leading-4 mt-0 pt-0">
                     <th className="w-32 border-r border-black text-center align-middle mt-0 pt-0">
-                      <p className="-mt-3">Año de servicio <div>{selectedYear}</div></p>
+                      <p className="-mt-3">
+                        Año de servicio <div>{selectedYear}</div>
+                      </p>
                     </th>
                     <th className="w-24 border-r border-black text-center align-middle mt-0 pt-0">
                       <p className="-mt-3">Participación</p>
@@ -236,10 +237,10 @@ function VistaPrevia() {
                       <p className="-mt-3">Cursos Bíblicos</p>
                     </th>
                     <th className="w-24 border-r border-black text-center align-middle mt-0 pt-0">
-                    <p className="-mt-3">Precursor Auxiliar</p>
+                      <p className="-mt-3">Precursor Auxiliar</p>
                     </th>
                     <th className="w-40 pb-2 border-r border-black text-center text-pretty align-middle mt-0 pt-0">
-                     <p className="-mt-1"> Horas{" "}</p>
+                      <p className="-mt-1"> Horas </p>
                       <p className="font-semibold text-pretty">
                         (Si es precursor o misionero que
                       </p>
@@ -248,7 +249,7 @@ function VistaPrevia() {
                       </p>
                     </th>
                     <th className="w-72 text-center align-middle mt-0 pt-0">
-                    <p className="-mt-3">Notas</p>
+                      <p className="-mt-3">Notas</p>
                     </th>
                   </tr>
                 </thead>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   collection,
   deleteDoc,
@@ -14,13 +14,23 @@ import { db } from "../firebase";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Modal from "react-modal";
 import "./modal.css";
-import { FaArrowLeft } from "react-icons/fa";
+import {
+  FaFilter,
+  FaPlus,
+  FaUserCheck,
+  FaUserTie,
+  FaUsers,
+  FaChevronDown,
+  FaChevronUp,
+  FaArrowLeft,
+} from "react-icons/fa";
 import { SyncLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import Papelera from "./Papelera";
 import { IoClose } from "react-icons/io5";
+import { VscOpenPreview } from "react-icons/vsc";
 
 Modal.setAppElement("#root");
 
@@ -46,6 +56,11 @@ function Personas() {
   const [yaHaySup, setYaHaySup] = useState(false);
   const [yaHayAux, setYaHayAux] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [filterRegular, setFilterRegular] = useState(false);
+  const [filterMinisterial, setFilterMinisterial] = useState(false);
+  const [filterAnciano, setFilterAnciano] = useState(false);
+  const filterMenuRef = useRef(null); // Referencia para el menú de filtros
 
   useEffect(() => {
     if (!grupoId) {
@@ -502,9 +517,39 @@ function Personas() {
     }
   };
 
-  const filteredPersonas = personas.filter((persona) =>
-    persona.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPersonas = personas.filter((persona) => {
+    const matchSearchTerm = persona.nombre
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchRegular = filterRegular ? persona.regular === true : true;
+    const matchMinisterial = filterMinisterial
+      ? persona.ministerial === true
+      : true;
+    const matchAnciano = filterAnciano ? persona.anciano === true : true;
+
+    // Devolver solo las personas que cumplen con todos los filtros
+    return matchSearchTerm && matchRegular && matchMinisterial && matchAnciano;
+  });
+
+  // Manejar clics fuera del menú de filtros
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        filterMenuRef.current &&
+        !filterMenuRef.current.contains(event.target)
+      ) {
+        setShowFilterMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside); // Agregar listener para dispositivos táctiles
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside); // Limpiar el listener
+    };
+  }, [filterMenuRef]);
 
   return (
     <>
@@ -524,13 +569,14 @@ function Personas() {
         </div>
       ) : (
         <>
-          <div className="bg-white sticky top-2 sm:top-14 px-6 py-4 mt-3 shadow-lg rounded-xl mb-2 z-10">
+          <div className="bg-white sticky top-2 sm:top-14 px-3 py-2 mt-3 shadow-lg rounded-xl mb-2 z-10">
             <Link
               to={`/grupos/${congregacionId}/${grupoId}/vistaPrevia`}
               state={{ selectedYear }}
-              className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg"
+              className="flex items-center gap-3 bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg"
             >
               Vista Previa PDF
+              <VscOpenPreview size={22} />
             </Link>
           </div>
           <div className="sm:p-6 p-3 bg-white rounded-lg shadow-md w-full relative mb-16">
@@ -539,18 +585,69 @@ function Personas() {
               {selectedYear}
             </h2>
             <div className="flex flex-col items-center">
-              <input
-                type="text"
-                placeholder="Buscar tarjeta..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="border border-blue-500 rounded-md p-2 mb-4 w-full sm:w-96"
-              />
+              <div className="flex gap-1">
+                <input
+                  type="text"
+                  placeholder="Buscar tarjeta..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="border border-blue-500 rounded-md p-2 mb-4 w-full sm:w-96"
+                />
+                {/* Botón de Filtros */}
+                <div className="relative" ref={filterMenuRef}>
+                  <button
+                    onClick={() => setShowFilterMenu(!showFilterMenu)}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2"
+                  >
+                    Filtros
+                    <FaFilter />
+                  </button>
+                  {showFilterMenu && (
+                    <div className="absolute right-0 mt-0 w-56 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                      <div className="p-4">
+                        <label className="flex items-center">
+                          <FaUserCheck className="mr-2 text-yellow-500" />
+                          <input
+                            type="checkbox"
+                            checked={filterRegular}
+                            onChange={(e) => setFilterRegular(e.target.checked)}
+                            className="mr-2"
+                          />
+                          Precursor Regular
+                        </label>
+                        <label className="flex items-center mt-2">
+                          <FaUserTie className="mr-2 text-blue-500" />
+                          <input
+                            type="checkbox"
+                            checked={filterMinisterial}
+                            onChange={(e) =>
+                              setFilterMinisterial(e.target.checked)
+                            }
+                            className="mr-2"
+                          />
+                          Siervo Ministerial
+                        </label>
+                        <label className="flex items-center mt-2">
+                          <FaUsers className="mr-2 text-purple-500" />
+                          <input
+                            type="checkbox"
+                            checked={filterAnciano}
+                            onChange={(e) => setFilterAnciano(e.target.checked)}
+                            className="mr-2"
+                          />
+                          Anciano
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
               <button
                 onClick={() => setModalIsOpen(true)}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4 flex items-center gap-2"
               >
                 Agregar Tarjeta
+                <FaPlus />
               </button>
             </div>
             <ul className="flex flex-col gap-4">
@@ -561,14 +658,19 @@ function Personas() {
                 >
                   <div
                     onClick={() => toggleAccordion(persona.id)}
-                    className="cursor-pointer p-4 bg-gray-100 hover:bg-gray-200 transition-colors rounded-t-md"
+                    className="cursor-pointer p-4 bg-gray-100 hover:bg-gray-200 transition-colors rounded-t-md flex justify-between items-center gap-2"
                   >
-                    <p className="text-lg font-medium text-gray-800">
+                    <p className="text-lg text-left text-pretty font-medium text-gray-800">
                       {(persona.rol === "Sup" || persona.rol === "Aux") && (
                         <span>({persona.rol}) </span>
                       )}
                       {persona.nombre}
                     </p>
+                    {openId === persona.id ? (
+                      <FaChevronUp className="text-blue-500" />
+                    ) : (
+                      <FaChevronDown className="text-blue-500" />
+                    )}
                   </div>
                   {openId === persona.id && (
                     <div className="p-2 md:p-4 bg-gray-50 rounded-b-md flex flex-col gap-2">
