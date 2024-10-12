@@ -37,6 +37,7 @@ function Grupos() {
     ministeriales: 0,
     ancianos: 0,
   });
+  const [mostrarNombramientos, setMostrarNombramientos] = useState(false);
 
   const fetchGrupos = async () => {
     try {
@@ -52,34 +53,6 @@ function Grupos() {
         id: doc.id,
         ...doc.data(),
       }));
-
-      // Contar los hermanos en cada grupo
-      let totalPrecursores = 0;
-      let totalMinisteriales = 0;
-      let totalAncianos = 0;
-
-      for (const grupo of grupoList) {
-        const hermanosCollection = collection(
-          db,
-          "congregaciones",
-          congregacionId,
-          "grupos",
-          grupo.id,
-          "hermanos"
-        );
-        const hermanosSnapshot = await getDocs(hermanosCollection);
-        const hermanosList = hermanosSnapshot.docs.map((doc) => doc.data());
-
-        totalPrecursores += hermanosList.filter((h) => h.regular).length; // Ajusta según tus propiedades
-        totalMinisteriales += hermanosList.filter((h) => h.ministerial).length;
-        totalAncianos += hermanosList.filter((h) => h.anciano).length;
-      }
-
-      setCounts({
-        precursores: totalPrecursores,
-        ministeriales: totalMinisteriales,
-        ancianos: totalAncianos,
-      });
 
       setGrupos(grupoList);
     } catch (error) {
@@ -122,21 +95,23 @@ function Grupos() {
         });
       }
 
-      return { precursorCount, ministerialCount, ancianoCount };
+      setCounts({
+        precursores: precursorCount,
+        ministeriales: ministerialCount,
+        ancianos: ancianoCount,
+      });
     } catch (error) {
       console.error("Error al contar hermanos:", error.message, error.code);
     }
   };
 
-  useEffect(() => {
-    const getCounts = async () => {
-      const counts = await fetchCounts();
-      // Aquí puedes establecer los estados para los conteos si es necesario
-      console.log(counts); // Para verificar los conteos
-    };
-
-    getCounts();
-  }, [congregacionId]);
+  const handleMostrarNombramientos = () => {
+    if (!mostrarNombramientos) {
+      fetchCounts();
+      console.log(counts)
+    }
+    setMostrarNombramientos(!mostrarNombramientos);
+  };
 
   useEffect(() => {
     fetchGrupos();
@@ -323,7 +298,8 @@ function Grupos() {
     }
   };
 
-  const capitalizedCongregacionId = congregacionId.charAt(0).toUpperCase() + congregacionId.slice(1);
+  const capitalizedCongregacionId =
+    congregacionId.charAt(0).toUpperCase() + congregacionId.slice(1);
 
   return (
     <div className="flex flex-col gap-4 items-center">
@@ -404,30 +380,44 @@ function Grupos() {
             ))}
           </ul>
 
-          <div className="p-4 bg-white rounded-lg shadow-md mt-4">
-            <h3 className="text-xl font-semibold mb-2 flex items-center">
-              Nombramientos:
-            </h3>
-            <div className="flex items-center mb-1">
-              <FaUsers className="text-purple-500 mr-2" />
-              <p className="text-lg">
-                Ancianos: <span className="font-bold">{counts.ancianos}</span>
-              </p>
-            </div>
-            <div className="flex items-center mb-1">
-              <FaUserTie className="text-blue-500 mr-2" />
-              <p className="text-lg">
-                Siervos Ministeriales:{" "}
-                <span className="font-bold">{counts.ministeriales}</span>
-              </p>
-            </div>
-            <div className="flex items-center mb-1">
-              <FaUserCheck className="text-yellow-500 mr-2" />
-              <p className="text-lg">
-                Precursores Regulares:{" "}
-                <span className="font-bold">{counts.precursores}</span>
-              </p>
-            </div>
+          <div className="mt-2">
+            <button
+              onClick={handleMostrarNombramientos}
+              className="bg-purple-500 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
+            >
+              {mostrarNombramientos
+                ? "Ocultar Nombramientos"
+                : "Ver Nombramientos"}
+            </button>
+
+            {mostrarNombramientos && (
+              <div className="p-4 bg-white rounded-lg shadow-md mt-4">
+                <h3 className="text-xl font-semibold mb-2 flex items-center">
+                  Nombramientos:
+                </h3>
+                <div className="flex items-center mb-1">
+                  <FaUsers className="text-purple-500 mr-2" />
+                  <p className="text-lg">
+                    Ancianos:{" "}
+                    <span className="font-bold">{counts.ancianos}</span>
+                  </p>
+                </div>
+                <div className="flex items-center mb-1">
+                  <FaUserTie className="text-blue-500 mr-2" />
+                  <p className="text-lg">
+                    Siervos Ministeriales:{" "}
+                    <span className="font-bold">{counts.ministeriales}</span>
+                  </p>
+                </div>
+                <div className="flex items-center mb-1">
+                  <FaUserCheck className="text-yellow-500 mr-2" />
+                  <p className="text-lg">
+                    Precursores Regulares:{" "}
+                    <span className="font-bold">{counts.precursores}</span>
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}
