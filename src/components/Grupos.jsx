@@ -302,7 +302,7 @@ function Grupos() {
     congregacionId.charAt(0).toUpperCase() + congregacionId.slice(1);
 
   return (
-    <div className="flex flex-col gap-4 items-center">
+    <div className="flex flex-col gap-3 items-center">
       <ToastContainer />
       <button
         onClick={() => navigate(-1)}
@@ -316,7 +316,7 @@ function Grupos() {
         </div>
       ) : (
         <>
-          <h2 className="text-3xl font-semibold mb-4 text-black">
+          <h2 className="text-3xl font-semibold mb-2 -mt-2 text-black">
             Grupos congregación {capitalizedCongregacionId}
           </h2>
           {user?.uid === "5wyoaagTbJOyE6ybQlxjH5Ue8tX2" && (
