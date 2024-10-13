@@ -89,7 +89,7 @@ function Grupos() {
 
         hermanosSnapshot.docs.forEach((hermanoDoc) => {
           const hermanoData = hermanoDoc.data();
-          if (hermanoData.precursor) precursorCount++;
+          if (hermanoData.regular) precursorCount++;
           if (hermanoData.ministerial) ministerialCount++;
           if (hermanoData.anciano) ancianoCount++;
         });
