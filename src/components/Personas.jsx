@@ -23,6 +23,7 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaArrowLeft,
+  FaSearch,
 } from "react-icons/fa";
 import { SyncLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
@@ -569,7 +570,7 @@ function Personas() {
         </div>
       ) : (
         <>
-          <div className="bg-white sticky top-2 sm:top-14 px-3 py-2 mt-3 shadow-lg rounded-xl mb-2 z-10">
+          <div className="bg-white sticky top-2 sm:top-14 px-3 py-2 mt-3 shadow-lg rounded-xl mb-2 z-10 sm:z-20">
             <Link
               to={`/grupos/${congregacionId}/${grupoId}/vistaPrevia`}
               state={{ selectedYear }}
@@ -586,13 +587,16 @@ function Personas() {
             </h2>
             <div className="flex flex-col items-center">
               <div className="flex gap-1">
+              <div className="relative">
+              <FaSearch className="absolute left-3 top-1/3 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Buscar tarjeta..."
+                  placeholder={`Buscar tarjeta...`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="border border-blue-500 rounded-md p-2 mb-4 w-full sm:w-96"
+                  className="border border-blue-500 rounded-md pl-9 p-2 mb-4 w-full sm:w-96"
                 />
+              </div>
                 {/* Botón de Filtros */}
                 <div className="relative" ref={filterMenuRef}>
                   <button

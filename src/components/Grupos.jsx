@@ -316,7 +316,7 @@ function Grupos() {
         </div>
       ) : (
         <>
-          <h2 className="text-3xl font-semibold mb-6 text-black">
+          <h2 className="text-3xl font-semibold mb-4 text-black">
             Grupos congregación {capitalizedCongregacionId}
           </h2>
           {user?.uid === "5wyoaagTbJOyE6ybQlxjH5Ue8tX2" && (
@@ -329,7 +329,7 @@ function Grupos() {
               </button>
             </div>
           )}
-          <div className="mb-4 flex flex-wrap items-center justify-center">
+          <div className="flex flex-wrap items-center justify-center">
             <label
               htmlFor="year-select"
               className="mr-4 text-lg font-medium text-gray-700 mb-2 sm:mb-0"
@@ -366,7 +366,7 @@ function Grupos() {
             )}
           </div>
 
-          <ul className="flex flex-wrap justify-center gap-4 gap-y-8">
+          <ul className="flex flex-wrap justify-center gap-2 sm:gap-4 sm:gap-y-8 gap-y-8">
             {grupos.map((grupo) => (
               <li key={grupo.id}>
                 <Link
