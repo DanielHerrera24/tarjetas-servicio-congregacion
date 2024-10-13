@@ -461,7 +461,7 @@ function Personas() {
       // Mostrar un cuadro de confirmación antes de eliminar
       const result = await Swal.fire({
         title: `¿Estás seguro de eliminar a ${nombre}?`,
-        text: "No podrás revertir los cambios!",
+        text: "Se enviará a la papelera!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",

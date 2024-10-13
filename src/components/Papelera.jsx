@@ -165,7 +165,7 @@ const Papelera = () => {
       {/* Botón para abrir el modal */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="flex gap-3 items-center bg-white text-red-500 px-4 py-2 rounded border border-black"
+        className="flex gap-3 items-center bg-white text-red-500 px-4 py-2 rounded border border-black hover:bg-red-500 hover:text-white hover:border-none transition duration-200"
       >
         Ver Papelera
         <FaTrash />
@@ -186,7 +186,7 @@ const Papelera = () => {
                 personasEliminadas.map((persona) => (
                   <div
                     key={persona.id}
-                    className="tarjeta-eliminada flex justify-between items-center p-4 border border-red-300 rounded mb-2"
+                    className="tarjeta-eliminada flex justify-between items-center p-4 border border-black shadow-md rounded mb-2"
                   >
                     <span>{persona.nombre}</span>
                     <div className="flex gap-2">
@@ -194,7 +194,7 @@ const Papelera = () => {
                         onClick={() =>
                           handleRestore(persona.id, persona.nombre)
                         }
-                        className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                        className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700"
                       >
                         Restaurar
                       </button>
@@ -202,7 +202,7 @@ const Papelera = () => {
                         onClick={() =>
                           handlePermanentDelete(persona.id, persona.nombre)
                         }
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-900"
                       >
                         Eliminar
                       </button>
@@ -216,7 +216,7 @@ const Papelera = () => {
               {/* Botón para cerrar el modal */}
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="bg-red-500 text-white px-4 py-2 rounded mt-4"
+                className="bg-gray-400 hover:bg-gray-600 text-white px-4 py-2 rounded mt-4"
               >
                 Cerrar
               </button>
