@@ -1,5 +1,4 @@
 import "./App.css";
-import Congregaciones from "./components/Congregaciones";
 import Nav from "./components/Nav";
 import { Routes, Route } from "react-router-dom";
 import Register from "./components/Register";
@@ -28,14 +27,6 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Inicio />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/congregaciones"
-                  element={
-                    <ProtectedRoute>
-                      <Congregaciones />
                     </ProtectedRoute>
                   }
                 />
