@@ -19,7 +19,7 @@ function Nav() {
           {!hideBackButton && ( // Condición para mostrar la flecha
             <button
               onClick={() => navigate(-1)}
-              className="sm:hidden ml-2 sm:ml-4 bg-white shadow-lg border border-black rounded-full p-3 text-red-500"
+              className="sm:hidden ml-2 sm:ml-4 bg-white shadow-lg border border-black rounded-full p-3 text-red-500 hover:bg-gray-100 hover:scale-110"
             >
               <FaArrowLeft size={24} />
             </button>

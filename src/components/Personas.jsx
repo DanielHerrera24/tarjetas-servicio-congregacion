@@ -32,6 +32,7 @@ import Swal from "sweetalert2";
 import Papelera from "./Papelera";
 import { IoClose } from "react-icons/io5";
 import { VscOpenPreview } from "react-icons/vsc";
+import { AnimatePresence, motion } from "framer-motion";
 
 Modal.setAppElement("#root");
 
@@ -558,7 +559,7 @@ function Personas() {
       <div className="sm:sticky top-6 z-20 flex sm:w-full sm:mt-0 -mt-[32px] sm:justify-between sm:items-center justify-end pr-4 sm:pr-0 pb-3">
         <button
           onClick={() => navigate(-1)}
-          className="hidden sm:block bg-white shadow-lg border border-black rounded-full p-3 mt-8 text-red-500"
+          className="hidden sm:block bg-white shadow-lg border border-black rounded-full p-3 mt-8 text-red-500 hover:bg-gray-100 hover:scale-110"
         >
           <FaArrowLeft size={24} />
         </button>
@@ -587,16 +588,16 @@ function Personas() {
             </h2>
             <div className="flex flex-col items-center">
               <div className="flex gap-1">
-              <div className="relative">
-              <FaSearch className="absolute left-3 top-1/3 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder={`Buscar tarjeta...`}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="border border-blue-500 rounded-md pl-9 p-2 mb-4 w-full sm:w-96"
-                />
-              </div>
+                <div className="relative">
+                  <FaSearch className="absolute left-3 top-1/3 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder={`Buscar tarjeta...`}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="border border-blue-500 rounded-md pl-9 p-2 mb-4 w-full sm:w-96"
+                  />
+                </div>
                 {/* Botón de Filtros */}
                 <div className="relative" ref={filterMenuRef}>
                   <button
@@ -684,7 +685,7 @@ function Personas() {
                             <label className="text-md font-bold">Nombre:</label>
                             <input
                               type="text"
-                              placeholder="Juan Perez"
+                              placeholder="Perez Juan"
                               value={persona.nombre}
                               onChange={(e) =>
                                 handleInputChange(
@@ -1071,8 +1072,18 @@ function Personas() {
             </ul>
             {/* Modal para mover persona */}
             {moveModalIsOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-                <div className="flex flex-col justify-center items-center bg-white rounded-lg py-6 px-12 max-w-md relative shadow-lg transition-transform transform scale-100">
+              <motion.div
+                className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <motion.div
+                  className="flex flex-col justify-center items-center bg-white rounded-lg py-6 px-12 max-w-md relative shadow-lg"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
                   {moveLoading ? (
                     <div className="flex justify-center items-center w-20 h-24">
                       <SyncLoader color="#3B82F6" />
@@ -1125,83 +1136,99 @@ function Personas() {
                       </div>
                     </>
                   )}
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             )}
 
             {/* Modal para agregar persona */}
-            <Modal
-              isOpen={modalIsOpen}
-              onRequestClose={() => setModalIsOpen(false)}
-              className="modal"
-              overlayClassName="modal-overlay"
-              closeTimeoutMS={200}
-            >
-              <h2 className="text-xl font-semibold mb-4">
-                Agregar Nueva Tarjeta
-              </h2>
-              <button
-                className="modal-close-button"
-                onClick={() => setModalIsOpen(false)}
-              >
-                <IoClose size={30} />
-              </button>
-              <form className="flex flex-col gap-4 text-black">
-                <label>
-                  Nombre:
-                  <input
-                    type="text"
-                    placeholder="Juan Perez"
-                    value={nuevoNombre}
-                    onChange={(e) => setNuevoNombre(e.target.value)}
-                    className="w-full border border-gray-300 p-2 rounded focus:outline-blue-500"
-                  />
-                </label>
-                <label>
-                  Fecha de Nacimiento:
-                  <input
-                    type="text"
-                    placeholder="01/Enero/2000"
-                    value={fechaNacimiento}
-                    onChange={(e) => setFechaNacimiento(e.target.value)}
-                    className="w-full border border-gray-300 p-2 rounded focus:outline-blue-500"
-                  />
-                </label>
-                <label>
-                  Fecha de Bautismo:
-                  <input
-                    type="text"
-                    placeholder="01/Enero/2000"
-                    value={fechaBautismo}
-                    onChange={(e) => setFechaBautismo(e.target.value)}
-                    className="w-full border border-gray-300 p-2 rounded focus:outline-blue-500"
-                  />
-                </label>
-                {(!yaHaySup || !yaHayAux) && (
-                  <label>
-                    Rol:
-                    <select
-                      value={nuevoRol}
-                      onChange={(e) => setNuevoRol(e.target.value)}
-                      className="border border-gray-300 p-2 rounded"
-                    >
-                      <option value="">Selecciona un Rol</option>
-                      {!yaHaySup && (
-                        <option value="Sup">Superintendente</option>
-                      )}
-                      {!yaHayAux && <option value="Aux">Auxiliar</option>}
-                    </select>
-                  </label>
-                )}
-                <button
-                  type="button"
-                  onClick={agregarPersona}
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            <AnimatePresence>
+              {modalIsOpen && (
+                <motion.div
+                  className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  Agregar
-                </button>
-              </form>
-            </Modal>
+                  <motion.div
+                    className="flex flex-col gap-4 text-black bg-white rounded-lg py-6 px-6 max-w-md relative shadow-lg"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <motion.button
+                      className="modal-close-button absolute top-4 right-4"
+                      onClick={() => setModalIsOpen(false)}
+                      whileHover={{ scale: 1.2 }}
+                      whileTap={{ scale: 0.8 }}
+                    >
+                      <IoClose size={30} />
+                    </motion.button>
+                    <h2 className="text-xl font-semibold mb-4">
+                      Agregar Nueva Tarjeta
+                    </h2>
+                    <form className="flex flex-col gap-4">
+                      <label>
+                        Nombre:
+                        <input
+                          type="text"
+                          placeholder="Perez Juan"
+                          value={nuevoNombre}
+                          onChange={(e) => setNuevoNombre(e.target.value)}
+                          className="w-full border border-gray-300 p-2 rounded focus:outline-blue-500 transition-colors duration-200"
+                        />
+                      </label>
+                      <label>
+                        Fecha de Nacimiento:
+                        <input
+                          type="text"
+                          placeholder="01/Enero/2000"
+                          value={fechaNacimiento}
+                          onChange={(e) => setFechaNacimiento(e.target.value)}
+                          className="w-full border border-gray-300 p-2 rounded focus:outline-blue-500 transition-colors duration-200"
+                        />
+                      </label>
+                      <label>
+                        Fecha de Bautismo:
+                        <input
+                          type="text"
+                          placeholder="01/Enero/2000"
+                          value={fechaBautismo}
+                          onChange={(e) => setFechaBautismo(e.target.value)}
+                          className="w-full border border-gray-300 p-2 rounded focus:outline-blue-500 transition-colors duration-200"
+                        />
+                      </label>
+                      {(!yaHaySup || !yaHayAux) && (
+                        <label>
+                          Rol:
+                          <select
+                            value={nuevoRol}
+                            onChange={(e) => setNuevoRol(e.target.value)}
+                            className="border border-gray-300 p-2 rounded transition-colors duration-200"
+                          >
+                            <option value="">Selecciona un Rol</option>
+                            {!yaHaySup && (
+                              <option value="Sup">Superintendente</option>
+                            )}
+                            {!yaHayAux && <option value="Aux">Auxiliar</option>}
+                          </select>
+                        </label>
+                      )}
+                      <motion.button
+                        type="button"
+                        onClick={agregarPersona}
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transform transition-transform duration-200 hover:scale-105"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        Agregar
+                      </motion.button>
+                    </form>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </>
       )}

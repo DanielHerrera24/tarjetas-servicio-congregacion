@@ -306,7 +306,7 @@ function Grupos() {
       <ToastContainer />
       <button
         onClick={() => navigate(-1)}
-        className="hidden sm:block absolute top-0 left-0 bg-white shadow-lg border border-black rounded-full p-3 text-red-500"
+        className="hidden sm:block absolute top-0 left-0 bg-white shadow-lg border border-black rounded-full p-3 text-red-500 hover:bg-gray-100 hover:scale-110"
       >
         <FaArrowLeft size={24} />
       </button>

@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import "../App.css";
 import { FaArrowLeft, FaFileDownload } from "react-icons/fa";
+import { motion } from "framer-motion"; // Importa Framer Motion
 
 function VistaPrevia() {
   const navigate = useNavigate();
@@ -80,30 +81,43 @@ function VistaPrevia() {
 
   return (
     <>
-      <div className="sticky top-14 z-10 flex w-full sm:mt-0 -mt-[32px] sm:justify-between justify-end pr-4 sm:pr-0 pb-3">
-        <button
-          onClick={() => navigate(-1)}
-          className="hidden sm:block absolute top-2 left-2 bg-white shadow-lg border border-black rounded-full p-3 text-red-500"
-        >
-          <FaArrowLeft size={24} /> {/* Flecha hacia atrás */}
-        </button>
-      </div>
-      <div className="bg-white sticky top-0 sm:mt-0 -mt-16 sm:top-12 px-6 py-4 shadow-xl rounded-xl">
-        <button
+      <motion.button
+        onClick={() => navigate(-1)}
+        className="hidden sm:block absolute top-2 left-2 bg-white shadow-lg border border-black rounded-full p-3 text-red-500 hover:bg-gray-100 hover:scale-110"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <FaArrowLeft size={24} /> {/* Flecha hacia atrás */}
+      </motion.button>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="bg-white sticky top-0 sm:mt-0 -mt-16 sm:top-12 px-3 py-2 shadow-xl rounded-xl z-20"
+      >
+        <motion.button
           onClick={generatePDF}
-          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg"
+          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg transform transition-transform duration-200 hover:scale-105"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           Descargar en PDF
           <FaFileDownload />
-        </button>
-      </div>
-      <div
+        </motion.button>
+      </motion.div>
+      <motion.div
         id="content-to-print"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
         className="w-full max-w-[1024px] my-0 px-1 text-black"
       >
         {personas.map((persona) => (
-          <li
+          <motion.li
             key={persona.id}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
             className="persona rounded-md bg-white text-sm flex flex-col mt-8"
           >
             <div className="flex justify-center mb-3">
@@ -339,9 +353,9 @@ function VistaPrevia() {
                 </tbody>
               </table>
             </div>
-          </li>
+          </motion.li>
         ))}
-      </div>
+      </motion.div>
     </>
   );
 }
