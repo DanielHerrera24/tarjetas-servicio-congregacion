@@ -16,6 +16,7 @@ import { SyncLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/AuthContext";
+import { AnimatePresence, motion } from "framer-motion"; // Importa Framer Motion
 
 function Grupos() {
   const { user } = useAuth();
@@ -108,7 +109,7 @@ function Grupos() {
   const handleMostrarNombramientos = () => {
     if (!mostrarNombramientos) {
       fetchCounts();
-      console.log(counts)
+      console.log(counts);
     }
     setMostrarNombramientos(!mostrarNombramientos);
   };
@@ -329,7 +330,12 @@ function Grupos() {
               </button>
             </div>
           )}
-          <div className="flex flex-wrap items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex flex-wrap items-center justify-center mb-4"
+          >
             <label
               htmlFor="year-select"
               className="mr-4 text-lg font-medium text-gray-700 mb-2 sm:mb-0"
@@ -348,50 +354,75 @@ function Grupos() {
                 </option>
               ))}
             </select>
-          </div>
+          </motion.div>
+          {/* Botones para Crear y Eliminar Grupo */}
           <div className="flex flex-wrap justify-center mb-4 gap-4">
-            <button
+            <motion.button
               onClick={() => setShowModal(true)}
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               Crear Nuevo Grupo
-            </button>
+            </motion.button>
             {user?.uid === "5wyoaagTbJOyE6ybQlxjH5Ue8tX2" && (
-              <button
+              <motion.button
                 onClick={() => setShowDeleteModal(true)}
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Eliminar Grupo
-              </button>
+              </motion.button>
             )}
           </div>
 
-          <ul className="flex flex-wrap justify-center gap-2 sm:gap-4 sm:gap-y-8 gap-y-8">
-            {grupos.map((grupo) => (
-              <li key={grupo.id}>
-                <Link
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded"
-                  to={`/grupos/${congregacionId}/${grupo.id}`}
-                  state={{ selectedYear }}
+          {/* Lista de Grupos con Animaciones */}
+          <ul className="flex flex-wrap justify-center gap-2 sm:gap-4 sm:gap-y-8 gap-y-2">
+            <AnimatePresence>
+              {grupos.map((grupo) => (
+                <motion.li
+                  key={grupo.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                  className="border border-gray-300 rounded-md shadow-lg"
+                  whileHover={{ scale: 1.05 }}
                 >
-                  {grupo.nombre}
-                </Link>
-              </li>
-            ))}
+                  <Link
+                    className="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded"
+                    to={`/grupos/${congregacionId}/${grupo.id}`}
+                    state={{ selectedYear }}
+                  >
+                    {grupo.nombre}
+                  </Link>
+                </motion.li>
+              ))}
+            </AnimatePresence>
           </ul>
 
+          {/* Botón para Ver/Ocultar Nombramientos */}
           <div className="mt-2">
-            <button
+            <motion.button
               onClick={handleMostrarNombramientos}
               className="bg-purple-500 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {mostrarNombramientos
                 ? "Ocultar Nombramientos"
                 : "Ver Nombramientos"}
-            </button>
+            </motion.button>
 
             {mostrarNombramientos && (
-              <div className="p-4 bg-white rounded-lg shadow-md mt-4">
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.5 }}
+                className="p-4 bg-white rounded-lg shadow-md mt-4"
+              >
                 <h3 className="text-xl font-semibold mb-2 flex items-center">
                   Nombramientos:
                 </h3>
@@ -416,105 +447,182 @@ function Grupos() {
                     <span className="font-bold">{counts.precursores}</span>
                   </p>
                 </div>
-              </div>
+              </motion.div>
             )}
           </div>
         </>
       )}
 
       {/* Modal para añadir grupo */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20">
-          <div className="bg-white p-6 rounded shadow-lg">
-            <h3 className="text-xl font-semibold mb-4">Nuevo Grupo</h3>
-            <input
-              type="text"
-              placeholder="Nombre del grupo"
-              maxLength={13}
-              value={newGrupo}
-              onChange={(e) => setNewGrupo(e.target.value)}
-              className="border p-2 mb-4 w-full"
-            />
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setShowModal(false)}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="bg-white p-6 rounded-lg shadow-lg"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.h3
+                className="text-xl font-semibold mb-4"
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
               >
-                Cancelar
-              </button>
-              <button
-                onClick={handleAddGrupo}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Crear
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                Nuevo Grupo
+              </motion.h3>
+              <input
+                type="text"
+                placeholder="Nombre del grupo"
+                maxLength={13}
+                value={newGrupo}
+                onChange={(e) => setNewGrupo(e.target.value)}
+                className="border p-2 mb-4 w-full rounded"
+              />
+              <div className="flex justify-end gap-2">
+                <motion.button
+                  onClick={() => setShowModal(false)}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Cancelar
+                </motion.button>
+                <motion.button
+                  onClick={handleAddGrupo}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Crear
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Modal para eliminar grupo */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20">
-          <div className="bg-white p-4 rounded">
-            <h2 className="text-xl mb-4">Eliminar Grupo</h2>
-            <select
-              value={grupoToDelete}
-              onChange={(e) => setGrupoToDelete(e.target.value)}
-              className="border p-2 mb-4 w-full"
+      {/* Modal para Eliminar Grupo con Animaciones */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="bg-white p-4 rounded-lg shadow-lg"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
             >
-              <option value="">Selecciona un grupo</option>
-              {grupos.map((grupo) => (
-                <option key={grupo.id} value={grupo.id}>
-                  {grupo.nombre}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={handleDeleteGrupo}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Eliminar
-            </button>
-            <button
-              onClick={() => setShowDeleteModal(false)}
-              className="ml-2 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
+              <motion.h2
+                className="text-xl mb-4"
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                Eliminar Grupo
+              </motion.h2>
+              <select
+                value={grupoToDelete}
+                onChange={(e) => setGrupoToDelete(e.target.value)}
+                className="border p-2 mb-4 w-full rounded"
+              >
+                <option value="">Selecciona un grupo</option>
+                {grupos.map((grupo) => (
+                  <option key={grupo.id} value={grupo.id}>
+                    {grupo.nombre}
+                  </option>
+                ))}
+              </select>
+              <div className="flex justify-end gap-2">
+                <motion.button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Cancelar
+                </motion.button>
+                <motion.button
+                  onClick={handleDeleteGrupo}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Eliminar
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Modal para añadir año */}
-      {showYearModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20">
-          <div className="bg-white p-6 rounded shadow-lg">
-            <h3 className="text-xl font-semibold mb-4">Agregar Año</h3>
-            <input
-              type="number"
-              placeholder="Año a agregar"
-              value={yearToAdd}
-              onChange={(e) => setYearToAdd(e.target.value)}
-              className="border p-2 mb-4 w-full"
-            />
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setShowYearModal(false)}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+      <AnimatePresence>
+        {showYearModal && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="bg-white p-6 rounded-lg shadow-lg"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.h3
+                className="text-xl font-semibold mb-4"
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
               >
-                Cancelar
-              </button>
-              <button
-                onClick={handleAddYear} // Función para manejar la lógica de agregar el año
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Agregar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                Agregar Año
+              </motion.h3>
+              <input
+                type="number"
+                placeholder="Año a agregar"
+                value={yearToAdd}
+                onChange={(e) => setYearToAdd(e.target.value)}
+                className="border p-2 mb-4 w-full rounded"
+              />
+              <div className="flex justify-end gap-2">
+                <motion.button
+                  onClick={() => setShowYearModal(false)}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Cancelar
+                </motion.button>
+                <motion.button
+                  onClick={handleAddYear}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Agregar
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
