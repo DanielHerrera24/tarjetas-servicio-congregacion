@@ -1,5 +1,12 @@
-import { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { useEffect, useState, useCallback } from "react";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  getDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import html2pdf from "html2pdf.js";
@@ -12,6 +19,7 @@ function VistaPrevia() {
   const { grupoId, congregacionId } = useParams();
   const location = useLocation();
   const [personas, setPersonas] = useState([]);
+  const [nombreGrupo, setNombreGrupo] = useState("");
 
   // Extraer el año de los parámetros de búsqueda (query params) o state
   const selectedYear = location.state?.selectedYear;
@@ -63,20 +71,43 @@ function VistaPrevia() {
     fetchPersonas();
   }, [grupoId, selectedYear, congregacionId]);
 
+  // Función para obtener el nombre del grupo desde Firestore
+  const fetchGrupoNombre = useCallback(async () => {
+    try {
+      const grupoDoc = await getDoc(
+        doc(db, "congregaciones", congregacionId, "grupos", grupoId)
+      );
+      if (grupoDoc.exists()) {
+        setNombreGrupo(grupoDoc.data().nombre);
+      } else {
+        console.error("El grupo no existe.");
+      }
+    } catch (error) {
+      console.error("Error al obtener el nombre del grupo: ", error);
+    }
+  }, [congregacionId, grupoId])
+
+  // Llama a fetchGrupoNombre cuando el grupoId cambie
+  useEffect(() => {
+    if (grupoId) {
+      fetchGrupoNombre();
+    }
+  }, [grupoId, fetchGrupoNombre]);
+
   const generatePDF = () => {
+    if (!nombreGrupo || !selectedYear) {
+      return <p>Error: El grupo o el año no están definidos.</p>;
+    }
+
     const element = document.getElementById("content-to-print");
     const opt = {
       margin: [0.2, 0.1, 0.2, 0.1],
-      filename: "tarjetas-servicio-grupo.pdf",
+      filename: `Tarjetas ${nombreGrupo} ${selectedYear}.pdf`,
       image: { type: "jpeg", quality: 1.0 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: "in", format: "a4", orientation: "portrait" }, // Formato A4
     };
     html2pdf().from(element).set(opt).save();
-
-    if (!grupoId || !selectedYear) {
-      return <p>Error: El grupo o el año no están definidos.</p>;
-    }
   };
 
   return (

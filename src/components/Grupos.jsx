@@ -480,7 +480,7 @@ function Grupos() {
               </motion.h3>
               <input
                 type="text"
-                placeholder="Nombre del grupo"
+                placeholder="Grupo 1"
                 maxLength={13}
                 value={newGrupo}
                 onChange={(e) => setNewGrupo(e.target.value)}
