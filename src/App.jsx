@@ -9,6 +9,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import Grupos from "./components/Grupos";
 import Personas from "./components/Personas";
 import VistaPrevia from "./components/VistaPrevia";
+import VistaPreviaTarjeta from "./components/VistaPreviaTarjeta";
 
 function App() {
   return (
@@ -51,6 +52,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <VistaPrevia />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/grupos/:congregacionId/:grupoId/:tarjetaSeleccionadaId"
+                  element={
+                    <ProtectedRoute>
+                      <VistaPreviaTarjeta />
                     </ProtectedRoute>
                   }
                 />

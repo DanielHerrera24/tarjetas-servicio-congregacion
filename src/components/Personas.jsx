@@ -681,6 +681,7 @@ function Personas() {
                     <div className="p-2 md:p-4 bg-gray-50 rounded-b-md flex flex-col gap-2">
                       <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-2 sm:gap-0">
                         <div className="flex flex-col items-start gap-1 sm:w-[315px] md:w-[415px]">
+                          {/* Nombre */}
                           <div className="flex items-center w-full lg:w-[480px]">
                             <label className="text-md font-bold">Nombre:</label>
                             <input
@@ -698,6 +699,7 @@ function Personas() {
                               className="border border-gray-300 rounded-md p-1 ml-1 w-full"
                             />
                           </div>
+                          {/* Fecha de Nacimiento */}
                           <div className="flex items-center w-full">
                             <label className="text-md font-bold">
                               Fecha de Nacimiento:
@@ -717,6 +719,7 @@ function Personas() {
                               className="border border-gray-300 rounded-md p-1 ml-1 w-auto"
                             />
                           </div>
+                          {/* Fecha de Bautismo */}
                           <div className="flex items-center w-full">
                             <label className="text-md font-bold">
                               Fecha de Bautismo:
@@ -738,6 +741,7 @@ function Personas() {
                           </div>
                         </div>
                         <div className="text-black font-bold flex flex-col items-start gap-1 mr-12">
+                          {/* Hombre y mujer */}
                           <div className="flex flex-wrap gap-2">
                             <input
                               type="checkbox"
@@ -764,6 +768,7 @@ function Personas() {
                             />
                             <span>Mujer</span>
                           </div>
+                          {/* Otras ovejas y Ungido */}
                           <div className="flex flex-wrap gap-2">
                             <input
                               type="checkbox"
@@ -793,6 +798,7 @@ function Personas() {
                         </div>
                       </div>
                       <div className="text-black font-bold flex flex-wrap sm:flex-row gap-y-2 items-start justify-between">
+                        {/* Anciano */}
                         <div className="flex gap-2 items-center">
                           <input
                             type="checkbox"
@@ -809,6 +815,7 @@ function Personas() {
                           />
                           <span>Anciano</span>
                         </div>
+                        {/* Ministerial */}
                         <div className="flex gap-2 items-center">
                           <input
                             type="checkbox"
@@ -825,6 +832,7 @@ function Personas() {
                           />
                           <span>Siervo Ministerial</span>
                         </div>
+                        {/* Precursor Regular */}
                         <div className="flex gap-2 items-center">
                           <input
                             type="checkbox"
@@ -841,6 +849,7 @@ function Personas() {
                           />
                           <span>Precursor Regular</span>
                         </div>
+                        {/* Precursor Especial */}
                         <div className="flex gap-2 items-center">
                           <input
                             type="checkbox"
@@ -857,6 +866,7 @@ function Personas() {
                           />
                           <span>Precursor Especial</span>
                         </div>
+                        {/* Misionero */}
                         <div className="flex gap-2 items-center">
                           <input
                             type="checkbox"
@@ -1040,7 +1050,7 @@ function Personas() {
                           </tbody>
                         </table>
                       </div>
-                      <div className="flex items-center justify-center gap-2 m-3">
+                      <div className="flex items-center justify-center gap-2 mt-3">
                         <button
                           className="bg-blue-500 w-40 rounded-2xl py-2 text-white hover:bg-blue-800"
                           onClick={() => saveChanges(persona.id)}
@@ -1064,6 +1074,15 @@ function Personas() {
                         >
                           Eliminar Tarjeta
                         </button>
+                      </div>
+                      <div className="mt-3">
+                        <Link
+                          to={`/grupos/${congregacionId}/${grupoId}/${persona.id}`}
+                          state={{ persona, selectedYear }}
+                          className="bg-green-500 w-40 rounded-2xl py-2 px-6 text-white hover:bg-green-800"
+                        >
+                          Descargar PDF
+                        </Link>
                       </div>
                     </div>
                   )}
