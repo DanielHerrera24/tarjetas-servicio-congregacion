@@ -574,7 +574,7 @@ function Personas() {
           <div className="bg-white sticky top-2 sm:top-14 px-3 py-2 mt-3 shadow-lg rounded-xl mb-2 z-10 sm:z-20">
             <Link
               to={`/grupos/${congregacionId}/${grupoId}/vistaPrevia`}
-              state={{ selectedYear }}
+              state={{ selectedYear, filterRegular, filterAnciano, filterMinisterial }}
               className="flex items-center gap-3 bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg"
             >
               Vista Previa PDF

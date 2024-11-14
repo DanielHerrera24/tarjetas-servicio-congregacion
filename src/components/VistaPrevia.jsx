@@ -21,8 +21,10 @@ function VistaPrevia() {
   const [personas, setPersonas] = useState([]);
   const [nombreGrupo, setNombreGrupo] = useState("");
 
-  // Extraer el año de los parámetros de búsqueda (query params) o state
   const selectedYear = location.state?.selectedYear;
+  const filterAnciano = location.state?.filterAnciano;
+  const filterRegular = location.state?.filterRegular;
+  const filterMinisterial = location.state?.filterMinisterial;
 
   useEffect(() => {
     const fetchPersonas = async () => {
@@ -47,29 +49,44 @@ function VistaPrevia() {
           ...doc.data(),
           genero: doc.data().genero || {},
           registros: doc.data().registros || {},
-          totalHoras: Object.values(
-            doc.data().registros?.[selectedYear] || {}
-          ).reduce((acc, registro) => acc + (registro.horas || 0), 0),
+          totalHoras: Object.values(doc.data().registros?.[selectedYear] || {}).reduce(
+            (acc, registro) => acc + (registro.horas || 0), 0
+          ),
         }));
 
+        // Filtrado basado en los filtros aplicados
+        let filteredPersonas = personaList;
+
+        if (filterAnciano) {
+          filteredPersonas = filteredPersonas.filter((persona) => persona.anciano === true);
+        }
+
+        if (filterRegular) {
+          filteredPersonas = filteredPersonas.filter((persona) => persona.regular === true);
+        }
+
+        if (filterMinisterial) {
+          filteredPersonas = filteredPersonas.filter((persona) => persona.ministerial === true);
+        }
+
         // Ordenar personas: Sup y Aux al principio
-        const superintendente = personaList.filter(
+        const superintendente = filteredPersonas.filter(
           (persona) => persona.rol === "Sup"
         );
-        const auxiliar = personaList.filter((persona) => persona.rol === "Aux");
-        const miembros = personaList.filter(
+        const auxiliar = filteredPersonas.filter((persona) => persona.rol === "Aux");
+        const miembros = filteredPersonas.filter(
           (persona) => !["Sup", "Aux"].includes(persona.rol)
         );
 
         // Establecer el estado con Sup y Aux al principio
         setPersonas([...superintendente, ...auxiliar, ...miembros]);
       } catch (error) {
-        console.log("Error al obtener las tarjetas: ", error);
+        console.log("Error al obtener las personas: ", error);
       }
     };
 
     fetchPersonas();
-  }, [grupoId, selectedYear, congregacionId]);
+  }, [grupoId, selectedYear, congregacionId, filterAnciano, filterRegular, filterMinisterial]);
 
   // Función para obtener el nombre del grupo desde Firestore
   const fetchGrupoNombre = useCallback(async () => {
@@ -85,7 +102,7 @@ function VistaPrevia() {
     } catch (error) {
       console.error("Error al obtener el nombre del grupo: ", error);
     }
-  }, [congregacionId, grupoId])
+  }, [congregacionId, grupoId]);
 
   // Llama a fetchGrupoNombre cuando el grupoId cambie
   useEffect(() => {
