@@ -39,6 +39,7 @@ function Grupos() {
     ancianos: 0,
   });
   const [mostrarNombramientos, setMostrarNombramientos] = useState(false);
+  const [nombramientoId, setNombramientoId] = useState("")
 
   const fetchGrupos = async () => {
     try {
@@ -109,9 +110,13 @@ function Grupos() {
   const handleMostrarNombramientos = () => {
     if (!mostrarNombramientos) {
       fetchCounts();
-      console.log(counts);
     }
     setMostrarNombramientos(!mostrarNombramientos);
+  };
+
+  const handleClick = (nombramiento) => {
+    setNombramientoId(nombramiento); // Establece el valor correcto del nombramiento
+    console.log(nombramientoId)
   };
 
   useEffect(() => {
@@ -334,7 +339,7 @@ function Grupos() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-wrap items-center justify-center mb-4"
+            className="flex flex-wrap items-center justify-between mb-4"
           >
             <label
               htmlFor="year-select"
@@ -421,31 +426,61 @@ function Grupos() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.5 }}
-                className="p-4 bg-white rounded-lg shadow-md mt-4"
+                className="p-3 bg-white rounded-lg shadow-md mt-4"
               >
                 <h3 className="text-xl font-semibold mb-2 flex items-center">
                   Nombramientos:
                 </h3>
-                <div className="flex items-center mb-1">
-                  <FaUsers className="text-purple-500 mr-2" />
-                  <p className="text-lg">
-                    Ancianos:{" "}
-                    <span className="font-bold">{counts.ancianos}</span>
-                  </p>
+                <div className="flex justify-between mb-2">
+                  <div className="flex items-center">
+                    <FaUsers className="text-purple-500 mr-2" />
+                    <p className="text-lg">
+                      Ancianos:{" "}
+                      <span className="font-bold">{counts.ancianos}</span>
+                    </p>
+                  </div>
+                  <Link
+                    to={`/grupos/${congregacionId}/nombramientos/anciano`}
+                    state={{ nombramientoId: "anciano", selectedYear: selectedYear }}
+                    onClick={() => handleClick("anciano")} // Llamamos a la función para establecer el valor
+                    className="flex bg-purple-500 hover:bg-purple-700 text-white px-3 py-1 rounded-lg"
+                  >
+                    Ver
+                  </Link>
                 </div>
-                <div className="flex items-center mb-1">
-                  <FaUserTie className="text-blue-500 mr-2" />
-                  <p className="text-lg">
-                    Siervos Ministeriales:{" "}
-                    <span className="font-bold">{counts.ministeriales}</span>
-                  </p>
+                <div className="flex justify-between mb-2">
+                  <div className="flex items-center">
+                    <FaUserTie className="text-blue-500 mr-2" />
+                    <p className="text-lg">
+                      Siervos Ministeriales:{" "}
+                      <span className="font-bold">{counts.ministeriales}</span>
+                    </p>
+                  </div>
+                  <Link
+                    to={`/grupos/${congregacionId}/nombramientos/ministerial`}
+                    state={{ nombramientoId: "ministerial", selectedYear: selectedYear }}
+                    onClick={() => handleClick("ministerial")}
+                    className="flex bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-lg"
+                  >
+                    Ver
+                  </Link>
                 </div>
-                <div className="flex items-center mb-1">
-                  <FaUserCheck className="text-yellow-500 mr-2" />
-                  <p className="text-lg">
-                    Precursores Regulares:{" "}
-                    <span className="font-bold">{counts.precursores}</span>
-                  </p>
+                <div className="flex justify-between gap-4">
+                  <div className="flex items-center">
+                    <FaUserCheck className="text-yellow-500 mr-2" />
+                    <p className="text-lg">
+                      Precursores Regulares:{" "}
+                      <span className="font-bold">{counts.precursores}</span>
+                    </p>
+                  </div>
+                  <Link
+                    to={`/grupos/${congregacionId}/nombramientos/regular`}
+                    state={{ nombramientoId: "regular", selectedYear: selectedYear }}
+                    onClick={() => handleClick("regular")}
+                    className="flex bg-yellow-500 hover:bg-yellow-700 text-white px-3 py-1 rounded-lg"
+                  >
+                    Ver
+                  </Link>
                 </div>
               </motion.div>
             )}

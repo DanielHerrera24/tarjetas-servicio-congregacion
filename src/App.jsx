@@ -10,6 +10,7 @@ import Grupos from "./components/Grupos";
 import Personas from "./components/Personas";
 import VistaPrevia from "./components/VistaPrevia";
 import VistaPreviaTarjeta from "./components/VistaPreviaTarjeta";
+import NombramientosHermanos from "./components/NombramientosHermanos";
 
 function App() {
   return (
@@ -44,6 +45,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Personas />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/grupos/:congregacionId/nombramientos/:tipo"
+                  element={
+                    <ProtectedRoute>
+                      <NombramientosHermanos />
                     </ProtectedRoute>
                   }
                 />

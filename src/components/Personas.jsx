@@ -1075,11 +1075,11 @@ function Personas() {
                           Eliminar Tarjeta
                         </button>
                       </div>
-                      <div className="mt-3">
+                      <div className="my-3">
                         <Link
                           to={`/grupos/${congregacionId}/${grupoId}/${persona.id}`}
                           state={{ persona, selectedYear }}
-                          className="bg-green-500 w-40 rounded-2xl py-2 px-6 text-white hover:bg-green-800"
+                          className="bg-green-500 w-40 rounded-2xl py-3 px-6 text-white hover:bg-green-800"
                         >
                           Descargar PDF
                         </Link>
