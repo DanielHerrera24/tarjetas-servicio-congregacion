@@ -667,22 +667,22 @@ function Personas() {
                 db={db}
               />
             </div>
+            <ul>
+              {filteredPersonas.map((persona) => (
+                <li
+                  key={persona.id}
+                  className="border-b text-left"
+                >
+                  {persona.id}
+                </li>
+              ))}
+            </ul>
             <ul className="flex flex-col gap-4">
               {filteredPersonas.map((persona) => (
                 <li
                   key={persona.id}
                   className="border border-gray-300 rounded-md"
                 >
-                  {/* <div className="">
-                    {filteredPersonas.map((persona) => (
-                      <li
-                        key={persona.id}
-                        className="border border-gray-300 rounded-md"
-                      >
-                        {persona.id}
-                      </li>
-                    ))}
-                  </div> */}
                   <div
                     onClick={() => toggleAccordion(persona.id)}
                     className="cursor-pointer p-4 bg-gray-100 hover:bg-gray-200 transition-colors rounded-t-md flex justify-between items-center gap-2"

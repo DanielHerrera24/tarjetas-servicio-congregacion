@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types */
 import { doc, setDoc } from "firebase/firestore"; // Importar Firestore
 import * as XLSX from "xlsx"; // Importar la librería XLSX
 
@@ -7,18 +8,6 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
     const file = event.target.files[0];
 
     if (file) {
-      // Extraer el mes del nombre del archivo
-      const fileName = file.name.toLowerCase();
-      const mesMatch = fileName.match(
-        /enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre/
-      );
-      const mes = mesMatch ? mesMatch[0] : null;
-
-      if (!mes) {
-        alert("El nombre del archivo no contiene un mes válido.");
-        return;
-      }
-
       const reader = new FileReader();
 
       reader.onload = async (e) => {
@@ -43,17 +32,44 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
             );
 
             // Preparar la estructura de los datos para el campo "registros"
-            const nuevoRegistro = {
-              [selectedYear]: {
-                [mes]: {
-                  cursos: parseInt(hermano.Estudios, 10) || 0,
-                  horas: parseInt(hermano.Horas, 10) || 0,
-                  participacion: hermano.Participó === "Si",
-                  precursor: hermano.Precursor === "Si",
-                  notas: hermano.Notas || "",
-                },
-              },
-            };
+            const nuevoRegistro = { [selectedYear]: {} };
+
+            // Iterar sobre las claves del hermano para procesar cada mes
+            Object.keys(hermano).forEach((key) => {
+              if (key.includes("_")) {
+                const [mes, campo] = key.split("_"); // Separar mes y tipo de campo
+                const mesLowerCase = mes.toLowerCase();
+
+                // Asegurarse de que el mes ya exista en la estructura
+                if (!nuevoRegistro[selectedYear][mesLowerCase]) {
+                  nuevoRegistro[selectedYear][mesLowerCase] = {
+                    cursos: 0,
+                    horas: 0,
+                    participacion: false,
+                    precursor: false,
+                    notas: "",
+                  };
+                }
+
+                // Asignar los valores correspondientes
+                if (campo === "Participó") {
+                  nuevoRegistro[selectedYear][mesLowerCase].participacion =
+                    hermano[key] === "Si";
+                } else if (campo === "Estudios") {
+                  nuevoRegistro[selectedYear][mesLowerCase].cursos =
+                    parseInt(hermano[key], 10) || 0;
+                } else if (campo === "Precursor") {
+                  nuevoRegistro[selectedYear][mesLowerCase].precursor =
+                    hermano[key] === "Si";
+                } else if (campo === "Horas") {
+                  nuevoRegistro[selectedYear][mesLowerCase].horas =
+                    parseInt(hermano[key], 10) || 0;
+                } else if (campo === "Notas") {
+                  nuevoRegistro[selectedYear][mesLowerCase].notas =
+                    hermano[key] || "";
+                }
+              }
+            });
 
             // Subir los datos al campo "registros" en Firebase
             await setDoc(
@@ -80,7 +96,7 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
         htmlFor="file-upload"
         className="block text-sm font-bold text-black"
       >
-        Subir archivo de Excel por mes
+        Subir Excel
       </label>
       <div className="mt-2">
         <input
