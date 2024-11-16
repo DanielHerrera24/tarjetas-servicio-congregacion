@@ -78,7 +78,7 @@ const NombramientosHermanos = () => {
     if (nombramientoId) {
       obtenerHermanosPorNombramiento(); // Solo se llama si el nombramientoId está definido
     }
-  }, [congregacionId, nombramientoId]);
+  }, [congregacionId, nombramientoId, selectedYear]);
 
   const generatePDF = () => {
     if (!selectedYear) {

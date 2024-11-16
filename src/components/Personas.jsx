@@ -33,6 +33,7 @@ import Papelera from "./Papelera";
 import { IoClose } from "react-icons/io5";
 import { VscOpenPreview } from "react-icons/vsc";
 import { AnimatePresence, motion } from "framer-motion";
+import SubirExcel from "./SubirExcel";
 
 Modal.setAppElement("#root");
 
@@ -574,7 +575,12 @@ function Personas() {
           <div className="bg-white sticky top-2 sm:top-14 px-3 py-2 mt-3 shadow-lg rounded-xl mb-2 z-10 sm:z-20">
             <Link
               to={`/grupos/${congregacionId}/${grupoId}/vistaPrevia`}
-              state={{ selectedYear, filterRegular, filterAnciano, filterMinisterial }}
+              state={{
+                selectedYear,
+                filterRegular,
+                filterAnciano,
+                filterMinisterial,
+              }}
               className="flex items-center gap-3 bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg"
             >
               Vista Previa PDF
@@ -654,6 +660,12 @@ function Personas() {
                 Agregar Tarjeta
                 <FaPlus />
               </button>
+              <SubirExcel
+                selectedYear={selectedYear}
+                congregacionId={congregacionId}
+                grupoId={grupoId}
+                db={db}
+              />
             </div>
             <ul className="flex flex-col gap-4">
               {filteredPersonas.map((persona) => (
@@ -661,6 +673,16 @@ function Personas() {
                   key={persona.id}
                   className="border border-gray-300 rounded-md"
                 >
+                  {/* <div className="">
+                    {filteredPersonas.map((persona) => (
+                      <li
+                        key={persona.id}
+                        className="border border-gray-300 rounded-md"
+                      >
+                        {persona.id}
+                      </li>
+                    ))}
+                  </div> */}
                   <div
                     onClick={() => toggleAccordion(persona.id)}
                     className="cursor-pointer p-4 bg-gray-100 hover:bg-gray-200 transition-colors rounded-t-md flex justify-between items-center gap-2"

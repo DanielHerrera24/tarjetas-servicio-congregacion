@@ -28,7 +28,8 @@
     "react-router-dom": "^6.26.0",
     "react-spinners": "^0.14.1",
     "react-toastify": "^10.0.5",
-    "sweetalert2": "^11.13.1"
+    "sweetalert2": "^11.13.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
