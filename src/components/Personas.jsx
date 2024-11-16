@@ -34,6 +34,7 @@ import { IoClose } from "react-icons/io5";
 import { VscOpenPreview } from "react-icons/vsc";
 import { AnimatePresence, motion } from "framer-motion";
 import SubirExcel from "./SubirExcel";
+import CopiarIDsModal from "./CopiarIDsModal";
 
 Modal.setAppElement("#root");
 
@@ -667,16 +668,7 @@ function Personas() {
                 db={db}
               />
             </div>
-            <ul>
-              {filteredPersonas.map((persona) => (
-                <li
-                  key={persona.id}
-                  className="border-b text-left"
-                >
-                  {persona.id}
-                </li>
-              ))}
-            </ul>
+            <CopiarIDsModal filteredPersonas={filteredPersonas} />
             <ul className="flex flex-col gap-4">
               {filteredPersonas.map((persona) => (
                 <li
