@@ -2,6 +2,7 @@
 /* eslint-disable react/prop-types */
 import { doc, setDoc } from "firebase/firestore"; // Importar Firestore
 import * as XLSX from "xlsx"; // Importar la librería XLSX
+import { toast } from "react-toastify";
 
 const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
   const handleFileUpload = async (event) => {
@@ -79,10 +80,25 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
             );
           }
 
-          alert("Datos subidos correctamente a Firebase");
+          toast.success(`Archivo de Excel subido correctamente.`, {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
         } catch (error) {
-          console.error("Error al subir los datos:", error);
-          alert("Hubo un error al subir los datos");
+          toast.error(`No se pudo subir el archivo de Excel: ${error}`, {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
         }
       };
 

@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
+import { toast } from "react-toastify";
+
 
 const CopiarIDsModal = ({ filteredPersonas }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,7 +16,15 @@ const CopiarIDsModal = ({ filteredPersonas }) => {
   const copiarAlPortapapeles = () => {
     const ids = filteredPersonas.map((persona) => persona.id).join("\n");
     navigator.clipboard.writeText(ids).then(() => {
-      alert("IDs copiados al portapapeles");
+      toast.success(`IDs copiados al portapapeles.`, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     });
   };
 
