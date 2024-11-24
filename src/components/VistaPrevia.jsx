@@ -121,7 +121,7 @@ function VistaPrevia() {
       margin: [0.2, 0.1, 0.2, 0.1],
       filename: `Tarjetas ${nombreGrupo} ${selectedYear}.pdf`,
       image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 2, useCORS: true },
+      html2canvas: { scale: 5, useCORS: true },
       jsPDF: { unit: "in", format: "a4", orientation: "portrait" }, // Formato A4
     };
     html2pdf().from(element).set(opt).save();
