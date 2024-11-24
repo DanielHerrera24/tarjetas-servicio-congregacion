@@ -2,7 +2,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import "../App.css";
 import { FaArrowLeft, FaFileDownload } from "react-icons/fa";
-import { motion } from "framer-motion"; // Importa Framer Motion
 
 function VistaPreviaTarjeta() {
   const navigate = useNavigate();
@@ -16,7 +15,7 @@ function VistaPreviaTarjeta() {
       margin: [0.2, 0.1, 0.2, 0.1],
       filename: `Tarjeta ${persona.nombre} ${selectedYear}.pdf`,
       image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 5, useCORS: true },
+      html2canvas: { scale: 4, useCORS: true },
       jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
     };
     html2pdf().from(element).set(opt).save();
@@ -24,35 +23,25 @@ function VistaPreviaTarjeta() {
 
   return (
     <>
-      <motion.button
+      <button
         onClick={() => navigate(-1)}
         className="hidden sm:block absolute top-2 left-2 bg-white shadow-lg border border-black rounded-full p-3 text-red-500 hover:bg-gray-100 hover:scale-110"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
       >
         <FaArrowLeft size={24} /> {/* Flecha hacia atrás */}
-      </motion.button>
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+      </button>
+      <div
         className="bg-white sticky top-0 sm:mt-0 -mt-16 sm:top-12 px-3 py-2 shadow-xl rounded-xl z-20"
       >
-        <motion.button
+        <button
           onClick={generatePDF}
           className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg transform transition-transform duration-200 hover:scale-105"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
         >
           Descargar en PDF
           <FaFileDownload />
-        </motion.button>
-      </motion.div>
-      <motion.div
+        </button>
+      </div>
+      <div
         id="content-to-print"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
         className="w-full max-w-[1024px] my-0 px-1 text-black"
       >
         <div className="flex justify-center mb-3">
@@ -83,7 +72,7 @@ function VistaPreviaTarjeta() {
                 readOnly
                 className="mt-3"
               />
-              <label className="mr-14">Hombre</label>
+              <label className="mr-[61px]">Hombre</label>
               <input
                 type="checkbox"
                 checked={persona.genero?.mujer || false}
@@ -280,7 +269,7 @@ function VistaPreviaTarjeta() {
             </tbody>
           </table>
         </div>
-      </motion.div>
+      </div>
     </>
   );
 }
