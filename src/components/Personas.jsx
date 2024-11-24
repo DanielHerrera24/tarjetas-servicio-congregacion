@@ -575,7 +575,7 @@ function Personas() {
         <>
           <div className="bg-white sticky top-2 sm:top-14 px-3 py-2 mt-3 shadow-lg rounded-xl mb-2 z-10 sm:z-20">
             <Link
-              to={`/grupos/${congregacionId}/${grupoId}/vistaPrevia`}
+              to={`/${congregacionId}/grupos/${grupoId}/vistaPrevia`}
               state={{
                 selectedYear,
                 filterRegular,
@@ -1091,7 +1091,7 @@ function Personas() {
                       </div>
                       <div className="my-3">
                         <Link
-                          to={`/grupos/${congregacionId}/${grupoId}/${persona.id}`}
+                          to={`/${congregacionId}/grupos/${grupoId}/${persona.id}`}
                           state={{ persona, selectedYear }}
                           className="bg-green-500 w-40 rounded-2xl py-3 px-6 text-white hover:bg-green-800"
                         >

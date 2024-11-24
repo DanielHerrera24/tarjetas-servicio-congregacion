@@ -28,6 +28,7 @@ function Grupos() {
   const [grupoToDelete, setGrupoToDelete] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingCounts, setLoadingCounts] = useState(false);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Año seleccionado
   const [years, setYears] = useState([]); // Lista de años
   const [yearToAdd, setYearToAdd] = useState(""); // Año a agregar
@@ -40,7 +41,7 @@ function Grupos() {
     ancianos: 0,
   });
   const [mostrarNombramientos, setMostrarNombramientos] = useState(false);
-  const [nombramientoId, setNombramientoId] = useState("")
+  const [nombramientoId, setNombramientoId] = useState("");
 
   const fetchGrupos = async () => {
     try {
@@ -66,6 +67,7 @@ function Grupos() {
   };
 
   const fetchCounts = async () => {
+    setLoadingCounts(true);
     try {
       const gruposCollection = collection(
         db,
@@ -105,6 +107,8 @@ function Grupos() {
       });
     } catch (error) {
       console.error("Error al contar hermanos:", error.message, error.code);
+    } finally {
+      setLoadingCounts(false);
     }
   };
 
@@ -117,7 +121,7 @@ function Grupos() {
 
   const handleClick = (nombramiento) => {
     setNombramientoId(nombramiento); // Establece el valor correcto del nombramiento
-    console.log(nombramientoId)
+    console.log(nombramientoId);
   };
 
   useEffect(() => {
@@ -398,7 +402,7 @@ function Grupos() {
                 >
                   <Link
                     className="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded"
-                    to={`/grupos/${congregacionId}/${grupo.id}`}
+                    to={`/${congregacionId}/grupos/${grupo.id}`}
                     state={{ selectedYear }}
                   >
                     {grupo.nombre}
@@ -421,70 +425,92 @@ function Grupos() {
                 : "Ver Nombramientos"}
             </motion.button>
 
-            {mostrarNombramientos && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.5 }}
-                className="p-3 bg-white rounded-lg shadow-md mt-4"
-              >
-                <h3 className="text-xl font-semibold mb-2 flex items-center">
-                  Nombramientos:
-                </h3>
-                <div className="flex justify-between mb-2">
-                  <div className="flex items-center">
-                    <FaUsers className="text-purple-500 mr-2" />
-                    <p className="text-lg">
-                      Ancianos:{" "}
-                      <span className="font-bold">{counts.ancianos}</span>
-                    </p>
-                  </div>
-                  <Link
-                    to={`/grupos/${congregacionId}/nombramientos/anciano`}
-                    state={{ nombramientoId: "anciano", selectedYear: selectedYear }}
-                    onClick={() => handleClick("anciano")} // Llamamos a la función para establecer el valor
-                    className="flex bg-purple-500 hover:bg-purple-700 text-white px-3 py-1 rounded-lg"
+            {mostrarNombramientos &&
+              (loadingCounts ? (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.5 }}
+                  className="p-8 bg-white shadow-md rounded-lg mt-4 flex items-center justify-center"
+                >
+                  <SyncLoader color="#3B82F6" />
+                </motion.div>
+              ) : (
+                <>
+                  <div
+                    className="p-3 bg-white rounded-lg shadow-md mt-4"
                   >
-                    Ver
-                  </Link>
-                </div>
-                <div className="flex justify-between mb-2">
-                  <div className="flex items-center">
-                    <FaUserTie className="text-blue-500 mr-2" />
-                    <p className="text-lg">
-                      Siervos Ministeriales:{" "}
-                      <span className="font-bold">{counts.ministeriales}</span>
-                    </p>
+                    <h3 className="text-xl font-semibold mb-2 flex items-center">
+                      Nombramientos:
+                    </h3>
+                    <div className="flex justify-between mb-2">
+                      <div className="flex items-center">
+                        <FaUsers className="text-purple-500 mr-2" />
+                        <p className="text-lg">
+                          Ancianos:{" "}
+                          <span className="font-bold">{counts.ancianos}</span>
+                        </p>
+                      </div>
+                      <Link
+                        to={`/${congregacionId}/nombramiento/anciano`}
+                        state={{
+                          nombramientoId: "anciano",
+                          selectedYear: selectedYear,
+                        }}
+                        onClick={() => handleClick("anciano")} // Llamamos a la función para establecer el valor
+                        className="flex bg-purple-500 hover:bg-purple-700 text-white px-3 py-1 rounded-lg"
+                      >
+                        Ver
+                      </Link>
+                    </div>
+                    <div className="flex justify-between mb-2">
+                      <div className="flex items-center">
+                        <FaUserTie className="text-blue-500 mr-2" />
+                        <p className="text-lg">
+                          Siervos Ministeriales:{" "}
+                          <span className="font-bold">
+                            {counts.ministeriales}
+                          </span>
+                        </p>
+                      </div>
+                      <Link
+                        to={`/${congregacionId}/nombramiento/ministerial`}
+                        state={{
+                          nombramientoId: "ministerial",
+                          selectedYear: selectedYear,
+                        }}
+                        onClick={() => handleClick("ministerial")}
+                        className="flex bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-lg"
+                      >
+                        Ver
+                      </Link>
+                    </div>
+                    <div className="flex justify-between gap-4">
+                      <div className="flex items-center">
+                        <FaUserCheck className="text-yellow-500 mr-2" />
+                        <p className="text-lg">
+                          Precursores Regulares:{" "}
+                          <span className="font-bold">
+                            {counts.precursores}
+                          </span>
+                        </p>
+                      </div>
+                      <Link
+                        to={`/${congregacionId}/nombramiento/regular`}
+                        state={{
+                          nombramientoId: "regular",
+                          selectedYear: selectedYear,
+                        }}
+                        onClick={() => handleClick("regular")}
+                        className="flex bg-yellow-500 hover:bg-yellow-700 text-white px-3 py-1 rounded-lg"
+                      >
+                        Ver
+                      </Link>
+                    </div>
                   </div>
-                  <Link
-                    to={`/grupos/${congregacionId}/nombramientos/ministerial`}
-                    state={{ nombramientoId: "ministerial", selectedYear: selectedYear }}
-                    onClick={() => handleClick("ministerial")}
-                    className="flex bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-lg"
-                  >
-                    Ver
-                  </Link>
-                </div>
-                <div className="flex justify-between gap-4">
-                  <div className="flex items-center">
-                    <FaUserCheck className="text-yellow-500 mr-2" />
-                    <p className="text-lg">
-                      Precursores Regulares:{" "}
-                      <span className="font-bold">{counts.precursores}</span>
-                    </p>
-                  </div>
-                  <Link
-                    to={`/grupos/${congregacionId}/nombramientos/regular`}
-                    state={{ nombramientoId: "regular", selectedYear: selectedYear }}
-                    onClick={() => handleClick("regular")}
-                    className="flex bg-yellow-500 hover:bg-yellow-700 text-white px-3 py-1 rounded-lg"
-                  >
-                    Ver
-                  </Link>
-                </div>
-              </motion.div>
-            )}
+                </>
+              ))}
           </div>
         </>
       )}

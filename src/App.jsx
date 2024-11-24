@@ -33,7 +33,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/grupos/:congregacionId"
+                  path="/:congregacionId/grupos"
                   element={
                     <ProtectedRoute>
                       <Grupos />
@@ -41,7 +41,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/grupos/:congregacionId/:grupoId"
+                  path="/:congregacionId/grupos/:grupoId"
                   element={
                     <ProtectedRoute>
                       <Personas />
@@ -49,7 +49,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/grupos/:congregacionId/nombramientos/:tipo"
+                  path="/:congregacionId/nombramiento/:tipo"
                   element={
                     <ProtectedRoute>
                       <NombramientosHermanos />
@@ -57,7 +57,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/grupos/:congregacionId/:grupoId/vistaPrevia"
+                  path="/:congregacionId/grupos/:grupoId/vistaPrevia"
                   element={
                     <ProtectedRoute>
                       <VistaPrevia />
@@ -65,7 +65,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/grupos/:congregacionId/:grupoId/:tarjetaSeleccionadaId"
+                  path="/:congregacionId/grupos/:grupoId/:tarjetaSeleccionadaId"
                   element={
                     <ProtectedRoute>
                       <VistaPreviaTarjeta />

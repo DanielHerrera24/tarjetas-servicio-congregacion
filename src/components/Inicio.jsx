@@ -36,21 +36,21 @@ function Inicio() {
             <>
               {/* Enlaces para el usuario con acceso total */}
               <Link
-                to="/grupos/sur"
+                to="/sur/grupos"
                 className="bg-green-500 hover:bg-green-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
               >
                 <FaUsers className="text-white" />
                 <span>Sur</span>
               </Link>
               <Link
-                to="/grupos/primavera"
+                to="/primavera/grupos"
                 className="bg-green-500 hover:bg-green-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
               >
                 <FaUsers className="text-white" />
                 <span>Primavera</span>
               </Link>
               <Link
-                to="/grupos/libertad"
+                to="/libertad/grupos"
                 className="bg-green-500 hover:bg-green-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
               >
                 <FaUsers className="text-white" />
@@ -62,7 +62,7 @@ function Inicio() {
             <>
               {user?.uid === "F7mOwGdIT1UMmwumoRi1pzrybQI3" && (
                 <Link
-                  to="/grupos/sur"
+                  to="/sur/grupos"
                   className="bg-green-500 hover:bg-green-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
                 >
                   <FaUsers className="text-white" />
@@ -71,7 +71,7 @@ function Inicio() {
               )}
               {user?.uid === "t1CsG4nesTO4wrnz7z4e4oh7rT13" && (
                 <Link
-                  to="/grupos/primavera"
+                  to="/primavera/grupos"
                   className="bg-green-500 hover:bg-green-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
                 >
                   <FaUsers className="text-white" />
@@ -80,7 +80,7 @@ function Inicio() {
               )}
               {user?.uid === "Jn2BVXqKHOaXPxYmtibEOwwZywP2" && (
                 <Link
-                  to="/grupos/libertad"
+                  to="/libertad/grupos"
                   className="bg-green-500 hover:bg-green-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
                 >
                   <FaUsers className="text-white" />
