@@ -19,7 +19,8 @@ export function ProtectedRoute({ children }) {
     user.uid === "t1CsG4nesTO4wrnz7z4e4oh7rT13" ||
     user.uid === "Jn2BVXqKHOaXPxYmtibEOwwZywP2" ||
     user.uid === "5wyoaagTbJOyE6ybQlxjH5Ue8tX2" ||
-    user.uid === "F7mOwGdIT1UMmwumoRi1pzrybQI3"
+    user.uid === "F7mOwGdIT1UMmwumoRi1pzrybQI3" ||
+    user.uid === "BU5YbSLQh6QWAS65MUi1Et6v5iK2"
   ) {
     return <>{children}</>;
   } else {

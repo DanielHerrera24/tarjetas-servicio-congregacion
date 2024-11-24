@@ -8,7 +8,7 @@ function Inicio() {
 
   const mensajesUsuarios = {
     F7mOwGdIT1UMmwumoRi1pzrybQI3: "¡Bienvenido, Guapos!",
-    t1CsG4nesTO4wrnz7z4e4oh7rT13: "¡Bienvenido, Primavera!",
+    BU5YbSLQh6QWAS65MUi1Et6v5iK2: "¡Bienvenido, Primavera!",
     Jn2BVXqKHOaXPxYmtibEOwwZywP2: "¡Bienvenido, Libertad!",
   };
 
@@ -69,7 +69,7 @@ function Inicio() {
                   <span>Congregación Sur</span>
                 </Link>
               )}
-              {user?.uid === "t1CsG4nesTO4wrnz7z4e4oh7rT13" && (
+              {user?.uid === "BU5YbSLQh6QWAS65MUi1Et6v5iK2" && (
                 <Link
                   to="/primavera/grupos"
                   className="bg-green-500 hover:bg-green-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"

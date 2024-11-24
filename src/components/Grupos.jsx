@@ -18,6 +18,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/AuthContext";
 import { AnimatePresence, motion } from "framer-motion"; // Importa Framer Motion
+import { auth } from "../firebase";
 
 function Grupos() {
   const { user } = useAuth();
@@ -42,6 +43,47 @@ function Grupos() {
   });
   const [mostrarNombramientos, setMostrarNombramientos] = useState(false);
   const [nombramientoId, setNombramientoId] = useState("");
+
+  if (auth.currentUser) {
+    console.log("Usuario autenticado:", auth.currentUser);
+    auth.currentUser
+      .getIdTokenResult(true) // El parámetro 'true' forza la actualización del token
+      .then((idTokenResult) => {
+        const claims = idTokenResult.claims;
+        console.log("Claims del usuario:", claims); // Verifica si 'congregacionId' está presente
+        if (claims.congregacionId) {
+          const congregacionId = claims.congregacionId;
+          const groupsRef = collection(
+            db,
+            "congregaciones",
+            congregacionId,
+            "grupos"
+          );
+          getDocs(groupsRef)
+            .then((querySnapshot) => {
+              if (querySnapshot.empty) {
+                console.log("No se encontraron grupos.");
+              } else {
+                querySnapshot.forEach((doc) => {
+                  console.log("Grupo encontrado:", doc.data());
+                });
+              }
+            })
+            .catch((error) => {
+              console.error("Error al obtener grupos:", error);
+            });
+        } else {
+          console.error(
+            "El usuario no tiene un Custom Claim para congregación."
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error al obtener el token:", error);
+      });
+  } else {
+    console.log("Usuario no autenticado");
+  }
 
   const fetchGrupos = async () => {
     try {
@@ -438,9 +480,7 @@ function Grupos() {
                 </motion.div>
               ) : (
                 <>
-                  <div
-                    className="p-3 bg-white rounded-lg shadow-md mt-4"
-                  >
+                  <div className="p-3 bg-white rounded-lg shadow-md mt-4">
                     <h3 className="text-xl font-semibold mb-2 flex items-center">
                       Nombramientos:
                     </h3>
