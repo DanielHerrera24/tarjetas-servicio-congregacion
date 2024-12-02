@@ -41,9 +41,15 @@ function Login() {
       } else if (error.code === "auth/operation-not-allowed") {
         setError("El inicio de sesión no está permitido en este momento.");
       } else if (error.code === "auth/too-many-requests") {
-        setError("Demasiados intentos de inicio de sesión. Inténtalo de nuevo más tarde.");
-      } else if (error.code === "auth/account-exists-with-different-credential") {
-        setError("Ya existe una cuenta con el mismo correo, pero con otro proveedor de autenticación.");
+        setError(
+          "Demasiados intentos de inicio de sesión. Inténtalo de nuevo más tarde."
+        );
+      } else if (
+        error.code === "auth/account-exists-with-different-credential"
+      ) {
+        setError(
+          "Ya existe una cuenta con el mismo correo, pero con otro proveedor de autenticación."
+        );
       } else if (error.code === "auth/auth-domain-config-required") {
         setError("La configuración del dominio de autenticación es necesaria.");
       } else if (error.code === "auth/credential-already-in-use") {
@@ -67,12 +73,12 @@ function Login() {
       }
     }
   };
-  
-  
 
   return (
     <div className="flex flex-col items-center justify-center p-4 pb-32">
-      <h2 className="text-3xl font-bold text-black mb-6 text-center">Tarjetas de Servicio</h2>
+      <h2 className="text-3xl font-bold text-black mb-6 text-center">
+        Gestión de Congregación
+      </h2>
       <div className="relative bg-white rounded-lg shadow-2xl p-8 max-w-sm w-full">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           Inicia Sesión
@@ -92,6 +98,7 @@ function Login() {
                 id="email"
                 name="email"
                 onChange={handleChange}
+                required
                 className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -103,20 +110,25 @@ function Login() {
                 Contraseña
               </label>
               <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
-              >
-                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-              </button>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  onChange={handleChange}
+                  required
+                  className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
+                >
+                  {showPassword ? (
+                    <FaEyeSlash size={20} />
+                  ) : (
+                    <FaEye size={20} />
+                  )}
+                </button>
               </div>
             </div>
             <button

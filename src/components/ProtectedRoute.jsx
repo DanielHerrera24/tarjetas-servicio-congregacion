@@ -1,27 +1,45 @@
 /* eslint-disable react/prop-types */
+import { useEffect, useState } from "react";
 import { SyncLoader } from "react-spinners";
 import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase"; // Configuración Firestore
 
 export function ProtectedRoute({ children }) {
   const { user, loading, logout } = useAuth();
+  const [allowedUsers, setAllowedUsers] = useState([]);
+  const [error, setError] = useState(null);
 
   const handleLogout = async () => {
     await logout();
   };
 
+  useEffect(() => {
+    const fetchAllowedUsers = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "usuarios"));
+        const users = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          console.log("Data del documento:", data); // Verificar datos del documento
+          return data.uid; // Asegúrate de que 'uid' exista
+        });
+        setAllowedUsers(users);
+        console.log("Usuarios permitidos:", users);
+      } catch (e) {
+        console.error("Error al obtener usuarios permitidos:", e);
+        setError("Ocurrió un error al verificar el acceso.");
+      }
+    };
+
+    fetchAllowedUsers();
+  }, []);
+
   if (loading) return <SyncLoader color="#3B82F6" />;
 
   if (!user) return <Navigate to="/login" />;
 
-  if (
-    user.uid === "eMhSeCCoZLUzrjxCdc7Ylfcu6SB2" ||
-    user.uid === "t1CsG4nesTO4wrnz7z4e4oh7rT13" ||
-    user.uid === "Jn2BVXqKHOaXPxYmtibEOwwZywP2" ||
-    user.uid === "5wyoaagTbJOyE6ybQlxjH5Ue8tX2" ||
-    user.uid === "F7mOwGdIT1UMmwumoRi1pzrybQI3" ||
-    user.uid === "BU5YbSLQh6QWAS65MUi1Et6v5iK2"
-  ) {
+  if (allowedUsers.includes(user.uid)) {
     return <>{children}</>;
   } else {
     return (
@@ -30,6 +48,7 @@ export function ProtectedRoute({ children }) {
           <h2 className="text-2xl font-bold text-gray-800 mb-6">
             No tienes acceso a esta sección.
           </h2>
+          {error && <p>{error}</p>}
           <button
             onClick={handleLogout}
             className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-full"

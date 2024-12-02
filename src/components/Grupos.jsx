@@ -372,16 +372,14 @@ function Grupos() {
           <h2 className="text-3xl font-semibold mb-2 -mt-2 text-black">
             Grupos congregación {capitalizedCongregacionId}
           </h2>
-          {user?.uid === "5wyoaagTbJOyE6ybQlxjH5Ue8tX2" && (
-            <div className="flex gap-2 items-center">
-              <button
-                onClick={() => setShowYearModal(true)}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Añadir Año
-              </button>
-            </div>
-          )}
+          <div className="flex gap-2 items-center">
+            <button
+              onClick={() => setShowYearModal(true)}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Añadir Año
+            </button>
+          </div>
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
