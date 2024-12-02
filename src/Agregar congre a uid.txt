@@ -1,0 +1,5 @@
+1. Entrar al proyecto "backend-tarjetas-congregaciones"
+2. Reemplazar el UID de la cuenta registrada en Firebase y congregacion a agregar acceso
+3. Escribir en la terminal "node index.js"
+4. Iniciar sesión en la app de tarjetas con la cuenta agregada
+5. LISTO
