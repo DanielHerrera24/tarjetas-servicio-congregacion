@@ -16,12 +16,10 @@ import { FaArrowLeft, FaUserCheck, FaUsers, FaUserTie } from "react-icons/fa";
 import { SyncLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useAuth } from "../context/AuthContext";
 import { AnimatePresence, motion } from "framer-motion"; // Importa Framer Motion
 import { auth } from "../firebase";
 
 function Grupos() {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [grupos, setGrupos] = useState([]);
   const [showModal, setShowModal] = useState(false); // Estado para manejar el modal
@@ -224,7 +222,7 @@ function Grupos() {
     try {
       const year = parseInt(yearToAdd, 10);
 
-      if (isNaN(year) || year <= 0) {
+      if (isNaN(year) || year <= 2000) {
         toast.error("Por favor, ingresa un año válido.", {
           position: "bottom-center",
           autoClose: 3000,
@@ -415,16 +413,14 @@ function Grupos() {
             >
               Crear Nuevo Grupo
             </motion.button>
-            {user?.uid === "5wyoaagTbJOyE6ybQlxjH5Ue8tX2" && (
-              <motion.button
-                onClick={() => setShowDeleteModal(true)}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Eliminar Grupo
-              </motion.button>
-            )}
+            <motion.button
+              onClick={() => setShowDeleteModal(true)}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Eliminar Grupo
+            </motion.button>
           </div>
 
           {/* Lista de Grupos con Animaciones */}
