@@ -485,7 +485,7 @@ function Grupos() {
               ) : (
                 <>
                   <div
-                    className={`p-3 bg-white rounded-lg shadow-xl mt-4 ${
+                    className={`p-3 rounded-lg shadow-xl mt-4 ${
                       darkMode
                         ? "bg-[#303030] text-white shadow-gray-600"
                         : "bg-[#f3f3f3] text-black"
@@ -638,7 +638,7 @@ function Grupos() {
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className={`bg-white p-4 rounded-lg shadow-lg ${
+              className={`p-4 rounded-lg shadow-lg ${
                 darkMode
                   ? "bg-[#303030] text-white shadow-gray-600"
                   : "bg-[#f3f3f3] text-black"
@@ -702,7 +702,7 @@ function Grupos() {
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className={`bg-white p-6 rounded-lg shadow-lg ${
+              className={`p-6 rounded-lg shadow-lg ${
                 darkMode
                   ? "bg-[#303030] text-white shadow-gray-600"
                   : "bg-[#f3f3f3] text-black"
