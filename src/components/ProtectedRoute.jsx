@@ -5,11 +5,13 @@ import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase"; // Configuración Firestore
+import { useDarkMode } from "../context/DarkModeContext";
 
 export function ProtectedRoute({ children }) {
   const { user, loading, logout } = useAuth();
   const [allowedUsers, setAllowedUsers] = useState([]);
   const [error, setError] = useState(null);
+  const { darkMode } = useDarkMode();
 
   const handleLogout = async () => {
     await logout();
@@ -44,8 +46,10 @@ export function ProtectedRoute({ children }) {
   } else {
     return (
       <div className="flex flex-col items-center justify-center p-4 pb-36">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        <div className={`rounded-lg shadow-lg p-8 max-w-sm w-full text-center ${
+          darkMode ? "bg-[#303030] text-white shadow-gray-600" : "bg-[#f3f3f3] text-black"
+        }`}>
+          <h2 className="text-2xl font-bold mb-6">
             No tienes acceso a esta sección.
           </h2>
           {error && <p>{error}</p>}

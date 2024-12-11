@@ -11,12 +11,19 @@ import Personas from "./components/Personas";
 import VistaPrevia from "./components/VistaPrevia";
 import VistaPreviaTarjeta from "./components/VistaPreviaTarjeta";
 import NombramientosHermanos from "./components/NombramientosHermanos";
+import { useDarkMode } from "./context/DarkModeContext";
 
 function App() {
+  const { darkMode } = useDarkMode();
+
   return (
     <>
       <Nav />
-      <main className="flex justify-center min-h-[80vh] pt-10">
+      <main
+        className={`flex justify-center min-h-[80vh] pt-14 ${
+          darkMode ? "bg-[#1F1F1F] text-white" : "bg-white text-black"
+        }`}
+      >
         <div className="flex flex-col md:mt-7 w-full max-w-screen-lg">
           <section
             id="seccion"

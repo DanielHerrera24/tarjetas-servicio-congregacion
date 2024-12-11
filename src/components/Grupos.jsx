@@ -18,6 +18,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AnimatePresence, motion } from "framer-motion"; // Importa Framer Motion
 import { auth } from "../firebase";
+import { useDarkMode } from "../context/DarkModeContext";
 
 function Grupos() {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ function Grupos() {
   });
   const [mostrarNombramientos, setMostrarNombramientos] = useState(false);
   const [nombramientoId, setNombramientoId] = useState("");
+  const { darkMode } = useDarkMode();
 
   if (auth.currentUser) {
     console.log("Usuario autenticado:", auth.currentUser);
@@ -61,10 +63,6 @@ function Grupos() {
             .then((querySnapshot) => {
               if (querySnapshot.empty) {
                 console.log("No se encontraron grupos.");
-              } else {
-                querySnapshot.forEach((doc) => {
-                  console.log("Grupo encontrado:", doc.data());
-                });
               }
             })
             .catch((error) => {
@@ -353,11 +351,19 @@ function Grupos() {
     congregacionId.charAt(0).toUpperCase() + congregacionId.slice(1);
 
   return (
-    <div className="flex flex-col gap-3 items-center">
+    <div
+      className={`flex flex-col gap-3 items-center ${
+        darkMode ? "bg-[#1F1F1F] text-white" : "bg-white text-black"
+      }`}
+    >
       <ToastContainer />
       <button
         onClick={() => navigate(-1)}
-        className="hidden sm:block absolute top-0 left-0 bg-white shadow-lg border border-black rounded-full p-3 text-red-500 hover:bg-gray-100 hover:scale-110"
+        className={`hidden sm:block absolute top-0 left-0 shadow-lg border rounded-full p-3 ${
+          darkMode
+            ? "bg-black border-white text-red-500 hover:bg-gray-700"
+            : "bg-white border-black text-red-500 hover:bg-gray-100"
+        } hover:scale-110`}
       >
         <FaArrowLeft size={24} />
       </button>
@@ -367,7 +373,7 @@ function Grupos() {
         </div>
       ) : (
         <>
-          <h2 className="text-3xl font-semibold mb-2 -mt-2 text-black">
+          <h2 className="text-3xl font-semibold mb-2 -mt-2">
             Grupos congregación {capitalizedCongregacionId}
           </h2>
           <div className="flex gap-2 items-center">
@@ -386,7 +392,7 @@ function Grupos() {
           >
             <label
               htmlFor="year-select"
-              className="mr-4 text-lg font-medium text-gray-700 mb-2 sm:mb-0"
+              className="mr-4 text-lg font-medium mb-2 sm:mb-0"
             >
               Año de servicio:
             </label>
@@ -394,7 +400,7 @@ function Grupos() {
               id="year-select"
               value={selectedYear}
               onChange={handleYearChange}
-              className="border border-gray-300 rounded-lg p-2 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="border border-blue-300 rounded-lg p-2 bg-white text-black focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             >
               {years.map((year) => (
                 <option key={year} value={year}>
@@ -433,7 +439,7 @@ function Grupos() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.3 }}
-                  className="border border-gray-300 rounded-md shadow-lg"
+                  className="rounded-md shadow-lg"
                   whileHover={{ scale: 1.05 }}
                 >
                   <Link
@@ -468,13 +474,23 @@ function Grupos() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.5 }}
-                  className="p-8 bg-white shadow-md rounded-lg mt-4 flex items-center justify-center"
+                  className={`p-8 shadow-lg rounded-lg mt-4 flex items-center justify-center ${
+                    darkMode
+                      ? "bg-[#303030] text-white shadow-gray-600"
+                      : "bg-[#f3f3f3] text-black"
+                  }`}
                 >
                   <SyncLoader color="#3B82F6" />
                 </motion.div>
               ) : (
                 <>
-                  <div className="p-3 bg-white rounded-lg shadow-md mt-4">
+                  <div
+                    className={`p-3 bg-white rounded-lg shadow-xl mt-4 ${
+                      darkMode
+                        ? "bg-[#303030] text-white shadow-gray-600"
+                        : "bg-[#f3f3f3] text-black"
+                    }`}
+                  >
                     <h3 className="text-xl font-semibold mb-2 flex items-center">
                       Nombramientos:
                     </h3>
@@ -553,14 +569,20 @@ function Grupos() {
       <AnimatePresence>
         {showModal && (
           <motion.div
-            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 ${
+              darkMode ? "bg-[#303030] text-white" : "bg-[#f3f3f3] text-black"
+            }`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className="bg-white p-6 rounded-lg shadow-lg"
+              className={`p-6 rounded-lg shadow-lg ${
+                darkMode
+                  ? "bg-[#303030] text-white shadow-gray-600"
+                  : "bg-[#f3f3f3] text-black"
+              }`}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
@@ -580,7 +602,7 @@ function Grupos() {
                 maxLength={13}
                 value={newGrupo}
                 onChange={(e) => setNewGrupo(e.target.value)}
-                className="border p-2 mb-4 w-full rounded"
+                className="text-black border p-2 mb-4 w-full rounded"
               />
               <div className="flex justify-end gap-2">
                 <motion.button
@@ -616,7 +638,11 @@ function Grupos() {
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className="bg-white p-4 rounded-lg shadow-lg"
+              className={`bg-white p-4 rounded-lg shadow-lg ${
+                darkMode
+                  ? "bg-[#303030] text-white shadow-gray-600"
+                  : "bg-[#f3f3f3] text-black"
+              }`}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
@@ -633,7 +659,7 @@ function Grupos() {
               <select
                 value={grupoToDelete}
                 onChange={(e) => setGrupoToDelete(e.target.value)}
-                className="border p-2 mb-4 w-full rounded"
+                className="text-black border p-2 mb-4 w-full rounded"
               >
                 <option value="">Selecciona un grupo</option>
                 {grupos.map((grupo) => (
@@ -676,7 +702,11 @@ function Grupos() {
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className="bg-white p-6 rounded-lg shadow-lg"
+              className={`bg-white p-6 rounded-lg shadow-lg ${
+                darkMode
+                  ? "bg-[#303030] text-white shadow-gray-600"
+                  : "bg-[#f3f3f3] text-black"
+              }`}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
@@ -695,7 +725,7 @@ function Grupos() {
                 placeholder="Año a agregar"
                 value={yearToAdd}
                 onChange={(e) => setYearToAdd(e.target.value)}
-                className="border p-2 mb-4 w-full rounded"
+                className="text-black border p-2 mb-4 w-full rounded"
               />
               <div className="flex justify-end gap-2">
                 <motion.button

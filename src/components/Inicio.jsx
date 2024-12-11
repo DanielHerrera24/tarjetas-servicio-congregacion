@@ -5,11 +5,13 @@ import { db } from "../firebase"; // Configuración Firestore
 import { useAuth } from "../context/AuthContext";
 import { SyncLoader } from "react-spinners";
 import { FaSignOutAlt, FaUsers } from "react-icons/fa";
+import { useDarkMode } from "../context/DarkModeContext";
 
 function Inicio() {
   const { user, logout, loading } = useAuth();
   const [congregacion, setCongregacion] = useState(null); // Almacena la congregación del usuario
   const [error, setError] = useState(null);
+  const { darkMode } = useDarkMode();
 
   useEffect(() => {
     const obtenerCongregacion = async () => {
@@ -47,14 +49,20 @@ function Inicio() {
   if (loading) return <SyncLoader color="#3B82F6" />;
 
   // Capitalizar la primera letra de la congregación
-  const congregacionCapitalizada = congregacion ? congregacion.charAt(0).toUpperCase() + congregacion.slice(1) : null;
+  const congregacionCapitalizada = congregacion
+    ? congregacion.charAt(0).toUpperCase() + congregacion.slice(1)
+    : null;
 
   return (
-    <div className="bg-white rounded-lg sm:shadow-xl p-6 max-w-md w-full text-center">
-      <h1 className="text-2xl font-bold text-blue-600 mb-4">
-        ¡Bienvenido!
-      </h1>
-      <p className="text-black mb-6">
+    <div
+      className={`bg-white rounded-lg shadow-xl p-6 max-w-md w-full text-center ${
+        darkMode
+          ? "bg-[#303030] text-white shadow-gray-600"
+          : "bg-[#f3f3f3] text-black"
+      }`}
+    >
+      <h1 className="text-2xl font-bold text-blue-600 mb-4">¡Bienvenido!</h1>
+      <p className="mb-6">
         En esta aplicación podrás gestionar las tarjetas de servicio de tu
         congregación de manera fácil y rápida.
       </p>
@@ -87,7 +95,7 @@ function Inicio() {
       </div>
 
       {/* Información adicional */}
-      <div className="mt-8 text-black">
+      <div className="mt-8">
         <p>
           Puedes crear, ver, editar, guardar, mover de grupo, eliminar y
           descargar en PDF las tarjetas de servicio de tu congregación.

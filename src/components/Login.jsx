@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useDarkMode } from "../context/DarkModeContext";
 
 function Login() {
   const [user, setUser] = useState({
@@ -12,6 +13,7 @@ function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const { darkMode } = useDarkMode();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -75,22 +77,25 @@ function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <h2 className="text-3xl font-bold text-black mb-6 text-center">
+    <div
+      className={`flex flex-col items-center justify-center ${
+        darkMode ? "bg-[#1F1F1F] text-white" : "bg-white text-black"
+      }`}
+    >
+      <h2 className="text-3xl font-bold mb-6 text-center">
         Gestión de Congregación
       </h2>
-      <div className="relative bg-white rounded-lg shadow-2xl p-8 max-w-sm w-full">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          Inicia Sesión
-        </h2>
+      <div
+        className={`relative rounded-lg shadow-2xl p-8 max-w-sm w-full ${
+          darkMode ? "bg-[#303030] text-white shadow-gray-600" : "bg-[#f3f3f3] text-black"
+        }`}
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Inicia Sesión</h2>
         <div>
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           <form onSubmit={submit} className="flex flex-col gap-4">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-gray-700 font-medium mb-2"
-              >
+              <label htmlFor="email" className="block font-medium mb-2">
                 Correo Electrónico
               </label>
               <input
@@ -99,14 +104,11 @@ function Login() {
                 name="email"
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="text-black w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="relative">
-              <label
-                htmlFor="password"
-                className="block text-gray-700 font-medium mb-2"
-              >
+              <label htmlFor="password" className="block font-medium mb-2">
                 Contraseña
               </label>
               <div className="relative">
@@ -116,17 +118,17 @@ function Login() {
                   name="password"
                   onChange={handleChange}
                   required
-                  className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="text-black w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
+                  className="absolute inset-y-0 right-0 flex items-center px-3"
                 >
                   {showPassword ? (
-                    <FaEyeSlash size={20} />
+                    <FaEyeSlash size={20} color="black" />
                   ) : (
-                    <FaEye size={20} />
+                    <FaEye size={20} color="black" />
                   )}
                 </button>
               </div>
@@ -140,7 +142,12 @@ function Login() {
           </form>
           <div className="pt-4 flex justify-between gap-2">
             <span className="">¿No tienes una cuenta?</span>
-            <Link to="/register" className="text-blue-500 border-b border-blue-400 hover:text-blue-700 hover:border-blue-700">Regístrate</Link>
+            <Link
+              to="/register"
+              className="text-blue-500 border-b border-blue-400 hover:text-blue-700 hover:border-blue-700"
+            >
+              Regístrate
+            </Link>
           </div>
         </div>
       </div>
