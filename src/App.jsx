@@ -16,7 +16,7 @@ function App() {
   return (
     <>
       <Nav />
-      <main className="flex justify-center min-h-[80vh] pt-16">
+      <main className="flex justify-center min-h-[80vh] pt-10">
         <div className="flex flex-col md:mt-7 w-full max-w-screen-lg">
           <section
             id="seccion"

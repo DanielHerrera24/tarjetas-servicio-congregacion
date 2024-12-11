@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { db } from "../firebase"; // Importar Firestore
 import { doc, setDoc } from "firebase/firestore";
@@ -66,9 +66,12 @@ function Register() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
+    <div className="flex flex-col items-center justify-center">
+      <h2 className="text-3xl font-bold text-black mb-6 text-center">
+        Gestión de Congregación
+      </h2>
       <div className="bg-white shadow-2xl rounded-lg p-8 max-w-md w-full">
-        <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
           Regístrate
         </h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
@@ -77,7 +80,7 @@ function Register() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block font-medium text-gray-700"
             >
               Correo Electrónico
             </label>
@@ -95,7 +98,7 @@ function Register() {
           <div className="relative">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block font-medium text-gray-700"
             >
               Contraseña
             </label>
@@ -122,7 +125,7 @@ function Register() {
           <div>
             <label
               htmlFor="congregacion"
-              className="block text-sm font-medium text-gray-700"
+              className="block font-medium text-gray-700"
             >
               Selecciona tu congregación
             </label>
@@ -146,10 +149,9 @@ function Register() {
               <option value="" disabled>
                 -- Selecciona una congregación --
               </option>
-              <option value="norte">Congregación Norte</option>
               <option value="sur">Congregación Sur</option>
-              <option value="este">Congregación Este</option>
-              <option value="oeste">Congregación Oeste</option>
+              <option value="este">Congregación Primavera</option>
+              <option value="oeste">Congregación Libertad</option>
               <option value="otra">Otra Congregación</option>
             </select>
 
@@ -158,15 +160,15 @@ function Register() {
               <div className="mt-4">
                 <label
                   htmlFor="otra-congregacion"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block font-medium text-gray-700"
                 >
-                  Escribe el nombre de tu congregación
+                  Escribe el nombre de tu congregación (minúsculas)
                 </label>
                 <input
                   type="text"
                   id="otra-congregacion"
                   name="otraCongregacion"
-                  placeholder="nombre de la congregación en minúsculas"
+                  placeholder="sur"
                   value={user.otraCongregacion || ""} // Maneja el valor de "otraCongregacion"
                   onChange={(e) =>
                     setUser({
@@ -189,6 +191,15 @@ function Register() {
             Registrar
           </button>
         </form>
+        <div className="pt-4 flex justify-between gap-2">
+          <span>¿Ya tienes una cuenta?</span>
+          <Link
+            to="/login"
+            className="text-blue-500 border-b border-blue-400 hover:text-blue-700 hover:border-blue-700"
+          >
+            Inicia Sesión
+          </Link>
+        </div>
       </div>
     </div>
   );

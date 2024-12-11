@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Login() {
@@ -75,7 +75,7 @@ function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 pb-32">
+    <div className="flex flex-col items-center justify-center">
       <h2 className="text-3xl font-bold text-black mb-6 text-center">
         Gestión de Congregación
       </h2>
@@ -138,6 +138,10 @@ function Login() {
               Iniciar Sesión
             </button>
           </form>
+          <div className="pt-4 flex justify-between gap-2">
+            <span className="">¿No tienes una cuenta?</span>
+            <Link to="/register" className="text-blue-500 border-b border-blue-400 hover:text-blue-700 hover:border-blue-700">Regístrate</Link>
+          </div>
         </div>
       </div>
     </div>

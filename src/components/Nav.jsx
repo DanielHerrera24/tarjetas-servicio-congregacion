@@ -5,7 +5,7 @@ function Nav() {
   const navigate = useNavigate();
   const location = useLocation(); // Obtenemos la ubicación actual
 
-  const hideBackButton = location.pathname === "/" || location.pathname === "/login";
+  const hideBackButton = location.pathname === "/" || location.pathname === "/login" || location.pathname === "/register";
 
   return (
     <header className="w-full fixed top-0 left-0 sm:shadow-md z-10">
