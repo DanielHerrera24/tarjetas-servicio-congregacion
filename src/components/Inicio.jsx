@@ -55,7 +55,7 @@ function Inicio() {
 
   return (
     <div
-      className={`bg-white rounded-lg shadow-xl p-6 max-w-md w-full text-center ${
+      className={`rounded-lg shadow-xl p-6 max-w-md w-full text-center ${
         darkMode
           ? "bg-[#303030] text-white shadow-gray-600"
           : "bg-[#f3f3f3] text-black"
