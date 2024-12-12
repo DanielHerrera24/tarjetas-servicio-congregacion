@@ -35,6 +35,7 @@ import { VscOpenPreview } from "react-icons/vsc";
 import { AnimatePresence, motion } from "framer-motion";
 import SubirExcel from "./SubirExcel";
 import CopiarIDsModal from "./CopiarIDsModal";
+import { useDarkMode } from "../context/DarkModeContext";
 
 Modal.setAppElement("#root");
 
@@ -65,6 +66,7 @@ function Personas() {
   const [filterMinisterial, setFilterMinisterial] = useState(false);
   const [filterAnciano, setFilterAnciano] = useState(false);
   const filterMenuRef = useRef(null); // Referencia para el menú de filtros
+  const { darkMode } = useDarkMode();
 
   useEffect(() => {
     if (!grupoId) {
@@ -561,7 +563,11 @@ function Personas() {
       <div className="sm:sticky top-6 z-20 flex sm:w-full sm:mt-0 -mt-[32px] sm:justify-between sm:items-center justify-end pr-4 sm:pr-0 pb-3">
         <button
           onClick={() => navigate(-1)}
-          className="hidden sm:block bg-white shadow-lg border border-black rounded-full p-3 mt-8 text-red-500 hover:bg-gray-100 hover:scale-110"
+          className={`hidden sm:block shadow-lg border rounded-full p-3 mt-8 text-red-500 ${
+            darkMode
+              ? "bg-black border-white hover:bg-gray-700"
+              : "bg-white border-black hover:bg-gray-100"
+          } hover:scale-110`}
         >
           <FaArrowLeft size={24} />
         </button>

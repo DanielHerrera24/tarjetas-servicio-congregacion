@@ -44,16 +44,21 @@ function Nav() {
             </button>
           )}
         </div>
-        <button
-          onClick={toggleDarkMode}
-          className={`p-2 mr-4 rounded-md border ${
-            darkMode
-              ? "border-white bg-gray-800 hover:bg-gray-700 text-white"
-              : "border-black bg-white hover:bg-gray-100 text-black"
-          }`}
-        >
-          {darkMode ? <FaSun color="white" /> : <FaMoon color="black" />}
-        </button>
+        <div className="flex items-center">
+          <span className="hidden sm:inline mr-3">
+            {darkMode ? "Modo Claro" : "Modo Oscuro"}
+          </span>
+          <button
+            onClick={toggleDarkMode}
+            className={`p-2.5 sm:p-2 mr-4 rounded-md border ${
+              darkMode
+                ? "border-white bg-gray-800 hover:bg-gray-700 text-white"
+                : "border-black bg-white hover:bg-gray-100 text-black"
+            }`}
+          >
+            {darkMode ? <FaSun color="white" size={20} /> : <FaMoon color="black" size={20} />}
+          </button>
+        </div>
       </nav>
     </header>
   );

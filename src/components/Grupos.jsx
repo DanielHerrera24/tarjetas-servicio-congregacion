@@ -361,7 +361,7 @@ function Grupos() {
         onClick={() => navigate(-1)}
         className={`hidden sm:block absolute top-0 left-0 shadow-lg border rounded-full p-3 ${
           darkMode
-            ? "bg-black border-white text-red-500 hover:bg-gray-700"
+            ? "bg-gray-800 border-white text-red-500 hover:bg-gray-700"
             : "bg-white border-black text-red-500 hover:bg-gray-100"
         } hover:scale-110`}
       >

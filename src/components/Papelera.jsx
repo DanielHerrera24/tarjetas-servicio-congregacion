@@ -14,12 +14,14 @@ import { toast } from "react-toastify";
 import { SyncLoader } from "react-spinners";
 import { useParams } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
+import { useDarkMode } from "../context/DarkModeContext";
 
 const Papelera = () => {
   const { grupoId, congregacionId } = useParams();
   const [personasEliminadas, setPersonasEliminadas] = useState([]);
   const [loadingPapelera, setLoadingPapelera] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar la visibilidad del modal
+  const { darkMode } = useDarkMode();
 
   useEffect(() => {
     const fetchPersonasEliminadas = async () => {
@@ -63,6 +65,17 @@ const Papelera = () => {
         cancelButtonColor: "#d33",
         cancelButtonText: "Cancelar",
         confirmButtonText: "Sí, restaurar",
+        customClass: {
+          popup: "swal-custom-popup",
+        },
+        didOpen: () => {
+          const swalPopup = document.querySelector(".swal-custom-popup");
+          if (swalPopup) {
+            swalPopup.style.backgroundColor = darkMode ? "#1f1f1f" : "#ffffff";
+            swalPopup.style.color = darkMode ? "#ffffff" : "#000000";
+            swalPopup.style.border = darkMode ? "1px solid #ffffff" : "none";
+          }
+        },
       });
 
       if (result.isConfirmed) {
@@ -86,9 +99,12 @@ const Papelera = () => {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "light",
+          theme: darkMode ? "dark" : "light",
+          style: {
+            border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+          },
         });
-        setIsModalOpen(false)
+        setIsModalOpen(false);
         setPersonasEliminadas(personasEliminadas.filter((p) => p.id !== id));
       }
     } catch (error) {
@@ -101,7 +117,10 @@ const Papelera = () => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+        },
       });
     }
   };
@@ -117,6 +136,19 @@ const Papelera = () => {
         cancelButtonColor: "#d33",
         cancelButtonText: "Cancelar",
         confirmButtonText: "Sí, eliminar permanentemente",
+        customClass: {
+          popup: "swal-custom-popup",
+        },
+        didOpen: () => {
+          const swalPopup = document.querySelector(".swal-custom-popup");
+          if (swalPopup) {
+            swalPopup.style.backgroundColor = darkMode ? "#1f1f1f" : "#ffffff";
+            swalPopup.style.color = darkMode ? "#ffffff" : "#000000";
+            swalPopup.style.border = darkMode
+              ? "1px solid #ffffff"
+              : "1px solid #000000";
+          }
+        },
       });
 
       if (result.isConfirmed) {
@@ -140,9 +172,12 @@ const Papelera = () => {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "light",
+          theme: darkMode ? "dark" : "light",
+          style: {
+            border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+          },
         });
-        setIsModalOpen(false)
+        setIsModalOpen(false);
         setPersonasEliminadas(personasEliminadas.filter((p) => p.id !== id));
       }
     } catch (error) {
@@ -155,7 +190,10 @@ const Papelera = () => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+        },
       });
     }
   };
@@ -165,7 +203,9 @@ const Papelera = () => {
       {/* Botón para abrir el modal */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="flex gap-3 items-center bg-white text-red-500 px-4 py-2 rounded border border-black hover:bg-red-500 hover:text-white hover:border-none transition duration-200"
+        className={`flex gap-3 items-center text-red-500 px-4 py-2 rounded border border-black hover:bg-red-500 hover:text-white hover:border-none transition duration-200 ${
+          darkMode ? "bg-gray-800 border border-white" : "bg-[#ffffff]"
+        }`}
       >
         Ver Papelera
         <FaTrash />
@@ -174,7 +214,13 @@ const Papelera = () => {
       {/* Modal para mostrar la papelera */}
       {isModalOpen && (
         <div className="fixed z-20 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white rounded-lg shadow-lg max-w-lg w-full">
+          <div
+            className={`rounded-lg shadow-lg max-w-lg w-full ${
+              darkMode
+                ? "bg-[#303030] text-white shadow-gray-600"
+                : "bg-[#ffffff] text-black"
+            }`}
+          >
             <div className="p-4">
               <h2 className="text-lg font-bold mb-4">Tarjetas Eliminadas</h2>
 
@@ -186,7 +232,11 @@ const Papelera = () => {
                 personasEliminadas.map((persona) => (
                   <div
                     key={persona.id}
-                    className="tarjeta-eliminada flex justify-between items-center p-4 border border-black shadow-md rounded mb-2"
+                    className={`tarjeta-eliminada flex justify-between items-center p-4 border border-black shadow-md rounded mb-2 ${
+                      darkMode
+                        ? "bg-[#1e1e1e] border border-white shadow-gray-600"
+                        : "bg-[#f9f9f9]"
+                    }`}
                   >
                     <span>{persona.nombre}</span>
                     <div className="flex gap-2">
