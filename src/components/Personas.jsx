@@ -496,6 +496,17 @@ function Personas() {
         cancelButtonColor: "#d33",
         cancelButtonText: "Cancelar",
         confirmButtonText: "Sí, elimínalo",
+        customClass: {
+          popup: "swal-custom-popup",
+        },
+        didOpen: () => {
+          const swalPopup = document.querySelector(".swal-custom-popup");
+          if (swalPopup) {
+            swalPopup.style.backgroundColor = darkMode ? "#303030" : "#ffffff";
+            swalPopup.style.color = darkMode ? "#ffffff" : "#000000";
+            swalPopup.style.border = darkMode ? "1px solid #ffffff" : "none";
+          }
+        },
       });
 
       if (result.isConfirmed) {
@@ -630,9 +641,9 @@ function Personas() {
             </Link>
           </div>
           <div
-            className={`sm:p-6 p-3 rounded-lg shadow-md w-full relative mb-16 border ${
+            className={`sm:p-6 p-3 rounded-lg shadow-xl w-full relative mb-16 border ${
               darkMode
-                ? "bg-[#303030] border-white text-white"
+                ? "bg-[#303030] border-white text-white shadow-gray-600"
                 : "bg-white border-black text-black"
             }`}
           >
@@ -782,10 +793,10 @@ function Personas() {
                 >
                   <div
                     onClick={() => toggleAccordion(persona.id)}
-                    className={`cursor-pointer p-4 bg-gray-100 hover:bg-gray-200 transition-colors rounded-t-md flex justify-between items-center gap-2 ${
+                    className={`cursor-pointer p-4 transition-colors rounded-t-md flex justify-between items-center gap-2 ${
                       darkMode
                         ? "bg-gray-800 border-white text-white hover:bg-gray-700"
-                        : "bg-white border-black text-black hover:bg-gray-100"
+                        : "bg-white border-black text-black hover:bg-gray-200"
                     }`}
                   >
                     <p className="text-lg text-left text-pretty font-medium">
@@ -1282,9 +1293,9 @@ function Personas() {
                 exit={{ opacity: 0 }}
               >
                 <motion.div
-                  className={`flex flex-col justify-center items-center rounded-lg py-6 px-12 max-w-md relative shadow-lg ${
+                  className={`flex flex-col border justify-center items-center rounded-lg py-6 px-12 max-w-md relative shadow-lg ${
                     darkMode
-                      ? "bg-gray-800 border-white text-white"
+                      ? "bg-[#303030] border-white text-white"
                       : "bg-white border-black text-black"
                   }`}
                   initial={{ scale: 0.8, opacity: 0 }}
