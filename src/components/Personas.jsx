@@ -593,7 +593,13 @@ function Personas() {
         </div>
       ) : (
         <>
-          <div className="bg-white sticky top-2 sm:top-14 px-3 py-2 mt-3 shadow-lg rounded-xl mb-2 z-10 sm:z-20">
+          <div
+            className={`sticky border top-2 sm:top-14 px-3 py-2 mt-3 shadow-lg rounded-xl mb-2 z-10 sm:z-20 ${
+              darkMode
+                ? "bg-gray-800 border-white hover:bg-gray-700"
+                : "bg-white border-black hover:bg-gray-100"
+            }`}
+          >
             <Link
               to={`/${congregacionId}/grupos/${grupoId}/vistaPrevia`}
               state={{
@@ -608,8 +614,14 @@ function Personas() {
               <VscOpenPreview size={22} />
             </Link>
           </div>
-          <div className="sm:p-6 p-3 bg-white rounded-lg shadow-md w-full relative mb-16">
-            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6">
+          <div
+            className={`sm:p-6 p-3 rounded-lg shadow-md w-full relative mb-16 border ${
+              darkMode
+                ? "bg-[#303030] border-white text-white"
+                : "bg-white border-black text-black"
+            }`}
+          >
+            <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">
               Tarjetas de servicio {congregacionId} {"-"} {nombreGrupo} {"-"}{" "}
               {selectedYear}
             </h2>
@@ -622,7 +634,7 @@ function Personas() {
                     placeholder={`Buscar tarjeta...`}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="border border-blue-500 rounded-md pl-9 p-2 mb-4 w-full sm:w-96"
+                    className="text-black border border-blue-500 rounded-md pl-9 p-2 mb-4 w-full sm:w-96"
                   />
                 </div>
                 {/* Botón de Filtros */}
@@ -635,7 +647,13 @@ function Personas() {
                     <FaFilter />
                   </button>
                   {showFilterMenu && (
-                    <div className="absolute right-0 mt-0 w-56 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                    <div
+                      className={`absolute right-0 mt-0 w-56 border border-gray-300 rounded-lg shadow-lg z-10 ${
+                        darkMode
+                          ? "bg-gray-800 border-white hover:bg-gray-700"
+                          : "bg-white border-black hover:bg-gray-100"
+                      }`}
+                    >
                       <div className="flex flex-col gap-1 p-4">
                         <label className="flex items-center">
                           <FaUsers className="mr-2 text-purple-500" />
@@ -692,11 +710,33 @@ function Personas() {
 
                 {/* Modal */}
                 {isModalOpen && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
+                    <div
+                      className={`border rounded-lg shadow-lg p-6 w-96 relative ${
+                        darkMode
+                          ? "bg-[#1f1f1f] border-white"
+                          : "bg-white border-black"
+                      }`}
+                    >
                       {/* Contenido del modal */}
                       <h2 className="text-xl font-bold mb-4">Opciones</h2>
-                      <div className="flex flex-col gap-4 mb-6">
+
+                      <motion.button
+                        className="modal-close-button absolute top-4 right-4"
+                        onClick={closeModal}
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.8 }}
+                      >
+                        <IoClose
+                          size={30}
+                          className={`${
+                            darkMode
+                              ? "text-white border-white hover:text-red-500"
+                              : "text-black border-black hover:text-red-500"
+                          }`}
+                        />
+                      </motion.button>
+                      <div className="flex flex-col gap-4">
                         {/* Botón para descargar la plantilla */}
                         <button
                           onClick={descargarPlantilla}
@@ -712,14 +752,6 @@ function Personas() {
                           db={db}
                         />
                       </div>
-
-                      {/* Botón para cerrar el modal */}
-                      <button
-                        onClick={closeModal}
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                      >
-                        Cerrar
-                      </button>
                     </div>
                   </div>
                 )}
@@ -1240,7 +1272,11 @@ function Personas() {
                   transition={{ duration: 0.3 }}
                 >
                   <motion.div
-                    className="flex flex-col gap-4 text-black bg-white rounded-lg py-6 px-6 max-w-md relative shadow-lg"
+                    className={`border flex flex-col gap-4 rounded-lg py-6 px-6 max-w-md relative shadow-lg ${
+                      darkMode
+                        ? "bg-[#1f1f1f] border-white text-white"
+                        : "bg-white border-black text-black"
+                    }`}
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.8, opacity: 0 }}
@@ -1252,7 +1288,14 @@ function Personas() {
                       whileHover={{ scale: 1.2 }}
                       whileTap={{ scale: 0.8 }}
                     >
-                      <IoClose size={30} />
+                      <IoClose
+                        size={30}
+                        className={`${
+                          darkMode
+                            ? "text-white border-white hover:text-red-500"
+                            : "text-black border-black hover:text-red-500"
+                        }`}
+                      />
                     </motion.button>
                     <h2 className="text-xl font-semibold mb-4">
                       Agregar Nueva Tarjeta
@@ -1265,7 +1308,7 @@ function Personas() {
                           placeholder="Perez Juan"
                           value={nuevoNombre}
                           onChange={(e) => setNuevoNombre(e.target.value)}
-                          className="w-full border border-gray-300 p-2 rounded focus:outline-blue-500 transition-colors duration-200"
+                          className="text-black w-full border border-gray-400 p-2 rounded focus:outline-blue-500 transition-colors duration-200"
                         />
                       </label>
                       <label>
@@ -1275,7 +1318,7 @@ function Personas() {
                           placeholder="01/Enero/2000"
                           value={fechaNacimiento}
                           onChange={(e) => setFechaNacimiento(e.target.value)}
-                          className="w-full border border-gray-300 p-2 rounded focus:outline-blue-500 transition-colors duration-200"
+                          className="text-black w-full border border-gray-400 p-2 rounded focus:outline-blue-500 transition-colors duration-200"
                         />
                       </label>
                       <label>
@@ -1285,7 +1328,7 @@ function Personas() {
                           placeholder="01/Enero/2000"
                           value={fechaBautismo}
                           onChange={(e) => setFechaBautismo(e.target.value)}
-                          className="w-full border border-gray-300 p-2 rounded focus:outline-blue-500 transition-colors duration-200"
+                          className="text-black w-full border border-gray-400 p-2 rounded focus:outline-blue-500 transition-colors duration-200"
                         />
                       </label>
                       {(!yaHaySup || !yaHayAux) && (

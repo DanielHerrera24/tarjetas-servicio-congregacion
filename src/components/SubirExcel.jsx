@@ -110,7 +110,7 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
     <div className="">
       <label
         htmlFor="file-upload"
-        className="block text-sm font-bold text-black"
+        className="block text-md font-bold"
       >
         Subir Excel
       </label>
