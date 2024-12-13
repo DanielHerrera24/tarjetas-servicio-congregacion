@@ -67,6 +67,20 @@ function Personas() {
   const [filterAnciano, setFilterAnciano] = useState(false);
   const filterMenuRef = useRef(null); // Referencia para el menú de filtros
   const { darkMode } = useDarkMode();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  // Ruta de la plantilla de Excel
+  const plantillaExcelURL = "/src/Plantilla Informes.xlsx"; // Cambia a la ruta de tu archivo
+
+  const descargarPlantilla = () => {
+    const link = document.createElement("a");
+    link.href = plantillaExcelURL;
+    link.download = "Plantilla Informes.xlsx"; // Nombre del archivo al descargar
+    link.click();
+  };
 
   useEffect(() => {
     if (!grupoId) {
@@ -565,7 +579,7 @@ function Personas() {
           onClick={() => navigate(-1)}
           className={`hidden sm:block shadow-lg border rounded-full p-3 mt-8 text-red-500 ${
             darkMode
-              ? "bg-black border-white hover:bg-gray-700"
+              ? "bg-gray-800 border-white hover:bg-gray-700"
               : "bg-white border-black hover:bg-gray-100"
           } hover:scale-110`}
         >
@@ -667,14 +681,50 @@ function Personas() {
                 Agregar Tarjeta
                 <FaPlus />
               </button>
-              <SubirExcel
-                selectedYear={selectedYear}
-                congregacionId={congregacionId}
-                grupoId={grupoId}
-                db={db}
-              />
+              <div className="mb-4">
+                {/* Botón para abrir el modal */}
+                <button
+                  onClick={openModal}
+                  className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Subir información
+                </button>
+
+                {/* Modal */}
+                {isModalOpen && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                      {/* Contenido del modal */}
+                      <h2 className="text-xl font-bold mb-4">Opciones</h2>
+                      <div className="flex flex-col gap-4 mb-6">
+                        {/* Botón para descargar la plantilla */}
+                        <button
+                          onClick={descargarPlantilla}
+                          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                          Descargar Plantilla Excel
+                        </button>
+                        <CopiarIDsModal filteredPersonas={filteredPersonas} />
+                        <SubirExcel
+                          selectedYear={selectedYear}
+                          congregacionId={congregacionId}
+                          grupoId={grupoId}
+                          db={db}
+                        />
+                      </div>
+
+                      {/* Botón para cerrar el modal */}
+                      <button
+                        onClick={closeModal}
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                      >
+                        Cerrar
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-            <CopiarIDsModal filteredPersonas={filteredPersonas} />
             <ul className="flex flex-col gap-4">
               {filteredPersonas.map((persona) => (
                 <li

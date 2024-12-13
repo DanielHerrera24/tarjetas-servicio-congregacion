@@ -20,10 +20,9 @@ function VistaPrevia() {
   const [personas, setPersonas] = useState([]);
   const [nombreGrupo, setNombreGrupo] = useState("");
 
-  const selectedYear = location.state?.selectedYear;
-  const filterAnciano = location.state?.filterAnciano;
-  const filterRegular = location.state?.filterRegular;
-  const filterMinisterial = location.state?.filterMinisterial;
+  // Extraer datos del state
+  const { selectedYear, filterAnciano, filterRegular, filterMinisterial } =
+    location.state || {};
 
   useEffect(() => {
     const fetchPersonas = async () => {

@@ -33,7 +33,7 @@ const CopiarIDsModal = ({ filteredPersonas }) => {
       {/* Botón para abrir el modal */}
       <button
         onClick={openModal}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
       >
         Ver y copiar IDs
       </button>

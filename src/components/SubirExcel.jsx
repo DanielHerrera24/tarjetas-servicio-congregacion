@@ -107,7 +107,7 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
   };
 
   return (
-    <div className="mb-4">
+    <div className="">
       <label
         htmlFor="file-upload"
         className="block text-sm font-bold text-black"
