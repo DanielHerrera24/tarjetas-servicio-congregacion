@@ -73,7 +73,7 @@ function Register() {
         darkMode ? "bg-[#1F1F1F] text-white" : "bg-white text-black"
       }`}
     >
-      <h2 className="text-3xl font-bold mb-6 text-center">
+      <h2 className="sm:hidden text-3xl font-bold mb-6 text-center">
         Gestión de Congregación
       </h2>
       <div

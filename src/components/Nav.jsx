@@ -28,7 +28,7 @@ function Nav() {
             }`}
           >
             <span className="ml-2 font-semibold hidden sm:block">
-              Tarjetas de Servicio
+              Gestión de Congregación
             </span>
           </Link>
           {!hideBackButton && ( // Condición para mostrar la flecha
