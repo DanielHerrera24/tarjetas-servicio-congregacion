@@ -228,7 +228,10 @@ function Grupos() {
           closeOnClick: true,
           draggable: true,
           progress: undefined,
-          theme: "light",
+          theme: darkMode ? "dark" : "light",
+          style: {
+            border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+          },
         });
         return;
       }
@@ -261,7 +264,10 @@ function Grupos() {
         closeOnClick: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+        },
       });
       setYearToAdd(""); // Resetea el año a agregar
     } catch (error) {
@@ -306,7 +312,10 @@ function Grupos() {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+        },
       });
 
       setShowModal(false); // Cierra el modal
@@ -337,7 +346,10 @@ function Grupos() {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+        },
       });
       setShowDeleteModal(false); // Cierra el modal de eliminar
       setGrupoToDelete(""); // Resetea el estado del grupo a eliminar

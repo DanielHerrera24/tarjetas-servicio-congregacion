@@ -1,10 +1,11 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { toast } from "react-toastify";
-
+import { useDarkMode } from "../context/DarkModeContext";
 
 const CopiarIDsModal = ({ filteredPersonas }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { darkMode } = useDarkMode();
 
   // Función para abrir el modal
   const openModal = () => setIsModalOpen(true);
@@ -23,7 +24,10 @@ const CopiarIDsModal = ({ filteredPersonas }) => {
         closeOnClick: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+        },
       });
     });
   };

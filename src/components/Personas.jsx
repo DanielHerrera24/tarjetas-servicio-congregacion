@@ -252,7 +252,10 @@ function Personas() {
         closeOnClick: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+        },
       });
       setPersonas(personas.filter((persona) => persona.id !== movingPersonId)); // Actualizar la lista local
       setMoveModalIsOpen(false); // Cierra el modal de mover persona
@@ -409,7 +412,10 @@ function Personas() {
         closeOnClick: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+        },
       });
     } catch (error) {
       console.error("Error al guardar los cambios: ", error);
@@ -461,7 +467,10 @@ function Personas() {
         closeOnClick: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+        },
       });
 
       setPersonas([...personas, { id, ...nuevaPersona }]);
@@ -511,7 +520,10 @@ function Personas() {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "light",
+          theme: darkMode ? "dark" : "light",
+          style: {
+            border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+          },
         });
 
         // Actualizar el estado local para reflejar la eliminación
@@ -531,7 +543,10 @@ function Personas() {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "light",
+          theme: darkMode ? "dark" : "light",
+          style: {
+            border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+          },
         }
       );
     }
@@ -712,14 +727,14 @@ function Personas() {
                 {isModalOpen && (
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
                     <div
-                      className={`border rounded-lg shadow-lg p-6 w-96 relative ${
+                      className={`border rounded-lg shadow-lg p-6 w-80 relative ${
                         darkMode
                           ? "bg-[#1f1f1f] border-white"
                           : "bg-white border-black"
                       }`}
                     >
                       {/* Contenido del modal */}
-                      <h2 className="text-xl font-bold mb-4">Opciones</h2>
+                      <h2 className="text-xl font-bold mb-4">Subir Archivo</h2>
 
                       <motion.button
                         className="modal-close-button absolute top-4 right-4"
@@ -740,7 +755,7 @@ function Personas() {
                         {/* Botón para descargar la plantilla */}
                         <button
                           onClick={descargarPlantilla}
-                          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                          className="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded"
                         >
                           Descargar Plantilla Excel
                         </button>
@@ -761,13 +776,19 @@ function Personas() {
               {filteredPersonas.map((persona) => (
                 <li
                   key={persona.id}
-                  className="border border-gray-300 rounded-md"
+                  className={`border rounded-md ${
+                    darkMode ? "border-white" : "border-gray-300"
+                  }`}
                 >
                   <div
                     onClick={() => toggleAccordion(persona.id)}
-                    className="cursor-pointer p-4 bg-gray-100 hover:bg-gray-200 transition-colors rounded-t-md flex justify-between items-center gap-2"
+                    className={`cursor-pointer p-4 bg-gray-100 hover:bg-gray-200 transition-colors rounded-t-md flex justify-between items-center gap-2 ${
+                      darkMode
+                        ? "bg-gray-800 border-white text-white hover:bg-gray-700"
+                        : "bg-white border-black text-black hover:bg-gray-100"
+                    }`}
                   >
-                    <p className="text-lg text-left text-pretty font-medium text-gray-800">
+                    <p className="text-lg text-left text-pretty font-medium">
                       {(persona.rol === "Sup" || persona.rol === "Aux") && (
                         <span>({persona.rol}) </span>
                       )}
@@ -780,7 +801,13 @@ function Personas() {
                     )}
                   </div>
                   {openId === persona.id && (
-                    <div className="p-2 md:p-4 bg-gray-50 rounded-b-md flex flex-col gap-2">
+                    <div
+                      className={`p-2 md:p-4 rounded-b-md flex flex-col gap-2 ${
+                        darkMode
+                          ? "bg-[#1f1f1f] text-white"
+                          : "bg-gray-50 text-black"
+                      }`}
+                    >
                       <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-2 sm:gap-0">
                         <div className="flex flex-col items-start gap-1 sm:w-[315px] md:w-[415px]">
                           {/* Nombre */}
@@ -798,7 +825,7 @@ function Personas() {
                                   e.target.value
                                 )
                               }
-                              className="border border-gray-300 rounded-md p-1 ml-1 w-full"
+                              className="text-black border border-gray-300 rounded-md p-1 ml-1 w-full"
                             />
                           </div>
                           {/* Fecha de Nacimiento */}
@@ -818,7 +845,7 @@ function Personas() {
                                   e.target.value
                                 )
                               }
-                              className="border border-gray-300 rounded-md p-1 ml-1 w-auto"
+                              className="text-black border border-gray-300 rounded-md p-1 ml-1 w-auto"
                             />
                           </div>
                           {/* Fecha de Bautismo */}
@@ -838,11 +865,11 @@ function Personas() {
                                   e.target.value
                                 )
                               }
-                              className="border border-gray-300 rounded-md p-1 ml-1 w-auto"
+                              className="text-black border border-gray-300 rounded-md p-1 ml-1 w-auto"
                             />
                           </div>
                         </div>
-                        <div className="text-black font-bold flex flex-col items-start gap-1 mr-12">
+                        <div className="font-bold flex flex-col items-start gap-1 mr-12">
                           {/* Hombre y mujer */}
                           <div className="flex flex-wrap gap-2">
                             <input
@@ -899,7 +926,7 @@ function Personas() {
                           </div>
                         </div>
                       </div>
-                      <div className="text-black font-bold flex flex-wrap sm:flex-row gap-y-2 items-start justify-between">
+                      <div className="font-bold flex flex-wrap sm:flex-row gap-y-2 items-start justify-between">
                         {/* Anciano */}
                         <div className="flex gap-2 items-center">
                           <input
@@ -998,27 +1025,51 @@ function Personas() {
                           className="sm:min-w-full min-w-[900px]"
                         >
                           <thead>
-                            <tr className="text-black text-sm leading-normal">
-                              <th className="w-32 py-2 px-4 border border-black font-bold">
+                            <tr className="text-sm leading-normal">
+                              <th
+                                className={`w-32 py-2 px-4 border font-bold ${
+                                  darkMode ? "border-white" : "border-black"
+                                }`}
+                              >
                                 Año de servicio <div>{selectedYear}</div>
                               </th>
-                              <th className="py-2 px-4 w-28 border border-black font-bold">
+                              <th
+                                className={`py-2 px-4 w-28 border font-bold ${
+                                  darkMode ? "border-white" : "border-black"
+                                }`}
+                              >
                                 Participación en el ministerio
                               </th>
-                              <th className="py-2 px-4 w-20 border border-black font-bold">
+                              <th
+                                className={`py-2 px-4 w-20 border font-bold ${
+                                  darkMode ? "border-white" : "border-black"
+                                }`}
+                              >
                                 Cursos Bíblicos
                               </th>
-                              <th className="py-2 px-4 w-24 border border-black font-bold">
+                              <th
+                                className={`py-2 px-4 w-24 border font-bold ${
+                                  darkMode ? "border-white" : "border-black"
+                                }`}
+                              >
                                 Precursor Auxiliar
                               </th>
-                              <th className="py-2 px-4 w-36 border border-black font-bold">
+                              <th
+                                className={`py-2 px-4 w-36 border font-bold ${
+                                  darkMode ? "border-white" : "border-black"
+                                }`}
+                              >
                                 Horas{" "}
                                 <div>
                                   (Si es precursor o misionero que sirve en el
                                   campo)
                                 </div>
                               </th>
-                              <th className="py-2 px-4 w-72 border border-black">
+                              <th
+                                className={`py-2 px-4 w-72 border ${
+                                  darkMode ? "border-white" : "border-black"
+                                }`}
+                              >
                                 Notas
                               </th>
                             </tr>
@@ -1038,11 +1089,26 @@ function Personas() {
                               "julio",
                               "agosto",
                             ].map((mes) => (
-                              <tr key={mes} className="hover:bg-gray-100">
-                                <td className="py-1 px-2 border border-black whitespace-nowrap">
+                              <tr
+                                key={mes}
+                                className={`${
+                                  darkMode
+                                    ? "hover:bg-gray-700"
+                                    : "hover:bg-gray-100"
+                                }`}
+                              >
+                                <td
+                                  className={`py-1 px-2 border whitespace-nowrap ${
+                                    darkMode ? "border-white" : "border-black"
+                                  }`}
+                                >
                                   {mes.charAt(0).toUpperCase() + mes.slice(1)}
                                 </td>
-                                <td className="py-1 px-2 border border-black whitespace-nowrap">
+                                <td
+                                  className={`py-1 px-2 border whitespace-nowrap ${
+                                    darkMode ? "border-white" : "border-black"
+                                  }`}
+                                >
                                   <input
                                     type="checkbox"
                                     checked={
@@ -1059,10 +1125,14 @@ function Personas() {
                                     }
                                   />
                                 </td>
-                                <td className="py-1 px-2 border border-black whitespace-nowrap">
+                                <td
+                                  className={`py-1 px-2 border whitespace-nowrap ${
+                                    darkMode ? "border-white" : "border-black"
+                                  }`}
+                                >
                                   <input
                                     type="number"
-                                    className="w-full"
+                                    className="w-full text-black"
                                     value={
                                       persona.registros?.[selectedYear]?.[mes]
                                         ?.cursos || ""
@@ -1077,7 +1147,11 @@ function Personas() {
                                     }
                                   />
                                 </td>
-                                <td className="py-1 px-2 border border-black whitespace-nowrap">
+                                <td
+                                  className={`py-1 px-2 border whitespace-nowrap ${
+                                    darkMode ? "border-white" : "border-black"
+                                  }`}
+                                >
                                   <input
                                     type="checkbox"
                                     checked={
@@ -1094,10 +1168,14 @@ function Personas() {
                                     }
                                   />
                                 </td>
-                                <td className="py-1 px-2 border border-black whitespace-nowrap">
+                                <td
+                                  className={`py-1 px-2 border whitespace-nowrap ${
+                                    darkMode ? "border-white" : "border-black"
+                                  }`}
+                                >
                                   <input
                                     type="number"
-                                    className="w-full"
+                                    className="w-full text-black"
                                     value={
                                       persona.registros?.[selectedYear]?.[mes]
                                         ?.horas || ""
@@ -1112,10 +1190,14 @@ function Personas() {
                                     }
                                   />
                                 </td>
-                                <td className="py-1 px-2 border border-black whitespace-nowrap">
+                                <td
+                                  className={`py-1 px-2 border whitespace-nowrap ${
+                                    darkMode ? "border-white" : "border-black"
+                                  }`}
+                                >
                                   <input
                                     type="text"
-                                    className="w-full"
+                                    className="w-full text-black"
                                     value={
                                       persona.registros?.[selectedYear]?.[mes]
                                         ?.notas || ""
@@ -1200,7 +1282,11 @@ function Personas() {
                 exit={{ opacity: 0 }}
               >
                 <motion.div
-                  className="flex flex-col justify-center items-center bg-white rounded-lg py-6 px-12 max-w-md relative shadow-lg"
+                  className={`flex flex-col justify-center items-center rounded-lg py-6 px-12 max-w-md relative shadow-lg ${
+                    darkMode
+                      ? "bg-gray-800 border-white text-white"
+                      : "bg-white border-black text-black"
+                  }`}
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.3 }}
@@ -1215,23 +1301,27 @@ function Personas() {
                         className="modal-close-button absolute top-4 right-4"
                         onClick={() => setMoveModalIsOpen(false)}
                       >
-                        <IoClose />
+                        <IoClose
+                          size={30}
+                          className={`${
+                            darkMode
+                              ? "text-white border-white hover:text-red-500"
+                              : "text-black border-black hover:text-red-500"
+                          }`}
+                        />
                       </button>
                       <h2 className="text-2xl font-semibold mb-4">
                         Seleccionar Nuevo Grupo
                       </h2>
-                      <label
-                        className="block text-gray-700 mb-2"
-                        htmlFor="group-select"
-                      >
-                        Del {grupoId} a:
+                      <label className="block mb-2" htmlFor="group-select">
+                        Del {nombreGrupo} a:
                       </label>
                       <div className="mb-4">
                         <select
                           id="group-select"
                           value={selectedGroup}
                           onChange={(e) => setSelectedGroup(e.target.value)}
-                          className="w-full border border-gray-300 rounded-md p-2"
+                          className="w-full border border-gray-300 rounded-md p-2 text-black"
                         >
                           <option value="">Seleccionar Grupo</option>
                           {grupos.map((grupo) => (

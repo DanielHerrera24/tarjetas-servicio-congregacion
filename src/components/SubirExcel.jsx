@@ -3,8 +3,11 @@
 import { doc, setDoc } from "firebase/firestore"; // Importar Firestore
 import * as XLSX from "xlsx"; // Importar la librería XLSX
 import { toast } from "react-toastify";
+import { useDarkMode } from "../context/DarkModeContext";
 
 const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
+  const { darkMode } = useDarkMode();
+
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
 
@@ -87,7 +90,10 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
             closeOnClick: true,
             draggable: true,
             progress: undefined,
-            theme: "light",
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            },
           });
         } catch (error) {
           toast.error(`No se pudo subir el archivo de Excel: ${error}`, {
@@ -97,7 +103,10 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
             closeOnClick: true,
             draggable: true,
             progress: undefined,
-            theme: "light",
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            },
           });
         }
       };
@@ -107,22 +116,22 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
   };
 
   return (
-    <div className="">
+    <div className="mt-2">
+      <input
+        id="file-upload"
+        type="file"
+        accept=".xlsx, .xls"
+        onChange={handleFileUpload}
+        className="hidden" // Oculta el input
+      />
+
+      {/* Botón personalizado */}
       <label
-        htmlFor="file-upload"
-        className="block text-md font-bold"
+        htmlFor="file-upload" // Vincula el botón con el input
+        className="bg-purple-500 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-purple-700"
       >
         Subir Excel
       </label>
-      <div className="mt-2">
-        <input
-          id="file-upload"
-          type="file"
-          accept=".xlsx, .xls"
-          onChange={handleFileUpload}
-          className="file:bg-purple-500 file:text-white file:px-3 file:py-1 file:rounded-md file:hover:bg-purple-700 file:cursor-pointer"
-        />
-      </div>
     </div>
   );
 };

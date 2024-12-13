@@ -146,7 +146,7 @@ function VistaPrevia() {
       </div>
       <div
         id="content-to-print"
-        className="w-full max-w-[1024px] my-0 px-1 text-black"
+        className="w-full max-w-[1024px] my-0 px-1 text-black bg-white"
       >
         {personas.map((persona) => (
           <li
