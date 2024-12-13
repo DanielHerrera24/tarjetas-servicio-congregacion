@@ -12,6 +12,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import "../App.css";
 import { FaArrowLeft, FaFileDownload } from "react-icons/fa";
+import { useDarkMode } from "../context/DarkModeContext";
 
 function VistaPrevia() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ function VistaPrevia() {
   const location = useLocation();
   const [personas, setPersonas] = useState([]);
   const [nombreGrupo, setNombreGrupo] = useState("");
+  const { darkMode } = useDarkMode();
 
   // Extraer datos del state
   const { selectedYear, filterAnciano, filterRegular, filterMinisterial } =
@@ -47,31 +49,39 @@ function VistaPrevia() {
           ...doc.data(),
           genero: doc.data().genero || {},
           registros: doc.data().registros || {},
-          totalHoras: Object.values(doc.data().registros?.[selectedYear] || {}).reduce(
-            (acc, registro) => acc + (registro.horas || 0), 0
-          ),
+          totalHoras: Object.values(
+            doc.data().registros?.[selectedYear] || {}
+          ).reduce((acc, registro) => acc + (registro.horas || 0), 0),
         }));
 
         // Filtrado basado en los filtros aplicados
         let filteredPersonas = personaList;
 
         if (filterAnciano) {
-          filteredPersonas = filteredPersonas.filter((persona) => persona.anciano === true);
+          filteredPersonas = filteredPersonas.filter(
+            (persona) => persona.anciano === true
+          );
         }
 
         if (filterRegular) {
-          filteredPersonas = filteredPersonas.filter((persona) => persona.regular === true);
+          filteredPersonas = filteredPersonas.filter(
+            (persona) => persona.regular === true
+          );
         }
 
         if (filterMinisterial) {
-          filteredPersonas = filteredPersonas.filter((persona) => persona.ministerial === true);
+          filteredPersonas = filteredPersonas.filter(
+            (persona) => persona.ministerial === true
+          );
         }
 
         // Ordenar personas: Sup y Aux al principio
         const superintendente = filteredPersonas.filter(
           (persona) => persona.rol === "Sup"
         );
-        const auxiliar = filteredPersonas.filter((persona) => persona.rol === "Aux");
+        const auxiliar = filteredPersonas.filter(
+          (persona) => persona.rol === "Aux"
+        );
         const miembros = filteredPersonas.filter(
           (persona) => !["Sup", "Aux"].includes(persona.rol)
         );
@@ -84,7 +94,14 @@ function VistaPrevia() {
     };
 
     fetchPersonas();
-  }, [grupoId, selectedYear, congregacionId, filterAnciano, filterRegular, filterMinisterial]);
+  }, [
+    grupoId,
+    selectedYear,
+    congregacionId,
+    filterAnciano,
+    filterRegular,
+    filterMinisterial,
+  ]);
 
   // Función para obtener el nombre del grupo desde Firestore
   const fetchGrupoNombre = useCallback(async () => {
@@ -129,12 +146,20 @@ function VistaPrevia() {
     <>
       <button
         onClick={() => navigate(-1)}
-        className="hidden sm:block absolute top-2 left-2 bg-white shadow-lg border border-black rounded-full p-3 text-red-500 hover:bg-gray-100 hover:scale-110"
+        className={`hidden sm:block absolute top-2 left-2 shadow-lg border rounded-full p-3 text-red-500 ${
+          darkMode
+            ? "bg-gray-800 border-white hover:bg-gray-700"
+            : "bg-white border-black hover:bg-gray-100"
+        } hover:scale-110`}
       >
         <FaArrowLeft size={24} /> {/* Flecha hacia atrás */}
       </button>
       <div
-        className="bg-white sticky top-0 sm:mt-0 -mt-16 sm:top-12 px-3 py-2 shadow-xl rounded-xl z-20"
+        className={`border sticky top-0 sm:mt-0 -mt-16 sm:top-12 px-3 py-2 shadow-xl rounded-xl z-20 ${
+          darkMode
+            ? "bg-gray-800 border-white hover:bg-gray-700"
+            : "bg-white border-black hover:bg-gray-100"
+        }`}
       >
         <button
           onClick={generatePDF}

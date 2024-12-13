@@ -2,12 +2,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import "../App.css";
 import { FaArrowLeft, FaFileDownload } from "react-icons/fa";
+import { useDarkMode } from "../context/DarkModeContext";
 
 function VistaPreviaTarjeta() {
   const navigate = useNavigate();
   const location = useLocation();
   const persona = location.state?.persona || {};
   const selectedYear = location.state?.selectedYear;
+  const { darkMode } = useDarkMode();
 
   const generatePDF = () => {
     const element = document.getElementById("content-to-print");
@@ -25,16 +27,24 @@ function VistaPreviaTarjeta() {
     <>
       <button
         onClick={() => navigate(-1)}
-        className="hidden sm:block absolute top-2 left-2 bg-white shadow-lg border border-black rounded-full p-3 text-red-500 hover:bg-gray-100 hover:scale-110"
+        className={`hidden sm:block absolute top-2 left-2 shadow-lg border rounded-full p-3 text-red-500 hover:scale-110 ${
+          darkMode
+            ? "bg-gray-800 border-white hover:bg-gray-700"
+            : "bg-white border-black hover:bg-gray-100"
+        } hover:scale-110`}
       >
         <FaArrowLeft size={24} /> {/* Flecha hacia atrás */}
       </button>
       <div
-        className="bg-white sticky top-0 sm:mt-0 -mt-16 sm:top-12 px-3 py-2 shadow-xl rounded-xl z-20"
+        className={`border sticky top-0 sm:mt-0 -mt-16 sm:top-12 px-3 py-2 shadow-xl rounded-xl z-20 ${
+          darkMode
+            ? "bg-gray-800 border-white hover:bg-gray-700"
+            : "bg-white border-black hover:bg-gray-100"
+        }`}
       >
         <button
           onClick={generatePDF}
-          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg transform transition-transform duration-200 hover:scale-105"
+          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg transform transition-transform duration-200"
         >
           Descargar en PDF
           <FaFileDownload />
