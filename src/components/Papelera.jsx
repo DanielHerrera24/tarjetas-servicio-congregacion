@@ -215,10 +215,10 @@ const Papelera = () => {
       {isModalOpen && (
         <div className="fixed z-20 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div
-            className={`rounded-lg shadow-lg max-w-lg w-full ${
+            className={`rounded-lg border shadow-lg max-w-lg w-full ${
               darkMode
-                ? "bg-[#303030] text-white shadow-gray-600"
-                : "bg-[#ffffff] text-black"
+                ? "bg-[#303030] text-white border-white shadow-gray-600"
+                : "bg-[#ffffff] text-black border-black"
             }`}
           >
             <div className="p-4">

@@ -1438,7 +1438,7 @@ function Personas() {
                           <select
                             value={nuevoRol}
                             onChange={(e) => setNuevoRol(e.target.value)}
-                            className="border border-gray-300 p-2 rounded transition-colors duration-200"
+                            className="text-black border border-gray-300 p-2 rounded transition-colors duration-200"
                           >
                             <option value="">Selecciona un Rol</option>
                             {!yaHaySup && (
