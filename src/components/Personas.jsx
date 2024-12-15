@@ -1042,7 +1042,7 @@ function Personas() {
                                   darkMode ? "border-white" : "border-black"
                                 }`}
                               >
-                                Año de servicio <div>{selectedYear}</div>
+                                Año de servicio <span>{selectedYear}</span>
                               </th>
                               <th
                                 className={`py-2 px-4 w-28 border font-bold ${
@@ -1071,10 +1071,10 @@ function Personas() {
                                 }`}
                               >
                                 Horas{" "}
-                                <div>
+                                <p>
                                   (Si es precursor o misionero que sirve en el
                                   campo)
-                                </div>
+                                </p>
                               </th>
                               <th
                                 className={`py-2 px-4 w-72 border ${

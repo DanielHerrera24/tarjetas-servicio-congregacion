@@ -46,12 +46,10 @@ function Grupos() {
   const { darkMode } = useDarkMode();
 
   if (auth.currentUser) {
-    console.log("Usuario autenticado:", auth.currentUser);
     auth.currentUser
       .getIdTokenResult(true) // El parámetro 'true' forza la actualización del token
       .then((idTokenResult) => {
-        const claims = idTokenResult.claims;
-        console.log("Claims del usuario:", claims); // Verifica si 'congregacionId' está presente
+        const claims = idTokenResult.claims; // Verifica si 'congregacionId' está presente
         if (claims.congregacionId) {
           const congregacionId = claims.congregacionId;
           const groupsRef = collection(

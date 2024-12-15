@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Joyride from "react-joyride";
 import { useDarkMode } from "../context/DarkModeContext";
+import { useAuth } from "../context/AuthContext";
 
 const Tutorial = () => {
-  const [run, setRun] = useState(true);
+  const [run, setRun] = useState(false);
   const { darkMode } = useDarkMode();
+  const { user } = useAuth();
 
   // Define los pasos del tutorial
   const steps = [
@@ -35,11 +37,26 @@ const Tutorial = () => {
     },
   ];
 
+  // Verifica si el usuario ya vio el tutorial
+  useEffect(() => {
+    if (user) {
+      const hasSeenTutorial = localStorage.getItem(
+        `hasSeenTutorial_${user.uid}`
+      );
+      if (!hasSeenTutorial) {
+        setRun(true); // Inicia el tutorial automáticamente la primera vez
+      }
+    }
+  }, [user]);
+
   // Maneja la finalización o eventos del tutorial
   const handleJoyrideCallback = (data) => {
     const { status } = data;
     if (status === "finished" || status === "skipped") {
-      setRun(false); // Detiene el tutorial si se completa o se salta
+      setRun(false); // Detiene el tutorial
+      if (user) {
+        localStorage.setItem(`hasSeenTutorial_${user.uid}`, "true"); // Marca como visto
+      }
     }
   };
 

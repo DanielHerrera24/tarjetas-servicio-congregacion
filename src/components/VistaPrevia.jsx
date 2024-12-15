@@ -296,8 +296,8 @@ function VistaPrevia() {
                 <thead>
                   <tr className="text-black border-r-2 border-l-2 border-t-2 border-b border-black font-bold text-sm leading-4 mt-0 pt-0">
                     <th className="w-32 border-r border-black text-center align-middle mt-0 pt-0">
-                      <p className="-mt-3">
-                        Año de servicio <div>{selectedYear}</div>
+                      <p className="-mt-3 flex flex-col">
+                        Año de servicio <span>{selectedYear}</span>
                       </p>
                     </th>
                     <th className="w-24 border-r border-black text-center align-middle mt-0 pt-0">

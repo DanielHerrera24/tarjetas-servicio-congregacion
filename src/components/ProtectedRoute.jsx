@@ -23,11 +23,9 @@ export function ProtectedRoute({ children }) {
         const querySnapshot = await getDocs(collection(db, "usuarios"));
         const users = querySnapshot.docs.map(doc => {
           const data = doc.data();
-          console.log("Data del documento:", data); // Verificar datos del documento
           return data.uid; // Asegúrate de que 'uid' exista
         });
         setAllowedUsers(users);
-        console.log("Usuarios permitidos:", users);
       } catch (e) {
         console.error("Error al obtener usuarios permitidos:", e);
         setError("Ocurrió un error al verificar el acceso.");
