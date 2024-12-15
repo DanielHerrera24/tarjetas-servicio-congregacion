@@ -19,6 +19,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { AnimatePresence, motion } from "framer-motion"; // Importa Framer Motion
 import { auth } from "../firebase";
 import { useDarkMode } from "../context/DarkModeContext";
+import Tutorial from "./Tutorial";
 
 function Grupos() {
   const navigate = useNavigate();
@@ -388,10 +389,11 @@ function Grupos() {
           <h2 className="text-3xl font-semibold mb-2 -mt-2">
             Grupos congregación {capitalizedCongregacionId}
           </h2>
+          <Tutorial />
           <div className="flex gap-2 items-center">
             <button
               onClick={() => setShowYearModal(true)}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="añadir-año bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
             >
               Añadir Año
             </button>
@@ -400,7 +402,7 @@ function Grupos() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-wrap items-center justify-between mb-4"
+            className="año-de-servicio flex flex-wrap items-center justify-between mb-4"
           >
             <label
               htmlFor="year-select"
@@ -425,7 +427,7 @@ function Grupos() {
           <div className="flex flex-wrap justify-center mb-4 gap-4">
             <motion.button
               onClick={() => setShowModal(true)}
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+              className="crear-grupo bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -433,7 +435,7 @@ function Grupos() {
             </motion.button>
             <motion.button
               onClick={() => setShowDeleteModal(true)}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              className="eliminar-grupo bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -470,7 +472,7 @@ function Grupos() {
           <div className="mt-2">
             <motion.button
               onClick={handleMostrarNombramientos}
-              className="bg-purple-500 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
+              className="nombramientos bg-purple-500 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
