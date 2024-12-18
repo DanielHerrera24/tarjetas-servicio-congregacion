@@ -4,7 +4,7 @@ import { useDarkMode } from "../context/DarkModeContext";
 import { useAuth } from "../context/AuthContext";
 import { FaPlayCircle } from "react-icons/fa";
 
-const Tutorial = () => {
+const TutorialPersonas = () => {
   const [run, setRun] = useState(false);
   const { darkMode } = useDarkMode();
   const { user } = useAuth();
@@ -12,39 +12,44 @@ const Tutorial = () => {
   // Define los pasos del tutorial
   const steps = [
     {
-      target: ".crear-grupo",
+      target: ".agregar-tarjeta",
       content:
-        "Usa este botón para crear un nuevo grupo. (El nombre del grupo tiene que ser como el del ejemplo).",
+        "Usa este botón para crear una nueva tarjeta, solo necesitas: Nombre, fecha de nacimiento y bautismo. Además, puedes asignar al Superintendente y Auxiliar de ese grupo",
     },
     {
-      target: ".eliminar-grupo",
+      target: ".informacion",
       content:
-        "Usa este botón para eliminar un grupo ¡Cuidado! Esta acción es irreversible.",
+        "Dentro de este botón podrás descargar una plantilla de Excel que te permite subir información de forma masiva de todas las tarjetas.",
     },
     {
-      target: ".añadir-año",
+      target: ".buscar-tarjeta",
       content:
-        "Aquí puedes añadir el año de servicio que deseas. ¡Ojo! El año de servicio se agregará a todas las tarjetas que estén creadas actualmente.",
+        "Aquí puedes buscar por nombre cada tarjeta.",
     },
     {
-      target: ".año-de-servicio",
+      target: ".filtros",
       content:
-        "Usa este campo para seleccionar el año de servicio que deseas ver en las tarjetas.",
+        "Aquí puedes filtrar por nombramientos (Anciano, Siervo Ministerial y Precursor Regular).",
     },
     {
-      target: ".nombramientos",
+      target: ".papelera",
       content:
-        "Aquí podrás ver cuántos nombramientos tienes registrados en todas tus tarjetas. (Anciano, Siervo ministerial y Precursor regular). También podrás ver una vista previa de todas las tarjetas de cada nombramiento para poder descargar en PDF posteriormente.",
+        "Aquí se van las tarjetas que elimines, puedes restaurarlas con la información que tenían o eliminarlas permanentemente.",
+    },
+    {
+      target: ".vista-previa",
+      content:
+        "Este botón te manda a una sección para mirar todas las tarjetas y posteriormente descargar en PDF las tarjetas del grupo que estén existentes.",
     },
   ];
 
   // Verifica si el usuario ya vio el tutorial
   useEffect(() => {
     if (user) {
-      const hasSeenTutorial = localStorage.getItem(
-        `hasSeenTutorial_${user.uid}`
+      const hasSeenTutorialPersonas = localStorage.getItem(
+        `hasSeenTutorialPersonas_${user.uid}`
       );
-      if (!hasSeenTutorial) {
+      if (!hasSeenTutorialPersonas) {
         setRun(true); // Inicia el tutorial automáticamente la primera vez
       }
     }
@@ -56,7 +61,7 @@ const Tutorial = () => {
     if (status === "finished" || status === "skipped") {
       setRun(false); // Detiene el tutorial
       if (user) {
-        localStorage.setItem(`hasSeenTutorial_${user.uid}`, "true"); // Marca como visto
+        localStorage.setItem(`hasSeenTutorialPersonas_${user.uid}`, "true"); // Marca como visto
       }
     }
   };
@@ -69,7 +74,7 @@ const Tutorial = () => {
     <div>
       <button
         onClick={handleStartTutorial} // Activa el tutorial al hacer clic
-        className="bg-orange-500 hover:bg-orange-700 text-white flex items-center gap-2 px-4 py-2 rounded font-semibold"
+        className="bg-orange-500 hover:bg-orange-700 flex items-center gap-2 text-white px-4 py-2 rounded font-semibold"
       >
         Ver Tutorial
         <FaPlayCircle />
@@ -79,7 +84,8 @@ const Tutorial = () => {
         steps={steps}
         run={run}
         continuous
-        scrollToFirstStep
+        scrollToFirstStep={false}
+        disableScrolling={true}
         showSkipButton
         callback={handleJoyrideCallback}
         locale={{
@@ -121,4 +127,4 @@ const Tutorial = () => {
   );
 };
 
-export default Tutorial;
+export default TutorialPersonas;

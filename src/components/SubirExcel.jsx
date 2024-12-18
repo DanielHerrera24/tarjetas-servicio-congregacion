@@ -4,6 +4,7 @@ import { doc, setDoc } from "firebase/firestore"; // Importar Firestore
 import * as XLSX from "xlsx"; // Importar la librería XLSX
 import { toast } from "react-toastify";
 import { useDarkMode } from "../context/DarkModeContext";
+import { FaUpload } from "react-icons/fa";
 
 const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
   const { darkMode } = useDarkMode();
@@ -116,7 +117,7 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
   };
 
   return (
-    <div className="mt-2">
+    <div className="flex justify-center">
       <input
         id="file-upload"
         type="file"
@@ -128,9 +129,10 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
       {/* Botón personalizado */}
       <label
         htmlFor="file-upload" // Vincula el botón con el input
-        className="bg-purple-500 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-purple-700"
+        className="bg-purple-500 text-white flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer hover:bg-purple-700"
       >
         Subir Excel
+        <FaUpload />
       </label>
     </div>
   );

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useDarkMode } from "../context/DarkModeContext";
+import { IoCopy } from "react-icons/io5";
 
 const CopiarIDsModal = ({ filteredPersonas }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,13 +34,14 @@ const CopiarIDsModal = ({ filteredPersonas }) => {
   };
 
   return (
-    <div>
+    <div className="flex justify-center">
       {/* Botón para abrir el modal */}
       <button
         onClick={openModal}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        className="bg-blue-500 text-white flex items-center gap-2 justify-center px-4 py-2 rounded hover:bg-blue-600"
       >
         Ver y copiar IDs
+        <IoCopy />
       </button>
 
       {/* Modal */}

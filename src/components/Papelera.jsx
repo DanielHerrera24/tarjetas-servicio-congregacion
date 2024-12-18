@@ -199,7 +199,7 @@ const Papelera = () => {
   };
 
   return (
-    <div className="sm:pt-8">
+    <div className="">
       {/* Botón para abrir el modal */}
       <button
         onClick={() => setIsModalOpen(true)}

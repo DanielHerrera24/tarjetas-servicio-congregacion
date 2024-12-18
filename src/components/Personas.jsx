@@ -24,6 +24,8 @@ import {
   FaChevronUp,
   FaArrowLeft,
   FaSearch,
+  FaFileUpload,
+  FaFileExcel,
 } from "react-icons/fa";
 import { SyncLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
@@ -36,6 +38,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import SubirExcel from "./SubirExcel";
 import CopiarIDsModal from "./CopiarIDsModal";
 import { useDarkMode } from "../context/DarkModeContext";
+import TutorialPersonas from "./TutorialPersonas";
 
 Modal.setAppElement("#root");
 
@@ -611,7 +614,13 @@ function Personas() {
         >
           <FaArrowLeft size={24} />
         </button>
-        {!loading && <Papelera />}
+        {!loading && (
+          <div className="sm:pt-8 hidden sm:block">
+            <div className="papelera">
+              <Papelera />
+            </div>
+          </div>
+        )}
       </div>
       {loading ? (
         <div className="min-h-[60vh] flex items-center justify-center">
@@ -619,8 +628,18 @@ function Personas() {
         </div>
       ) : (
         <>
+          <div className="mb-4 sm:mb-0 z-10">
+            <TutorialPersonas />
+          </div>
+          {!loading && (
+            <div className="papelera sm:pt-8 block sm:hidden z-10">
+              <div className="">
+                <Papelera />
+              </div>
+            </div>
+          )}
           <div
-            className={`sticky border top-2 sm:top-14 px-3 py-2 mt-3 shadow-lg rounded-xl mb-2 z-10 sm:z-20 ${
+            className={`vista-previa sticky border top-2 sm:top-14 px-3 py-2 mt-3 shadow-lg rounded-xl mb-2 z-10 sm:z-20 ${
               darkMode
                 ? "bg-gray-800 border-white hover:bg-gray-700"
                 : "bg-white border-black hover:bg-gray-100"
@@ -652,22 +671,22 @@ function Personas() {
               {selectedYear}
             </h2>
             <div className="flex flex-col items-center">
-              <div className="flex gap-1">
-                <div className="relative">
-                  <FaSearch className="absolute left-3 top-1/3 transform -translate-y-1/2 text-gray-400" />
+              <div className="flex gap-1 mb-4">
+                <div className="buscar-tarjeta relative">
+                  <FaSearch className="absolute left-3 top-2/4 transform -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
                     placeholder={`Buscar tarjeta...`}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="text-black border border-blue-500 rounded-md pl-9 p-2 mb-4 w-full sm:w-96"
+                    className="text-black border border-blue-500 rounded-md pl-9 p-2 w-full sm:w-96"
                   />
                 </div>
                 {/* Botón de Filtros */}
                 <div className="relative" ref={filterMenuRef}>
                   <button
                     onClick={() => setShowFilterMenu(!showFilterMenu)}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2"
+                    className="filtros bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2"
                   >
                     Filtros
                     <FaFilter />
@@ -720,7 +739,7 @@ function Personas() {
               </div>
               <button
                 onClick={() => setModalIsOpen(true)}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4 flex items-center gap-2"
+                className="agregar-tarjeta bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4 flex items-center gap-2"
               >
                 Agregar Tarjeta
                 <FaPlus />
@@ -729,9 +748,10 @@ function Personas() {
                 {/* Botón para abrir el modal */}
                 <button
                   onClick={openModal}
-                  className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+                  className="informacion bg-purple-500 hover:bg-purple-700 text-white flex items-center gap-2 font-bold py-2 px-4 rounded"
                 >
                   Subir información
+                  <FaFileUpload />
                 </button>
 
                 {/* Modal */}
@@ -766,9 +786,10 @@ function Personas() {
                         {/* Botón para descargar la plantilla */}
                         <button
                           onClick={descargarPlantilla}
-                          className="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded"
+                          className="bg-green-500 hover:bg-green-700 text-white flex justify-center items-center gap-2 font-semibold py-2 px-4 rounded"
                         >
                           Descargar Plantilla Excel
+                          <FaFileExcel />
                         </button>
                         <CopiarIDsModal filteredPersonas={filteredPersonas} />
                         <SubirExcel
