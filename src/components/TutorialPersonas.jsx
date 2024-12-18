@@ -14,7 +14,7 @@ const TutorialPersonas = () => {
     {
       target: ".agregar-tarjeta",
       content:
-        "Usa este botón para crear una nueva tarjeta, solo necesitas: Nombre, fecha de nacimiento y bautismo. Además, puedes asignar al Superintendente y Auxiliar de ese grupo",
+        "Crea una nueva tarjeta, solo necesitas: Nombre, fecha de nacimiento y bautismo. Además, puedes asignar al Superintendente y Auxiliar de ese grupo",
     },
     {
       target: ".informacion",
@@ -24,12 +24,12 @@ const TutorialPersonas = () => {
     {
       target: ".buscar-tarjeta",
       content:
-        "Aquí puedes buscar por nombre cada tarjeta.",
+        "Busca tarjetas por nombre.",
     },
     {
       target: ".filtros",
       content:
-        "Aquí puedes filtrar por nombramientos (Anciano, Siervo Ministerial y Precursor Regular).",
+        "Filtra por nombramientos (Anciano, Siervo Ministerial y Precursor Regular).",
     },
     {
       target: ".papelera",
@@ -39,7 +39,7 @@ const TutorialPersonas = () => {
     {
       target: ".vista-previa",
       content:
-        "Este botón te manda a una sección para mirar todas las tarjetas y posteriormente descargar en PDF las tarjetas del grupo que estén existentes.",
+        "Este botón te manda a una sección para mirar todas las tarjetas existentes del grupo y posteriormente descargar en PDF.",
     },
   ];
 

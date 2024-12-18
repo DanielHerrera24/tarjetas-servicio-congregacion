@@ -39,6 +39,7 @@ import SubirExcel from "./SubirExcel";
 import CopiarIDsModal from "./CopiarIDsModal";
 import { useDarkMode } from "../context/DarkModeContext";
 import TutorialPersonas from "./TutorialPersonas";
+import TutorialPersonasExcel from "./TutorialPersonasExcel";
 
 Modal.setAppElement("#root");
 
@@ -756,11 +757,11 @@ function Personas() {
 
                 {/* Modal */}
                 {isModalOpen && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
+                  <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
                     <div
-                      className={`border rounded-lg shadow-lg p-6 w-80 relative ${
+                      className={`border rounded-lg shadow-xl p-6 w-auto relative ${
                         darkMode
-                          ? "bg-[#1f1f1f] border-white"
+                          ? "bg-[#1f1f1f] border-white shadow-slate-600"
                           : "bg-white border-black"
                       }`}
                     >
@@ -783,21 +784,28 @@ function Personas() {
                         />
                       </motion.button>
                       <div className="flex flex-col gap-4">
+                        <div className="flex justify-center">
+                          <TutorialPersonasExcel />
+                        </div>
                         {/* Botón para descargar la plantilla */}
                         <button
                           onClick={descargarPlantilla}
-                          className="bg-green-500 hover:bg-green-700 text-white flex justify-center items-center gap-2 font-semibold py-2 px-4 rounded"
+                          className="descargar-excel bg-green-500 hover:bg-green-700 text-white flex justify-center items-center gap-2 font-semibold py-2 px-4 rounded"
                         >
                           Descargar Plantilla Excel
                           <FaFileExcel />
                         </button>
-                        <CopiarIDsModal filteredPersonas={filteredPersonas} />
-                        <SubirExcel
-                          selectedYear={selectedYear}
-                          congregacionId={congregacionId}
-                          grupoId={grupoId}
-                          db={db}
-                        />
+                        <div className="copiar-ids">
+                          <CopiarIDsModal filteredPersonas={filteredPersonas} />
+                        </div>
+                        <div className="subir-excel">
+                          <SubirExcel
+                            selectedYear={selectedYear}
+                            congregacionId={congregacionId}
+                            grupoId={grupoId}
+                            db={db}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -47,9 +47,15 @@ const CopiarIDsModal = ({ filteredPersonas }) => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg max-w-lg w-full">
+          <div
+            className={`p-6 rounded shadow-lg max-w-lg w-full ${
+              darkMode
+                ? "bg-[#1f1f1f] border-white text-white shadow-slate-600"
+                : "bg-white border-black text-black"
+            }`}
+          >
             <h2 className="text-xl font-bold mb-4">IDs de Personas</h2>
-            <ul className="mb-4">
+            <ul className="mb-4 max-h-96 sm:max-h-[512px] overflow-y-scroll">
               {filteredPersonas.map((persona) => (
                 <li key={persona.id} className="border-b text-left">
                   {persona.id}

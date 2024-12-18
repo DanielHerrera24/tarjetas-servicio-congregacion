@@ -4,7 +4,7 @@ import { useDarkMode } from "../context/DarkModeContext";
 import { useAuth } from "../context/AuthContext";
 import { FaPlayCircle } from "react-icons/fa";
 
-const Tutorial = () => {
+const TutorialPersonasExcel = () => {
   const [run, setRun] = useState(false);
   const { darkMode } = useDarkMode();
   const { user } = useAuth();
@@ -12,39 +12,29 @@ const Tutorial = () => {
   // Define los pasos del tutorial
   const steps = [
     {
-      target: ".crear-grupo",
+      target: ".descargar-excel",
       content:
-        "Usa este botón para crear un nuevo grupo. (El nombre del grupo tiene que ser como el del ejemplo).",
+        "Usa esta plantilla para poder llenar la información de las tarjetas de cada grupo. Sigue los ejemplos dentro de la plantilla.",
     },
     {
-      target: ".eliminar-grupo",
+      target: ".copiar-ids",
       content:
-        "Usa este botón para eliminar un grupo ¡Cuidado! Esta acción es irreversible.",
+        "Copia en tu portapapeles los IDs de todas tus tarjetas del grupo y pégalos en la plantilla de Excel. Este paso es ESCENCIAL para que la información se suba correctamente.",
     },
     {
-      target: ".añadir-año",
+      target: ".subir-excel",
       content:
-        "Añade el año de servicio que deseas. ¡Ojo! El año de servicio se agregará a todas las tarjetas que estén creadas actualmente.",
-    },
-    {
-      target: ".año-de-servicio",
-      content:
-        "Selecciona el año de servicio que deseas ver en las tarjetas.",
-    },
-    {
-      target: ".nombramientos",
-      content:
-        "Mira cuántos nombramientos tienes registrados en todas tus tarjetas (Anciano, Siervo ministerial y Precursor regular). También podrás ver una vista previa de todas las tarjetas de cada nombramiento para poder descargar en PDF posteriormente.",
+      "Sube tu archivo de Excel que hayas llenado. Asegúrate de que toda la información esté correcta.",
     },
   ];
 
   // Verifica si el usuario ya vio el tutorial
   useEffect(() => {
     if (user) {
-      const hasSeenTutorial = localStorage.getItem(
-        `hasSeenTutorial_${user.uid}`
+      const hasSeenTutorialPersonasExcel = localStorage.getItem(
+        `hasSeenTutorialPersonasExcel_${user.uid}`
       );
-      if (!hasSeenTutorial) {
+      if (!hasSeenTutorialPersonasExcel) {
         setRun(true); // Inicia el tutorial automáticamente la primera vez
       }
     }
@@ -56,7 +46,7 @@ const Tutorial = () => {
     if (status === "finished" || status === "skipped") {
       setRun(false); // Detiene el tutorial
       if (user) {
-        localStorage.setItem(`hasSeenTutorial_${user.uid}`, "true"); // Marca como visto
+        localStorage.setItem(`hasSeenTutorialPersonasExcel_${user.uid}`, "true"); // Marca como visto
       }
     }
   };
@@ -69,7 +59,7 @@ const Tutorial = () => {
     <div>
       <button
         onClick={handleStartTutorial} // Activa el tutorial al hacer clic
-        className="bg-orange-500 hover:bg-orange-700 text-white flex items-center gap-2 px-4 py-2 rounded font-semibold"
+        className="bg-orange-500 hover:bg-orange-700 flex items-center gap-2 text-white px-4 py-2 rounded font-semibold"
       >
         Ver Tutorial
         <FaPlayCircle />
@@ -79,7 +69,8 @@ const Tutorial = () => {
         steps={steps}
         run={run}
         continuous
-        scrollToFirstStep
+        scrollToFirstStep={false}
+        disableScrolling={true}
         showSkipButton
         callback={handleJoyrideCallback}
         locale={{
@@ -121,4 +112,4 @@ const Tutorial = () => {
   );
 };
 
-export default Tutorial;
+export default TutorialPersonasExcel;
