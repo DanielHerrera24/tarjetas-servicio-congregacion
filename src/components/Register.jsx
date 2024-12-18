@@ -32,6 +32,7 @@ function Register() {
     setError("");
 
     try {
+      const name = user.name
       // Crear el usuario con email y password
       const userCredential = await signup(user.email, user.password);
       const uid = userCredential.user.uid;
@@ -44,6 +45,7 @@ function Register() {
 
       // Guardar información adicional en Firestore
       await setDoc(doc(db, "usuarios", uid), {
+        nombre: name,
         uid: uid, // Asegúrate de usar el uid obtenido de userCredential
         email: user.email,
         congregacion: congregacionFinal, // Guardar la congregación correctamente
@@ -83,9 +85,24 @@ function Register() {
             : "bg-[#f3f3f3] text-black"
         }`}
       >
-        <h2 className="text-2xl font-bold text-center mb-6">Regístrate</h2>
+        <h2 className="text-2xl font-bold text-center mb-4">Regístrate</h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        <form onSubmit={submit} className="space-y-6">
+        <form onSubmit={submit} className="space-y-3">
+          {/* Campo de nombre */}
+          <div>
+            <label htmlFor="name" className="block font-medium">
+              Nombre
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              onChange={handleChange}
+              className="text-black mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              required
+            />
+          </div>
+
           {/* Campo de correo */}
           <div>
             <label htmlFor="email" className="block font-medium">
@@ -144,21 +161,21 @@ function Register() {
                   }); // Inicializa "otraCongregacion"
                 }
               }}
-              className="text-black mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="text-black mt-1 block w-full px-3 py-2 mb-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               required
             >
               <option value="" disabled>
                 -- Selecciona una congregación --
               </option>
               <option value="sur">Congregación Sur</option>
-              <option value="este">Congregación Primavera</option>
-              <option value="oeste">Congregación Libertad</option>
+              <option value="primavera">Congregación Primavera</option>
+              <option value="libertad">Congregación Libertad</option>
               <option value="otra">Otra Congregación</option>
             </select>
 
             {/* Campo adicional para "Otra Congregación" */}
             {user.congregacion === "otra" && (
-              <div className="mt-4">
+              <div className="mt-2">
                 <label
                   htmlFor="otra-congregacion"
                   className="block font-medium"
@@ -177,7 +194,7 @@ function Register() {
                       otraCongregacion: e.target.value.toLowerCase(),
                     })
                   }
-                  className="text-black mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="text-black mt-1 mb-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
                 />
               </div>
