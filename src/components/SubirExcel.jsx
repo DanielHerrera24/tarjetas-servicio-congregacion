@@ -63,7 +63,7 @@ const SubirExcel = ({ selectedYear, congregacionId, grupoId, db }) => {
                 } else if (campo === "Estudios") {
                   nuevoRegistro[selectedYear][mesLowerCase].cursos =
                     parseInt(hermano[key], 10) || 0;
-                } else if (campo === "Precursor") {
+                } else if (campo === "PrecursorAux") {
                   nuevoRegistro[selectedYear][mesLowerCase].precursor =
                     hermano[key] === "Si";
                 } else if (campo === "Horas") {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Joyride from "react-joyride";
 import { useDarkMode } from "../context/DarkModeContext";
 import { useAuth } from "../context/AuthContext";
-import { FaPlayCircle } from "react-icons/fa";
+import { FaQuestionCircle } from "react-icons/fa";
 
 const TutorialPersonasExcel = () => {
   const [run, setRun] = useState(false);
@@ -19,12 +19,12 @@ const TutorialPersonasExcel = () => {
     {
       target: ".copiar-ids",
       content:
-        "Copia en tu portapapeles los IDs de todas tus tarjetas del grupo y pégalos en la plantilla de Excel. Este paso es ESCENCIAL para que la información se suba correctamente.",
+        "Copia en tu portapapeles los IDs de todas tus tarjetas de cada grupo y pégalos en la plantilla de Excel. Este paso es ESCENCIAL para que la información se suba correctamente.",
     },
     {
       target: ".subir-excel",
       content:
-      "Sube tu archivo de Excel que hayas llenado. Asegúrate de que toda la información esté correcta.",
+        "Sube tu archivo de Excel que hayas llenado. Asegúrate de que toda la información esté correcta.",
     },
   ];
 
@@ -46,7 +46,10 @@ const TutorialPersonasExcel = () => {
     if (status === "finished" || status === "skipped") {
       setRun(false); // Detiene el tutorial
       if (user) {
-        localStorage.setItem(`hasSeenTutorialPersonasExcel_${user.uid}`, "true"); // Marca como visto
+        localStorage.setItem(
+          `hasSeenTutorialPersonasExcel_${user.uid}`,
+          "true"
+        ); // Marca como visto
       }
     }
   };
@@ -56,13 +59,12 @@ const TutorialPersonasExcel = () => {
   };
 
   return (
-    <div>
+    <div className="absolute top-4 left-4">
       <button
         onClick={handleStartTutorial} // Activa el tutorial al hacer clic
-        className="bg-orange-500 hover:bg-orange-700 flex items-center gap-2 text-white px-4 py-2 rounded font-semibold"
+        className="bg-orange-500 hover:bg-orange-700 flex items-center gap-2 text-white px-2 py-2 rounded font-semibold"
       >
-        Ver Tutorial
-        <FaPlayCircle />
+        <FaQuestionCircle size={25} />
       </button>
 
       <Joyride

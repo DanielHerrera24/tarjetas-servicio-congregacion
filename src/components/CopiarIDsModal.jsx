@@ -3,20 +3,71 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useDarkMode } from "../context/DarkModeContext";
 import { IoCopy } from "react-icons/io5";
+import { collection, getDocs } from "firebase/firestore";
 
-const CopiarIDsModal = ({ filteredPersonas }) => {
+const CopiarIDsModal = ({ db, congregacionId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [grupos, setGrupos] = useState({});
+  const [grupoActual, setGrupoActual] = useState(null);
   const { darkMode } = useDarkMode();
 
   // Función para abrir el modal
-  const openModal = () => setIsModalOpen(true);
+  const openModal = async () => {
+    await fetchGrupos();
+    setIsModalOpen(true);
+  };
 
   // Función para cerrar el modal
   const closeModal = () => setIsModalOpen(false);
 
-  // Función para copiar los IDs al portapapeles
+  // Función para obtener los grupos y sus IDs desde Firestore
+  const fetchGrupos = async () => {
+    try {
+      const gruposSnapshot = await getDocs(
+        collection(db, "congregaciones", congregacionId, "grupos")
+      );
+      const gruposData = {};
+
+      for (const grupoDoc of gruposSnapshot.docs) {
+        const grupoId = grupoDoc.id;
+        const grupoNombre = grupoDoc.data().nombre || "Sin Nombre";
+
+        const hermanosSnapshot = await getDocs(
+          collection(
+            db,
+            "congregaciones",
+            congregacionId,
+            "grupos",
+            grupoId,
+            "hermanos"
+          )
+        );
+        gruposData[grupoId] = {
+          nombre: grupoNombre,
+          ids: hermanosSnapshot.docs.map((doc) => doc.id),
+        };
+      }
+
+      setGrupos(gruposData);
+      setGrupoActual(Object.keys(gruposData)[0]); // Seleccionar el primer grupo por defecto
+    } catch (error) {
+      toast.error(`Error al obtener los grupos: ${error.message}`, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        draggable: true,
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+        },
+      });
+    }
+  };
+
+  // Función para copiar los IDs del grupo actual al portapapeles
   const copiarAlPortapapeles = () => {
-    const ids = filteredPersonas.map((persona) => persona.id).join("\n");
+    const ids = grupos[grupoActual]?.ids.join("\n") || "";
     navigator.clipboard.writeText(ids).then(() => {
       toast.success(`IDs copiados al portapapeles.`, {
         position: "bottom-center",
@@ -24,10 +75,9 @@ const CopiarIDsModal = ({ filteredPersonas }) => {
         hideProgressBar: true,
         closeOnClick: true,
         draggable: true,
-        progress: undefined,
         theme: darkMode ? "dark" : "light",
         style: {
-          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
         },
       });
     });
@@ -54,20 +104,35 @@ const CopiarIDsModal = ({ filteredPersonas }) => {
                 : "bg-white border-black text-black"
             }`}
           >
-            <h2 className="text-xl font-bold mb-4">IDs de Personas</h2>
-            <ul className="mb-4 max-h-96 sm:max-h-[512px] overflow-y-scroll">
-              {filteredPersonas.map((persona) => (
-                <li key={persona.id} className="border-b text-left">
-                  {persona.id}
-                </li>
+            <h2 className="text-xl font-bold mb-4">IDs por Grupo</h2>
+            <div className="flex mb-4 overflow-x-auto space-x-2">
+              {Object.keys(grupos).map((grupoId) => (
+                <button
+                  key={grupoId}
+                  onClick={() => setGrupoActual(grupoId)}
+                  className={`px-4 py-2 rounded min-w-28 ${
+                    grupoActual === grupoId
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-300 text-black hover:bg-gray-400"
+                  }`}
+                >
+                  {grupos[grupoId].nombre}
+                </button>
               ))}
+            </div>
+            <ul className="mb-4 max-h-[338px] sm:max-h-[512px] overflow-y-scroll">
+              {grupos[grupoActual]?.ids.map((id) => (
+                <li key={id} className="border-b text-left">
+                  {id}
+                </li>
+              )) || <p>No hay IDs para este grupo.</p>}
             </ul>
             <div className="flex justify-end space-x-2">
               <button
                 onClick={copiarAlPortapapeles}
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
               >
-                Copiar al portapapeles
+                Copiar IDs
               </button>
               <button
                 onClick={closeModal}

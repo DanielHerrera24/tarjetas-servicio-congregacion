@@ -12,7 +12,14 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { FaArrowLeft, FaUserCheck, FaUsers, FaUserTie } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaFileExcel,
+  FaFileUpload,
+  FaUserCheck,
+  FaUsers,
+  FaUserTie,
+} from "react-icons/fa";
 import { SyncLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,6 +27,10 @@ import { AnimatePresence, motion } from "framer-motion"; // Importa Framer Motio
 import { auth } from "../firebase";
 import { useDarkMode } from "../context/DarkModeContext";
 import Tutorial from "./Tutorial";
+import SubirExcelAll from "./SubirExcelAll";
+import { IoClose } from "react-icons/io5";
+import TutorialPersonasExcel from "./TutorialPersonasExcel";
+import CopiarIDsModal from "./CopiarIDsModal";
 
 function Grupos() {
   const navigate = useNavigate();
@@ -44,6 +55,20 @@ function Grupos() {
   const [mostrarNombramientos, setMostrarNombramientos] = useState(false);
   const [nombramientoId, setNombramientoId] = useState("");
   const { darkMode } = useDarkMode();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  // Ruta de la plantilla de Excel
+  const plantillaExcelURL = "/src/Plantilla Informes.xlsx"; // Cambia a la ruta de tu archivo
+
+  const descargarPlantilla = () => {
+    const link = document.createElement("a");
+    link.href = plantillaExcelURL;
+    link.download = "Plantilla Informes.xlsx"; // Nombre del archivo al descargar
+    link.click();
+  };
 
   if (auth.currentUser) {
     auth.currentUser
@@ -387,8 +412,8 @@ function Grupos() {
           <h2 className="text-3xl font-semibold mb-2 -mt-2">
             Grupos congregación {capitalizedCongregacionId}
           </h2>
-          <Tutorial />
-          <div className="flex gap-2 items-center">
+          <div className="relative w-full flex gap-2 justify-center items-center">
+            <Tutorial />
             <button
               onClick={() => setShowYearModal(true)}
               className="añadir-año bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
@@ -422,7 +447,7 @@ function Grupos() {
             </select>
           </motion.div>
           {/* Botones para Crear y Eliminar Grupo */}
-          <div className="flex flex-wrap justify-center mb-4 gap-4">
+          <div className="flex flex-wrap justify-center mb-2 gap-4">
             <motion.button
               onClick={() => setShowModal(true)}
               className="crear-grupo bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
@@ -439,6 +464,72 @@ function Grupos() {
             >
               Eliminar Grupo
             </motion.button>
+          </div>
+
+          <div className="mb-4">
+            {/* Botón para abrir el modal */}
+            <button
+              onClick={openModal}
+              className="informacion bg-purple-500 hover:bg-purple-700 text-white flex items-center gap-2 font-bold py-2 px-4 rounded"
+            >
+              Subir información
+              <FaFileUpload />
+            </button>
+
+            {/* Modal */}
+            {isModalOpen && (
+              <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
+                <div
+                  className={`border rounded-lg shadow-xl p-6 w-auto relative ${
+                    darkMode
+                      ? "bg-[#1f1f1f] border-white shadow-slate-600"
+                      : "bg-white border-black"
+                  }`}
+                >
+                  {/* Contenido del modal */}
+                  <h2 className="text-xl font-bold mb-4">Subir Archivo</h2>
+
+                  <motion.button
+                    className="modal-close-button absolute top-4 right-4"
+                    onClick={closeModal}
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.8 }}
+                  >
+                    <IoClose
+                      size={30}
+                      className={`${
+                        darkMode
+                          ? "text-white border-white hover:text-red-500"
+                          : "text-black border-black hover:text-red-500"
+                      }`}
+                    />
+                  </motion.button>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex justify-center">
+                      <TutorialPersonasExcel />
+                    </div>
+                    {/* Botón para descargar la plantilla */}
+                    <button
+                      onClick={descargarPlantilla}
+                      className="descargar-excel bg-green-500 hover:bg-green-700 text-white flex justify-center items-center gap-2 font-semibold py-2 px-4 rounded"
+                    >
+                      Descargar Plantilla Excel
+                      <FaFileExcel />
+                    </button>
+                    <div className="copiar-ids">
+                      <CopiarIDsModal db={db} congregacionId={congregacionId} />
+                    </div>
+                    <div className="subir-excel">
+                      <SubirExcelAll
+                        selectedYear={selectedYear}
+                        congregacionId={congregacionId}
+                        db={db}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Lista de Grupos con Animaciones */}
@@ -470,8 +561,8 @@ function Grupos() {
           <div className="mt-2">
             <motion.button
               onClick={handleMostrarNombramientos}
-              className="nombramientos bg-purple-500 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
-              whileHover={{ scale: 1.05 }}
+              className="nombramientos bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg"
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               {mostrarNombramientos

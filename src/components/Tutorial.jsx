@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Joyride from "react-joyride";
 import { useDarkMode } from "../context/DarkModeContext";
 import { useAuth } from "../context/AuthContext";
-import { FaPlayCircle } from "react-icons/fa";
+import { FaQuestionCircle } from "react-icons/fa";
 
 const Tutorial = () => {
   const [run, setRun] = useState(false);
@@ -30,6 +30,11 @@ const Tutorial = () => {
       target: ".año-de-servicio",
       content:
         "Selecciona el año de servicio que deseas ver en las tarjetas.",
+    },
+    {
+      target: ".informacion",
+      content:
+        "Dentro de este botón podrás descargar una plantilla de Excel que te permite subir información de forma masiva de todas las tarjetas.",
     },
     {
       target: ".nombramientos",
@@ -66,13 +71,12 @@ const Tutorial = () => {
   };
 
   return (
-    <div>
+    <div className="absolute top-0 left-4">
       <button
         onClick={handleStartTutorial} // Activa el tutorial al hacer clic
-        className="bg-orange-500 hover:bg-orange-700 text-white flex items-center gap-2 px-4 py-2 rounded font-semibold"
+        className="bg-orange-500 hover:bg-orange-700 text-white flex items-center gap-2 px-2 py-2 rounded font-semibold"
       >
-        Ver Tutorial
-        <FaPlayCircle />
+        <FaQuestionCircle size={25} />
       </button>
 
       <Joyride

@@ -24,8 +24,6 @@ import {
   FaChevronUp,
   FaArrowLeft,
   FaSearch,
-  FaFileUpload,
-  FaFileExcel,
 } from "react-icons/fa";
 import { SyncLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
@@ -35,11 +33,8 @@ import Papelera from "./Papelera";
 import { IoClose } from "react-icons/io5";
 import { VscOpenPreview } from "react-icons/vsc";
 import { AnimatePresence, motion } from "framer-motion";
-import SubirExcel from "./SubirExcel";
-import CopiarIDsModal from "./CopiarIDsModal";
 import { useDarkMode } from "../context/DarkModeContext";
 import TutorialPersonas from "./TutorialPersonas";
-import TutorialPersonasExcel from "./TutorialPersonasExcel";
 
 Modal.setAppElement("#root");
 
@@ -71,20 +66,6 @@ function Personas() {
   const [filterAnciano, setFilterAnciano] = useState(false);
   const filterMenuRef = useRef(null); // Referencia para el menú de filtros
   const { darkMode } = useDarkMode();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-
-  // Ruta de la plantilla de Excel
-  const plantillaExcelURL = "/src/Plantilla Informes.xlsx"; // Cambia a la ruta de tu archivo
-
-  const descargarPlantilla = () => {
-    const link = document.createElement("a");
-    link.href = plantillaExcelURL;
-    link.download = "Plantilla Informes.xlsx"; // Nombre del archivo al descargar
-    link.click();
-  };
 
   useEffect(() => {
     if (!grupoId) {
@@ -617,7 +598,7 @@ function Personas() {
         </button>
         {!loading && (
           <div className="sm:pt-8 hidden sm:block">
-            <div className="papelera">
+            <div className="">
               <Papelera />
             </div>
           </div>
@@ -629,21 +610,17 @@ function Personas() {
         </div>
       ) : (
         <>
-          <div className="mb-4 sm:mb-0 z-10">
-            <TutorialPersonas />
-          </div>
           {!loading && (
-            <div className="papelera sm:pt-8 block sm:hidden z-10">
-              <div className="">
+            <div className="sm:pt-8 block sm:hidden z-10">
+              <div className="papelera">
                 <Papelera />
               </div>
             </div>
           )}
           <div
-            className={`vista-previa sticky border top-2 sm:top-14 px-3 py-2 mt-3 shadow-lg rounded-xl mb-2 z-10 sm:z-20 ${
-              darkMode
-                ? "bg-gray-800 border-white hover:bg-gray-700"
-                : "bg-white border-black hover:bg-gray-100"
+            className={`vista-previa sticky top-2 sm:top-14 mt-3 mb-2 z-10 sm:z-20
+                ? "border-white"
+                : "border-black"
             }`}
           >
             <Link
@@ -654,7 +631,11 @@ function Personas() {
                 filterAnciano,
                 filterMinisterial,
               }}
-              className="flex items-center gap-3 bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg"
+              className={`flex items-center gap-1 border bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-3 rounded shadow-lg ${
+              darkMode
+                ? "border-white"
+                : "border-black"
+            }`}
             >
               Vista Previa PDF
               <VscOpenPreview size={22} />
@@ -667,6 +648,7 @@ function Personas() {
                 : "bg-white border-black text-black"
             }`}
           >
+            <TutorialPersonas />
             <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">
               Tarjetas de servicio {congregacionId} {"-"} {nombreGrupo} {"-"}{" "}
               {selectedYear}
@@ -745,72 +727,6 @@ function Personas() {
                 Agregar Tarjeta
                 <FaPlus />
               </button>
-              <div className="mb-4">
-                {/* Botón para abrir el modal */}
-                <button
-                  onClick={openModal}
-                  className="informacion bg-purple-500 hover:bg-purple-700 text-white flex items-center gap-2 font-bold py-2 px-4 rounded"
-                >
-                  Subir información
-                  <FaFileUpload />
-                </button>
-
-                {/* Modal */}
-                {isModalOpen && (
-                  <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
-                    <div
-                      className={`border rounded-lg shadow-xl p-6 w-auto relative ${
-                        darkMode
-                          ? "bg-[#1f1f1f] border-white shadow-slate-600"
-                          : "bg-white border-black"
-                      }`}
-                    >
-                      {/* Contenido del modal */}
-                      <h2 className="text-xl font-bold mb-4">Subir Archivo</h2>
-
-                      <motion.button
-                        className="modal-close-button absolute top-4 right-4"
-                        onClick={closeModal}
-                        whileHover={{ scale: 1.2 }}
-                        whileTap={{ scale: 0.8 }}
-                      >
-                        <IoClose
-                          size={30}
-                          className={`${
-                            darkMode
-                              ? "text-white border-white hover:text-red-500"
-                              : "text-black border-black hover:text-red-500"
-                          }`}
-                        />
-                      </motion.button>
-                      <div className="flex flex-col gap-4">
-                        <div className="flex justify-center">
-                          <TutorialPersonasExcel />
-                        </div>
-                        {/* Botón para descargar la plantilla */}
-                        <button
-                          onClick={descargarPlantilla}
-                          className="descargar-excel bg-green-500 hover:bg-green-700 text-white flex justify-center items-center gap-2 font-semibold py-2 px-4 rounded"
-                        >
-                          Descargar Plantilla Excel
-                          <FaFileExcel />
-                        </button>
-                        <div className="copiar-ids">
-                          <CopiarIDsModal filteredPersonas={filteredPersonas} />
-                        </div>
-                        <div className="subir-excel">
-                          <SubirExcel
-                            selectedYear={selectedYear}
-                            congregacionId={congregacionId}
-                            grupoId={grupoId}
-                            db={db}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
             <ul className="flex flex-col gap-4">
               {filteredPersonas.map((persona) => (
