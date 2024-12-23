@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase"; // Configuración Firestore
 import { useAuth } from "../context/AuthContext";
 import { SyncLoader } from "react-spinners";
 import { FaSignOutAlt, FaUsers } from "react-icons/fa";
@@ -11,34 +9,36 @@ function Inicio() {
   const { user, logout, loading } = useAuth();
   const [congregacion, setCongregacion] = useState(null); // Almacena la congregación del usuario
   const [error, setError] = useState(null);
+  const [usuarioTieneAcceso, setUsuarioTieneAcceso] = useState(null); // Estado para verificar acceso
   const { darkMode } = useDarkMode();
 
   useEffect(() => {
-    const obtenerCongregacion = async () => {
+    const obtenerCustomClaims = async () => {
       if (user) {
         try {
-          // Obtiene el documento del usuario en Firestore
-          const docRef = doc(db, "usuarios", user.uid);
-          const docSnap = await getDoc(docRef);
+          // Obtener el token del usuario para acceder a los custom claims
+          const idTokenResult = await user.getIdTokenResult(true); // true para forzar la actualización del token
+          const claims = idTokenResult.claims;
 
-          if (docSnap.exists()) {
-            // Si el usuario tiene congregación asignada
-            setCongregacion(docSnap.data().congregacion);
+          // Verificar si el usuario tiene un custom claim de 'congregacionId'
+          if (claims.congregacionId) {
+            setCongregacion(claims.congregacionId); // Si tiene un custom claim, se asigna la congregación
+            setUsuarioTieneAcceso(true);
           } else {
-            // Si no tiene una congregación asignada
-            setError("No tienes una congregación asignada.");
+            // Si no tiene el custom claim, se indica que no tiene acceso
+            setUsuarioTieneAcceso(false);
           }
         } catch (e) {
-          // Manejo de errores
-          console.error("Error al obtener congregación:", e);
-          setError("Ocurrió un error al cargar la congregación.");
+          console.error("Error al obtener custom claims:", e);
+          setError("Ocurrió un error al verificar tu acceso.");
+          setUsuarioTieneAcceso(false);
         }
       }
     };
 
     // Ejecutar solo si hay un usuario autenticado
     if (user) {
-      obtenerCongregacion();
+      obtenerCustomClaims();
     }
   }, [user]);
 
@@ -53,6 +53,38 @@ function Inicio() {
     ? congregacion.charAt(0).toUpperCase() + congregacion.slice(1)
     : null;
 
+  // Mostrar mensaje si el usuario no tiene acceso
+  if (usuarioTieneAcceso === false) {
+    return (
+      <div
+        className={`rounded-lg shadow-xl p-6 max-w-md w-full text-center ${
+          darkMode
+            ? "bg-[#303030] text-white shadow-gray-600"
+            : "bg-[#f3f3f3] text-black"
+        }`}
+      >
+        <h1 className="text-2xl font-bold text-red-600 mb-4">
+          Acceso Denegado
+        </h1>
+        <p
+          className={`text-lg mb-4 ${
+            darkMode ? "text-white" : "text-black"
+          }`}
+        >
+          No tienes acceso a esta aplicación. Por favor, contacta a tu
+          supervisor para que se te otorgue acceso.
+        </p>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-800 text-white font-bold py-3 px-6 rounded w-full transition-colors duration-100 flex items-center justify-center space-x-2"
+        >
+          <FaSignOutAlt className="text-white" />
+          <span>Cerrar Sesión</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`rounded-lg shadow-xl p-6 max-w-md w-full text-center ${
@@ -61,7 +93,9 @@ function Inicio() {
           : "bg-[#f3f3f3] text-black"
       }`}
     >
-      <h1 className="text-2xl font-bold text-blue-600 mb-4">¡Bienvenido!</h1>
+      <h1 className="text-2xl font-bold text-blue-600 mb-4">
+        ¡Bienvenido! {user.nombre}
+      </h1>
       <p className="mb-6">
         En esta aplicación podrás gestionar las tarjetas de servicio de tu
         congregación de manera fácil y rápida.

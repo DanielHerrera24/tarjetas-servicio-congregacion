@@ -21,7 +21,7 @@ export function ProtectedRoute({ children }) {
     const fetchAllowedUsers = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "usuarios"));
-        const users = querySnapshot.docs.map(doc => {
+        const users = querySnapshot.docs.map((doc) => {
           const data = doc.data();
           return data.uid; // Asegúrate de que 'uid' exista
         });
@@ -44,9 +44,13 @@ export function ProtectedRoute({ children }) {
   } else {
     return (
       <div className="flex flex-col items-center justify-center p-4 pb-36">
-        <div className={`rounded-lg shadow-lg p-8 max-w-sm w-full text-center ${
-          darkMode ? "bg-[#303030] text-white shadow-gray-600" : "bg-[#f3f3f3] text-black"
-        }`}>
+        <div
+          className={`rounded-lg shadow-lg p-8 max-w-sm w-full text-center ${
+            darkMode
+              ? "bg-[#303030] text-white shadow-gray-600"
+              : "bg-[#f3f3f3] text-black"
+          }`}
+        >
           <h2 className="text-2xl font-bold mb-6">
             No tienes acceso a esta sección.
           </h2>
