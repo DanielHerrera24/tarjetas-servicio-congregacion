@@ -1,17 +1,19 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { db } from "../firebase"; // Importar Firestore
+import { db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
+import emailjs from "@emailjs/browser"; // Importa EmailJS
 import { useDarkMode } from "../context/DarkModeContext";
 
 function Register() {
   const [user, setUser] = useState({
     email: "",
     password: "",
+    name: "",
     congregacion: "",
+    otraCongregacion: "",
   });
   const { signup } = useAuth();
   const navigate = useNavigate();
@@ -27,29 +29,62 @@ function Register() {
     setUser({ ...user, [name]: value });
   };
 
+  const sendEmail = (uid) => {
+    const templateParams = {
+      nombre: user.name,
+      email: user.email,
+      congregacion:
+        user.congregacion === "otra"
+          ? user.otraCongregacion
+          : user.congregacion,
+      uid: uid,
+    };
+
+    emailjs
+      .send(
+        "service_gzsf4vl", // Reemplaza con tu Service ID de EmailJS
+        "template_y8tj3os", // Reemplaza con tu Template ID
+        templateParams,
+        "LzEFFyFQExH4PM7z8" // Reemplaza con tu Public Key de EmailJS
+      )
+      .then(
+        (response) => {
+          console.log(
+            "Correo enviado exitosamente:",
+            response.status,
+            response.text
+          );
+        },
+        (err) => {
+          console.error("Error al enviar el correo:", err);
+        }
+      );
+  };
+
   const submit = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const name = user.name
-      // Crear el usuario con email y password
+      // Crear el usuario
       const userCredential = await signup(user.email, user.password);
       const uid = userCredential.user.uid;
 
-      // Si la congregación es 'otra', usar el valor de otraCongregacion
+      // Guardar información en Firestore
       const congregacionFinal =
         user.congregacion === "otra"
           ? user.otraCongregacion
           : user.congregacion;
 
-      // Guardar información adicional en Firestore
       await setDoc(doc(db, "usuarios", uid), {
-        nombre: name,
         uid: uid, // Asegúrate de usar el uid obtenido de userCredential
+        nombre: user.name,
         email: user.email,
-        congregacion: congregacionFinal, // Guardar la congregación correctamente
+        congregacion: congregacionFinal,
       });
+
+      // Enviar el correo de bienvenida
+      sendEmail(uid);
 
       navigate("/");
     } catch (error) {
