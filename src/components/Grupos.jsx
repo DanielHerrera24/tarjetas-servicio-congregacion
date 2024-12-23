@@ -61,12 +61,12 @@ function Grupos() {
   const closeModal = () => setIsModalOpen(false);
 
   // Ruta de la plantilla de Excel
-  const plantillaExcelURL = "/src/Plantilla Informes Sur.xlsx"; // Cambia a la ruta de tu archivo
+  const plantillaExcelURL = "/src/Plantilla-Informes-Sur.xlsx"; // Cambia a la ruta de tu archivo
 
   const descargarPlantilla = () => {
     const link = document.createElement("a");
     link.href = plantillaExcelURL;
-    link.download = "Plantilla Informes.xlsx"; // Nombre del archivo al descargar
+    link.download = "Plantilla-Informes-Sur.xlsx"; // Nombre del archivo al descargar
     link.click();
   };
 
