@@ -4,10 +4,13 @@ import { useAuth } from "../context/AuthContext";
 import { SyncLoader } from "react-spinners";
 import { FaSignOutAlt, FaUsers } from "react-icons/fa";
 import { useDarkMode } from "../context/DarkModeContext";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase"; // Asegúrate de importar tu configuración de Firestore
 
 function Inicio() {
   const { user, logout, loading } = useAuth();
   const [congregacion, setCongregacion] = useState(null); // Almacena la congregación del usuario
+  const [usuarioDatos, setUsuarioDatos] = useState(null); // Almacena la información del usuario (nombre, etc.)
   const [error, setError] = useState(null);
   const [usuarioTieneAcceso, setUsuarioTieneAcceso] = useState(null); // Estado para verificar acceso
   const { darkMode } = useDarkMode();
@@ -28,8 +31,17 @@ function Inicio() {
             // Si no tiene el custom claim, se indica que no tiene acceso
             setUsuarioTieneAcceso(false);
           }
+
+          // Obtener los datos adicionales del usuario desde Firestore
+          const usuarioRef = doc(db, "usuarios", user.uid);
+          const usuarioSnapshot = await getDoc(usuarioRef);
+          if (usuarioSnapshot.exists()) {
+            setUsuarioDatos(usuarioSnapshot.data()); // Almacena los datos del usuario (nombre, etc.)
+          } else {
+            console.log("No se encontraron datos del usuario.");
+          }
         } catch (e) {
-          console.error("Error al obtener custom claims:", e);
+          console.error("Error al obtener custom claims o datos de usuario:", e);
           setError("Ocurrió un error al verificar tu acceso.");
           setUsuarioTieneAcceso(false);
         }
@@ -53,6 +65,14 @@ function Inicio() {
     ? congregacion.charAt(0).toUpperCase() + congregacion.slice(1)
     : null;
 
+  if (usuarioTieneAcceso === null) {
+    return (
+      <div className="flex justify-center items-center p-4">
+        <SyncLoader color="#3B82F6" />
+      </div>
+    );
+  }
+
   // Mostrar mensaje si el usuario no tiene acceso
   if (usuarioTieneAcceso === false) {
     return (
@@ -66,11 +86,7 @@ function Inicio() {
         <h1 className="text-2xl font-bold text-red-600 mb-4">
           Acceso Denegado
         </h1>
-        <p
-          className={`text-lg mb-4 ${
-            darkMode ? "text-white" : "text-black"
-          }`}
-        >
+        <p className={`text-lg mb-4 ${darkMode ? "text-white" : "text-black"}`}>
           No tienes acceso a esta aplicación. Por favor, contacta a tu
           supervisor para que se te otorgue acceso.
         </p>
@@ -94,7 +110,7 @@ function Inicio() {
       }`}
     >
       <h1 className="text-2xl font-bold text-blue-600 mb-4">
-        ¡Bienvenido! {user.nombre}
+        ¡Bienvenido {usuarioDatos ? usuarioDatos.nombre : ""}!
       </h1>
       <p className="mb-6">
         En esta aplicación podrás gestionar las tarjetas de servicio de tu

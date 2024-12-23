@@ -9,7 +9,7 @@ import { useDarkMode } from "../context/DarkModeContext";
 
 export function ProtectedRoute({ children }) {
   const { user, loading, logout } = useAuth();
-  const [allowedUsers, setAllowedUsers] = useState([]);
+  const [allowedUsers, setAllowedUsers] = useState(null); // Inicializar como null para controlar el estado de carga
   const [error, setError] = useState(null);
   const { darkMode } = useDarkMode();
 
@@ -25,10 +25,11 @@ export function ProtectedRoute({ children }) {
           const data = doc.data();
           return data.uid; // Asegúrate de que 'uid' exista
         });
-        setAllowedUsers(users);
+        setAllowedUsers(users); // Actualiza el estado con los usuarios permitidos
       } catch (e) {
         console.error("Error al obtener usuarios permitidos:", e);
         setError("Ocurrió un error al verificar el acceso.");
+        setAllowedUsers([]); // Si hay error, asegúrate de actualizar a un array vacío
       }
     };
 
@@ -38,6 +39,14 @@ export function ProtectedRoute({ children }) {
   if (loading) return <SyncLoader color="#3B82F6" />;
 
   if (!user) return <Navigate to="/login" />;
+
+  if (allowedUsers === null) {
+    return (
+      <div className="flex justify-center items-center p-4">
+        <SyncLoader color="#3B82F6" />
+      </div>
+    );
+  }
 
   if (allowedUsers.includes(user.uid)) {
     return <>{children}</>;
