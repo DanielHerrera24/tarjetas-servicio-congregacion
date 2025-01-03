@@ -9,6 +9,7 @@ import {
   deleteDoc,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -56,6 +57,7 @@ function Grupos() {
   const [nombramientoId, setNombramientoId] = useState("");
   const { darkMode } = useDarkMode();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [role, setRole] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -104,6 +106,34 @@ function Grupos() {
   } else {
     console.log("Usuario no autenticado");
   }
+
+  useEffect(() => {
+    // Función para verificar el rol del usuario
+    const verificarRol = async () => {
+      const user = auth.currentUser; // Obtener el usuario autenticado
+      if (!user) {
+        console.error("No hay usuario autenticado");
+        return;
+      }
+      const usuariosRef = collection(db, "usuarios"); // Referencia a la colección
+      const q = query(usuariosRef, where("uid", "==", user.uid)); // Buscar usuario por UID
+
+      try {
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const userData = querySnapshot.docs[0].data(); // Obtener datos del usuario
+          setRole(userData.role === "admin"); // Verificar si el rol es admin
+        } else {
+          console.error("No se encontró el usuario en Firestore.");
+          setRole(false); // No es admin si no se encuentra
+        }
+      } catch (error) {
+        console.error("Error al verificar el rol del usuario:", error);
+      }
+    };
+
+    verificarRol(); // Llamar a la función
+  }, []);
 
   const fetchGrupos = async () => {
     try {
@@ -414,12 +444,14 @@ function Grupos() {
           </h2>
           <div className="relative w-full flex gap-2 justify-center items-center">
             <Tutorial />
-            <button
-              onClick={() => setShowYearModal(true)}
-              className="añadir-año bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
-            >
-              Añadir Año
-            </button>
+            {role && (
+              <button
+                onClick={() => setShowYearModal(true)}
+                className="añadir-año bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+              >
+                Añadir Año
+              </button>
+            )}
           </div>
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -456,14 +488,16 @@ function Grupos() {
             >
               Crear Nuevo Grupo
             </motion.button>
-            <motion.button
-              onClick={() => setShowDeleteModal(true)}
-              className="eliminar-grupo bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Eliminar Grupo
-            </motion.button>
+            {role && (
+              <motion.button
+                onClick={() => setShowDeleteModal(true)}
+                className="eliminar-grupo bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Eliminar Grupo
+              </motion.button>
+            )}
           </div>
 
           <div className="mb-4">
