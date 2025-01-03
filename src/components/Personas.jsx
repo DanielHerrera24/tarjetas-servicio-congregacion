@@ -632,10 +632,8 @@ function Personas() {
                 filterMinisterial,
               }}
               className={`flex items-center gap-1 border bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-3 rounded shadow-lg ${
-              darkMode
-                ? "border-white"
-                : "border-black"
-            }`}
+                darkMode ? "border-white" : "border-black"
+              }`}
             >
               Vista Previa PDF
               <VscOpenPreview size={22} />
@@ -1171,19 +1169,35 @@ function Personas() {
                               </tr>
                             ))}
                             {/* Fila adicional para Totales */}
-                            <tr className="font-bold text-center text-black">
+                            <tr
+                              className={`font-bold text-center ${
+                                darkMode
+                                  ? "hover:bg-gray-700"
+                                  : "hover:bg-gray-100"
+                              }`}
+                            >
                               <td
                                 colSpan="4"
-                                className="text-right align-middle pb-2"
+                                className={`text-right align-middle pb-2 ${
+                                  darkMode ? "border-white" : "border-black"
+                                }`}
                               >
                                 Total
                               </td>
-                              <td className="border border-black whitespace-nowrap align-middle pb-2">
+                              <td
+                                className={`border border-black whitespace-nowrap align-middle pb-2 ${
+                                  darkMode ? "border-white" : "border-black"
+                                }`}
+                              >
                                 <span className="w-full block">
                                   {persona.totalHoras}
                                 </span>
                               </td>
-                              <td className="border border-black whitespace-nowrap align-middle pb-2">
+                              <td
+                                className={`border border-black whitespace-nowrap align-middle pb-2 ${
+                                  darkMode ? "border-white" : "border-black"
+                                }`}
+                              >
                                 {/* Dejar vacío */}
                               </td>
                             </tr>
