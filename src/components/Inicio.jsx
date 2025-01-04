@@ -4,8 +4,15 @@ import { useAuth } from "../context/AuthContext";
 import { SyncLoader } from "react-spinners";
 import { FaSignOutAlt, FaUsers } from "react-icons/fa";
 import { useDarkMode } from "../context/DarkModeContext";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase"; // Asegúrate de importar tu configuración de Firestore
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { auth, db } from "../firebase"; // Asegúrate de importar tu configuración de Firestore
 
 function Inicio() {
   const { user, logout, loading } = useAuth();
@@ -14,6 +21,35 @@ function Inicio() {
   const [error, setError] = useState(null);
   const [usuarioTieneAcceso, setUsuarioTieneAcceso] = useState(null); // Estado para verificar acceso
   const { darkMode } = useDarkMode();
+  const [role, setRole] = useState(false);
+
+  useEffect(() => {
+    // Función para verificar el rol del usuario
+    const verificarRol = async () => {
+      const user = auth.currentUser; // Obtener el usuario autenticado
+      if (!user) {
+        console.error("No hay usuario autenticado");
+        return;
+      }
+      const usuariosRef = collection(db, "usuarios"); // Referencia a la colección
+      const q = query(usuariosRef, where("uid", "==", user.uid)); // Buscar usuario por UID
+
+      try {
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const userData = querySnapshot.docs[0].data(); // Obtener datos del usuario
+          setRole(userData.role === "admin"); // Verificar si el rol es admin
+        } else {
+          console.error("No se encontró el usuario en Firestore.");
+          setRole(false); // No es admin si no se encuentra
+        }
+      } catch (error) {
+        console.error("Error al verificar el rol del usuario:", error);
+      }
+    };
+
+    verificarRol(); // Llamar a la función
+  }, []);
 
   useEffect(() => {
     const obtenerCustomClaims = async () => {
@@ -36,12 +72,16 @@ function Inicio() {
           const usuarioRef = doc(db, "usuarios", user.uid);
           const usuarioSnapshot = await getDoc(usuarioRef);
           if (usuarioSnapshot.exists()) {
-            setUsuarioDatos(usuarioSnapshot.data()); // Almacena los datos del usuario (nombre, etc.)
+            setUsuarioDatos(usuarioSnapshot.data());
+            console.log(user); // Almacena los datos del usuario (nombre, etc.)
           } else {
             console.log("No se encontraron datos del usuario.");
           }
         } catch (e) {
-          console.error("Error al obtener custom claims o datos de usuario:", e);
+          console.error(
+            "Error al obtener custom claims o datos de usuario:",
+            e
+          );
           setError("Ocurrió un error al verificar tu acceso.");
           setUsuarioTieneAcceso(false);
         }
@@ -132,6 +172,14 @@ function Inicio() {
           <p className="text-red-500">
             {error || "No tienes acceso asignado."}
           </p>
+        )}
+        {role && (
+          <Link
+            to={`/${congregacion}/accesos`}
+            className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
+          >
+            <span>Accesos</span>
+          </Link>
         )}
 
         {/* Botón de cerrar sesión */}

@@ -12,6 +12,7 @@ import VistaPrevia from "./components/VistaPrevia";
 import VistaPreviaTarjeta from "./components/VistaPreviaTarjeta";
 import NombramientosHermanos from "./components/NombramientosHermanos";
 import { useDarkMode } from "./context/DarkModeContext";
+import Accesos from "./components/Accesos";
 
 function App() {
   const { darkMode } = useDarkMode();
@@ -36,6 +37,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Inicio />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/:congregacionId/accesos"
+                  element={
+                    <ProtectedRoute>
+                      <Accesos />
                     </ProtectedRoute>
                   }
                 />
