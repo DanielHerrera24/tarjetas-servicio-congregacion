@@ -24,7 +24,7 @@ const TutorialPersonasExcel = () => {
     {
       target: ".subir-excel",
       content:
-        "Sube tu archivo de Excel que hayas llenado. Asegúrate de que toda la información esté correcta.",
+        "Sube tu archivo de Excel que hayas llenado. Asegúrate de que el nombre del archivo incluya el año de servicio correspondiente.",
     },
   ];
 

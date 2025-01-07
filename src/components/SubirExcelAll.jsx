@@ -4,14 +4,38 @@ import * as XLSX from "xlsx"; // Importar la librería XLSX
 import { toast } from "react-toastify";
 import { useDarkMode } from "../context/DarkModeContext";
 import { FaUpload } from "react-icons/fa";
+import { useState } from "react";
+import { SyncLoader } from "react-spinners";
 
 const SubirExcel = ({ selectedYear, congregacionId, db }) => {
   const { darkMode } = useDarkMode();
+  const [loading, setLoading] = useState(false); // Estado para el modal de carga
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
 
     if (file) {
+      // Validar que el nombre del archivo contenga el año seleccionado
+      if (!file.name.includes(selectedYear)) {
+        toast.error(
+          `En el nombre del archivo debe incluir el mismo año que el año seleccionado: ${selectedYear}.`,
+          {
+            position: "bottom-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+            },
+          }
+        );
+        return; // Detener el proceso si no contiene el año
+      }
+
+      setLoading(true);
       const reader = new FileReader();
 
       reader.onload = async (e) => {
@@ -101,7 +125,7 @@ const SubirExcel = ({ selectedYear, congregacionId, db }) => {
               border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
             },
           });
-          console.log("Si se pudo")
+          console.log("Si se pudo");
         } catch (error) {
           toast.error(`No se pudo subir el archivo de Excel: ${error}`, {
             position: "bottom-center",
@@ -115,7 +139,9 @@ const SubirExcel = ({ selectedYear, congregacionId, db }) => {
               border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
             },
           });
-          console.error("No se pudo:", error)
+          console.error("No se pudo:", error);
+        } finally {
+          setLoading(false); // Ocultar modal de carga
         }
       };
 
@@ -141,6 +167,21 @@ const SubirExcel = ({ selectedYear, congregacionId, db }) => {
         Subir Excel
         <FaUpload />
       </label>
+
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div
+            className={`p-8 rounded border shadow-lg flex flex-col items-center ${
+              darkMode
+                ? "text-white border-white bg-black"
+                : "text-black border-black bg-white"
+            }`}
+          >
+            <p className="text-lg font-semibold mb-3">Subiendo archivo...</p>
+            <SyncLoader color="#3B82F6" />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

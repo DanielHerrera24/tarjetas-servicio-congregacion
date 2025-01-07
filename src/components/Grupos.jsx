@@ -58,18 +58,26 @@ function Grupos() {
   const { darkMode } = useDarkMode();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [role, setRole] = useState(false);
+  const [loadingDescarga, setLoadingDescarga] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   // Ruta de la plantilla de Excel
-  const plantillaExcelURL = "/Plantilla-Informes-Sur.xlsx"; // Cambia a la ruta de tu archivo
+  const plantillaExcelURL = "/Plantilla-Informes-2025.xlsx"; // Cambia a la ruta de tu archivo
 
   const descargarPlantilla = () => {
-    const link = document.createElement("a");
-    link.href = plantillaExcelURL;
-    link.download = "Plantilla-Informes-Sur.xlsx"; // Nombre del archivo al descargar
-    link.click();
+    setLoadingDescarga(true); // Activar estado de carga
+    try {
+      const link = document.createElement("a");
+      link.href = plantillaExcelURL;
+      link.download = "Plantilla-Informes-2025.xlsx"; // Nombre del archivo al descargar
+      link.click();
+    } catch (error) {
+      console.error("Error al descargar la plantilla:", error);
+    } finally {
+      setTimeout(() => setLoadingDescarga(false), 1000); // Desactivar estado de carga
+    }
   };
 
   if (auth.currentUser) {
@@ -561,6 +569,20 @@ function Grupos() {
                       />
                     </div>
                   </div>
+                  {loadingDescarga && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                      <div
+                        className={`p-8 rounded border shadow-lg flex flex-col items-center ${
+                          darkMode
+                            ? "text-white border-white bg-black"
+                            : "text-black border-black bg-white"
+                        }`}
+                      >
+                        <p className="text-lg font-semibold mb-3">Descargando...</p>
+                        <SyncLoader color="#3B82F6" />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
