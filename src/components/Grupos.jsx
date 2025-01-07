@@ -59,6 +59,7 @@ function Grupos() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [role, setRole] = useState(false);
   const [loadingDescarga, setLoadingDescarga] = useState(false);
+  const [totalTarjetas, setTotalTarjetas] = useState(0);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -180,6 +181,7 @@ function Grupos() {
       let precursorCount = 0;
       let ministerialCount = 0;
       let ancianoCount = 0;
+      let totalCount = 0;
 
       for (const grupoDoc of gruposSnapshot.docs) {
         const hermanosCollection = collection(
@@ -194,6 +196,8 @@ function Grupos() {
 
         hermanosSnapshot.docs.forEach((hermanoDoc) => {
           const hermanoData = hermanoDoc.data();
+          totalCount++; // Incrementa el conteo total por cada documento encontrado.
+
           if (hermanoData.regular) precursorCount++;
           if (hermanoData.ministerial) ministerialCount++;
           if (hermanoData.anciano) ancianoCount++;
@@ -205,6 +209,7 @@ function Grupos() {
         ministeriales: ministerialCount,
         ancianos: ancianoCount,
       });
+      setTotalTarjetas(totalCount); // Actualiza el estado del total de tarjetas.
     } catch (error) {
       console.error("Error al contar hermanos:", error.message, error.code);
     } finally {
@@ -578,7 +583,9 @@ function Grupos() {
                             : "text-black border-black bg-white"
                         }`}
                       >
-                        <p className="text-lg font-semibold mb-3">Descargando...</p>
+                        <p className="text-lg font-semibold mb-3">
+                          Descargando...
+                        </p>
                         <SyncLoader color="#3B82F6" />
                       </div>
                     </div>
@@ -695,7 +702,7 @@ function Grupos() {
                         Ver
                       </Link>
                     </div>
-                    <div className="flex justify-between gap-4">
+                    <div className="flex justify-between gap-4 mb-2">
                       <div className="flex items-center">
                         <FaUserCheck className="text-yellow-500 mr-2" />
                         <p className="text-lg">
@@ -717,6 +724,10 @@ function Grupos() {
                         Ver
                       </Link>
                     </div>
+                    
+                    <p className="text-lg font-semibold">
+                      Total de Tarjetas: <span className="font-bold">{totalTarjetas}</span>
+                    </p>
                   </div>
                 </>
               ))}
