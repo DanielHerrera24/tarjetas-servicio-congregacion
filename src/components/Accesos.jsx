@@ -4,8 +4,11 @@ import { useDarkMode } from "../context/DarkModeContext";
 import AssignCustomClaim from "./AssignCustomClaim";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function Accesos() {
+  const navigate = useNavigate();
   const { darkMode } = useDarkMode();
   const [uid, setUid] = useState("");
   const [role, setRole] = useState("admin");
@@ -77,6 +80,18 @@ function Accesos() {
     <div
       className={`sm:flex gap-3 mt-4 ${darkMode ? "text-white" : "text-black"}`}
     >
+      <div>
+        <button
+          onClick={() => navigate(-1)}
+          className={`hidden sm:block shadow-lg border rounded-full p-3 mt-0 text-red-500 ${
+            darkMode
+              ? "bg-gray-800 border-white hover:bg-gray-700"
+              : "bg-white border-black hover:bg-gray-100"
+          } hover:scale-110`}
+        >
+          <FaArrowLeft size={24} />
+        </button>
+      </div>
       <ToastContainer />
       <form
         onSubmit={handleAssignRole}
