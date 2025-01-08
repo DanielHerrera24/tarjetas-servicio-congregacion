@@ -9,7 +9,6 @@ import {
   deleteDoc,
   setDoc,
   updateDoc,
-  where,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -32,6 +31,7 @@ import SubirExcelAll from "./SubirExcelAll";
 import { IoClose } from "react-icons/io5";
 import TutorialPersonasExcel from "./TutorialPersonasExcel";
 import CopiarIDsModal from "./CopiarIDsModal";
+import { useAuth } from "../context/AuthContext";
 
 function Grupos() {
   const navigate = useNavigate();
@@ -57,9 +57,9 @@ function Grupos() {
   const [nombramientoId, setNombramientoId] = useState("");
   const { darkMode } = useDarkMode();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [role, setRole] = useState(false);
   const [loadingDescarga, setLoadingDescarga] = useState(false);
   const [totalTarjetas, setTotalTarjetas] = useState(0);
+  const { role } = useAuth();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -115,34 +115,6 @@ function Grupos() {
   } else {
     console.log("Usuario no autenticado");
   }
-
-  useEffect(() => {
-    // Función para verificar el rol del usuario
-    const verificarRol = async () => {
-      const user = auth.currentUser; // Obtener el usuario autenticado
-      if (!user) {
-        console.error("No hay usuario autenticado");
-        return;
-      }
-      const usuariosRef = collection(db, "usuarios"); // Referencia a la colección
-      const q = query(usuariosRef, where("uid", "==", user.uid)); // Buscar usuario por UID
-
-      try {
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          const userData = querySnapshot.docs[0].data(); // Obtener datos del usuario
-          setRole(userData.role === "admin"); // Verificar si el rol es admin
-        } else {
-          console.error("No se encontró el usuario en Firestore.");
-          setRole(false); // No es admin si no se encuentra
-        }
-      } catch (error) {
-        console.error("Error al verificar el rol del usuario:", error);
-      }
-    };
-
-    verificarRol(); // Llamar a la función
-  }, []);
 
   const fetchGrupos = async () => {
     try {
@@ -338,8 +310,43 @@ function Grupos() {
       });
       setYearToAdd(""); // Resetea el año a agregar
     } catch (error) {
-      toast.error("Error al añadir el año a todas las personas.");
-      console.error("Error al añadir el año a todas las personas:", error);
+      // Verifica si el error es el relacionado con permisos insuficientes
+      if (error.code === "permission-denied") {
+        toast.error(
+          "No tienes los permisos necesarios para añadir año de servicio. Por favor, contacta al supervisor.",
+          {
+            position: "bottom-center",
+            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            },
+          }
+        );
+      } else {
+        // Aquí puedes manejar otros tipos de errores si lo deseas
+        toast.error(
+          "Error al añadir año de servicio. Por favor, intenta nuevamente.",
+          {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+            },
+          }
+        );
+      }
     }
   };
 
@@ -389,7 +396,43 @@ function Grupos() {
       setNewGrupo(""); // Resetea el estado del nuevo grupo
       fetchGrupos(); // Vuelve a cargar los grupos
     } catch (error) {
-      console.error("Error al añadir el grupo:", error);
+      // Verifica si el error es el relacionado con permisos insuficientes
+      if (error.code === "permission-denied") {
+        toast.error(
+          "No tienes los permisos necesarios para agregar el grupo. Por favor, contacta al supervisor.",
+          {
+            position: "bottom-center",
+            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            },
+          }
+        );
+      } else {
+        // Aquí puedes manejar otros tipos de errores si lo deseas
+        toast.error(
+          "Ocurrió un error inesperado. Por favor, intenta nuevamente.",
+          {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+            },
+          }
+        );
+      }
     }
   };
 
@@ -422,7 +465,43 @@ function Grupos() {
       setGrupoToDelete(""); // Resetea el estado del grupo a eliminar
       fetchGrupos(); // Vuelve a cargar los grupos
     } catch (error) {
-      console.error("Error al eliminar el grupo:", error);
+      // Verifica si el error es el relacionado con permisos insuficientes
+      if (error.code === "permission-denied") {
+        toast.error(
+          "No tienes los permisos necesarios para eliminar el grupo. Por favor, contacta al supervisor.",
+          {
+            position: "bottom-center",
+            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            },
+          }
+        );
+      } else {
+        // Aquí puedes manejar otros tipos de errores si lo deseas
+        toast.error(
+          "Ocurrió un error inesperado. Por favor, intenta nuevamente.",
+          {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+            },
+          }
+        );
+      }
     }
   };
 
@@ -457,7 +536,9 @@ function Grupos() {
           </h2>
           <div className="relative w-full flex gap-2 justify-center items-center">
             <Tutorial />
-            {role && (
+            {(role === "Administrador" ||
+              role === "Gestor" ||
+              role === "Espectador") && (
               <button
                 onClick={() => setShowYearModal(true)}
                 className="añadir-año bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
@@ -501,7 +582,9 @@ function Grupos() {
             >
               Crear Nuevo Grupo
             </motion.button>
-            {role && (
+            {(role === "Administrador" ||
+              role === "Gestor" ||
+              role === "Espectador") && (
               <motion.button
                 onClick={() => setShowDeleteModal(true)}
                 className="eliminar-grupo bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -513,87 +596,94 @@ function Grupos() {
             )}
           </div>
 
-          <div className="mb-4">
-            {/* Botón para abrir el modal */}
-            <button
-              onClick={openModal}
-              className="informacion bg-purple-500 hover:bg-purple-700 text-white flex items-center gap-2 font-bold py-2 px-4 rounded"
-            >
-              Subir información
-              <FaFileUpload />
-            </button>
+          {(role === "Administrador" ||
+            role === "Gestor" ||
+            role === "Espectador") && (
+            <div className="mb-4">
+              {/* Botón para abrir el modal */}
+              <button
+                onClick={openModal}
+                className="informacion bg-purple-500 hover:bg-purple-700 text-white flex items-center gap-2 font-bold py-2 px-4 rounded"
+              >
+                Subir información
+                <FaFileUpload />
+              </button>
 
-            {/* Modal */}
-            {isModalOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
-                <div
-                  className={`border rounded-lg shadow-xl p-6 w-auto relative ${
-                    darkMode
-                      ? "bg-[#1f1f1f] border-white shadow-slate-600"
-                      : "bg-white border-black"
-                  }`}
-                >
-                  {/* Contenido del modal */}
-                  <h2 className="text-xl font-bold mb-4">Subir Archivo</h2>
-
-                  <motion.button
-                    className="modal-close-button absolute top-4 right-4"
-                    onClick={closeModal}
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.8 }}
+              {/* Modal */}
+              {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
+                  <div
+                    className={`border rounded-lg shadow-xl p-6 w-auto relative ${
+                      darkMode
+                        ? "bg-[#1f1f1f] border-white shadow-slate-600"
+                        : "bg-white border-black"
+                    }`}
                   >
-                    <IoClose
-                      size={30}
-                      className={`${
-                        darkMode
-                          ? "text-white border-white hover:text-red-500"
-                          : "text-black border-black hover:text-red-500"
-                      }`}
-                    />
-                  </motion.button>
-                  <div className="flex flex-col gap-4">
-                    <div className="flex justify-center">
-                      <TutorialPersonasExcel />
-                    </div>
-                    {/* Botón para descargar la plantilla */}
-                    <button
-                      onClick={descargarPlantilla}
-                      className="descargar-excel bg-green-500 hover:bg-green-700 text-white flex justify-center items-center gap-2 font-semibold py-2 px-4 rounded"
+                    {/* Contenido del modal */}
+                    <h2 className="text-xl font-bold mb-4">Subir Archivo</h2>
+
+                    <motion.button
+                      className="modal-close-button absolute top-4 right-4"
+                      onClick={closeModal}
+                      whileHover={{ scale: 1.2 }}
+                      whileTap={{ scale: 0.8 }}
                     >
-                      Descargar Plantilla Excel
-                      <FaFileExcel />
-                    </button>
-                    <div className="copiar-ids">
-                      <CopiarIDsModal db={db} congregacionId={congregacionId} />
-                    </div>
-                    <div className="subir-excel">
-                      <SubirExcelAll
-                        selectedYear={selectedYear}
-                        congregacionId={congregacionId}
-                        db={db}
-                      />
-                    </div>
-                  </div>
-                  {loadingDescarga && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                      <div
-                        className={`p-8 rounded border shadow-lg flex flex-col items-center ${
+                      <IoClose
+                        size={30}
+                        className={`${
                           darkMode
-                            ? "text-white border-white bg-black"
-                            : "text-black border-black bg-white"
+                            ? "text-white border-white hover:text-red-500"
+                            : "text-black border-black hover:text-red-500"
                         }`}
+                      />
+                    </motion.button>
+                    <div className="flex flex-col gap-4">
+                      <div className="flex justify-center">
+                        <TutorialPersonasExcel />
+                      </div>
+                      {/* Botón para descargar la plantilla */}
+                      <button
+                        onClick={descargarPlantilla}
+                        className="descargar-excel bg-green-500 hover:bg-green-700 text-white flex justify-center items-center gap-2 font-semibold py-2 px-4 rounded"
                       >
-                        <p className="text-lg font-semibold mb-3">
-                          Descargando...
-                        </p>
-                        <SyncLoader color="#3B82F6" />
+                        Descargar Plantilla Excel
+                        <FaFileExcel />
+                      </button>
+                      <div className="copiar-ids">
+                        <CopiarIDsModal
+                          db={db}
+                          congregacionId={congregacionId}
+                        />
+                      </div>
+                      <div className="subir-excel">
+                        <SubirExcelAll
+                          selectedYear={selectedYear}
+                          congregacionId={congregacionId}
+                          db={db}
+                        />
                       </div>
                     </div>
-                  )}
+                    {loadingDescarga && (
+                      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                        <div
+                          className={`p-8 rounded border shadow-lg flex flex-col items-center ${
+                            darkMode
+                              ? "text-white border-white bg-black"
+                              : "text-black border-black bg-white"
+                          }`}
+                        >
+                          <p className="text-lg font-semibold mb-3">
+                            Descargando...
+                          </p>
+                          <SyncLoader color="#3B82F6" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* Lista de Grupos con Animaciones */}
           <ul className="flex flex-wrap justify-center gap-2 sm:gap-4 sm:gap-y-8 gap-y-2">
@@ -724,9 +814,10 @@ function Grupos() {
                         Ver
                       </Link>
                     </div>
-                    
+
                     <p className="text-lg font-semibold">
-                      Total de Tarjetas: <span className="font-bold">{totalTarjetas}</span>
+                      Total de Tarjetas:{" "}
+                      <span className="font-bold">{totalTarjetas}</span>
                     </p>
                   </div>
                 </>

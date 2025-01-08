@@ -81,6 +81,7 @@ function Register() {
         nombre: user.name,
         email: user.email,
         congregacion: congregacionFinal,
+        role: "espectador",
       });
 
       // Enviar el correo de bienvenida

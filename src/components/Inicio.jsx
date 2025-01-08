@@ -4,52 +4,16 @@ import { useAuth } from "../context/AuthContext";
 import { SyncLoader } from "react-spinners";
 import { FaSignOutAlt, FaUsers } from "react-icons/fa";
 import { useDarkMode } from "../context/DarkModeContext";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-import { auth, db } from "../firebase"; // Asegúrate de importar tu configuración de Firestore
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase"; // Asegúrate de importar tu configuración de Firestore
 
 function Inicio() {
-  const { user, logout, loading } = useAuth();
+  const { user, logout, role, loading } = useAuth();
   const [congregacion, setCongregacion] = useState(null); // Almacena la congregación del usuario
   const [usuarioDatos, setUsuarioDatos] = useState(null); // Almacena la información del usuario (nombre, etc.)
   const [error, setError] = useState(null);
   const [usuarioTieneAcceso, setUsuarioTieneAcceso] = useState(null); // Estado para verificar acceso
   const { darkMode } = useDarkMode();
-  const [role, setRole] = useState(false);
-
-  useEffect(() => {
-    // Función para verificar el rol del usuario
-    const verificarRol = async () => {
-      const user = auth.currentUser; // Obtener el usuario autenticado
-      if (!user) {
-        console.error("No hay usuario autenticado");
-        return;
-      }
-      const usuariosRef = collection(db, "usuarios"); // Referencia a la colección
-      const q = query(usuariosRef, where("uid", "==", user.uid)); // Buscar usuario por UID
-
-      try {
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          const userData = querySnapshot.docs[0].data(); // Obtener datos del usuario
-          setRole(userData.role === "admin"); // Verificar si el rol es admin
-        } else {
-          console.error("No se encontró el usuario en Firestore.");
-          setRole(false); // No es admin si no se encuentra
-        }
-      } catch (error) {
-        console.error("Error al verificar el rol del usuario:", error);
-      }
-    };
-
-    verificarRol(); // Llamar a la función
-  }, []);
 
   useEffect(() => {
     const obtenerCustomClaims = async () => {
@@ -123,12 +87,12 @@ function Inicio() {
             : "bg-[#f3f3f3] text-black"
         }`}
       >
-        <h1 className="text-2xl font-bold text-red-600 mb-4">
-          Acceso Denegado
-        </h1>
         <p className={`text-lg mb-4 ${darkMode ? "text-white" : "text-black"}`}>
           No tienes acceso a esta aplicación. Por favor, contacta a tu
           supervisor para que se te otorgue acceso.
+        </p>
+        <p className={`text-lg mb-4 ${darkMode ? "text-white" : "text-black"}`}>
+          Recarga la página o vuelve a iniciar sesión si es necesario.
         </p>
         <button
           onClick={handleLogout}
@@ -149,9 +113,19 @@ function Inicio() {
           : "bg-[#f3f3f3] text-black"
       }`}
     >
-      <h1 className="text-2xl font-bold text-blue-600 mb-4">
-        ¡Bienvenido {usuarioDatos ? usuarioDatos.nombre : ""}!
+      <h1 className="text-2xl font-bold text-blue-500 mb-1">
+        ¡Bienvenido{" "}
+        <span className={`${darkMode ? "text-white" : "text-black"}`}>
+          {usuarioDatos ? usuarioDatos.nombre : ""}
+        </span>
+        !
       </h1>
+      <h2 className="text-xl font-bold text-blue-500 mb-4">
+        Rol:{" "}
+        <span className={`${darkMode ? "text-white" : "text-black"}`}>
+          {role}
+        </span>
+      </h2>
       <p className="mb-6">
         En esta aplicación podrás gestionar las tarjetas de servicio de tu
         congregación de manera fácil y rápida.
@@ -173,7 +147,7 @@ function Inicio() {
             {error || "No tienes acceso asignado."}
           </p>
         )}
-        {role && (
+        {role === "Administrador" && (
           <Link
             to={`/${congregacion}/accesos`}
             className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
@@ -198,7 +172,7 @@ function Inicio() {
           Puedes crear, ver, editar, guardar, mover de grupo, eliminar y
           descargar en PDF las tarjetas de servicio de tu congregación.
         </p>
-        <p className="mt-2 text-blue-500">
+        <p className="font-semibold mt-2 text-blue-500">
           ¡Organiza tu congregación con facilidad!
         </p>
       </div>

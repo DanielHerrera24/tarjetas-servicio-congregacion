@@ -245,7 +245,43 @@ function Personas() {
       setPersonas(personas.filter((persona) => persona.id !== movingPersonId)); // Actualizar la lista local
       setMoveModalIsOpen(false); // Cierra el modal de mover persona
     } catch (error) {
-      console.log("Error al mover la persona: ", error);
+      // Verifica si el error es el relacionado con permisos insuficientes
+      if (error.code === "permission-denied") {
+        toast.error(
+          "No tienes los permisos necesarios para mover grupos. Por favor, contacta al supervisor.",
+          {
+            position: "bottom-center",
+            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            },
+          }
+        );
+      } else {
+        // Aquí puedes manejar otros tipos de errores si lo deseas
+        toast.error(
+          "Ocurrió un error inesperado. Por favor, intenta nuevamente.",
+          {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+            },
+          }
+        );
+      }
     } finally {
       setMoveLoading(false); // Termina el estado de carga
     }
@@ -403,7 +439,43 @@ function Personas() {
         },
       });
     } catch (error) {
-      console.error("Error al guardar los cambios: ", error);
+      // Verifica si el error es el relacionado con permisos insuficientes
+      if (error.code === "permission-denied") {
+        toast.error(
+          "No tienes los permisos necesarios para guardar cambios. Por favor, contacta al supervisor.",
+          {
+            position: "bottom-center",
+            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            },
+          }
+        );
+      } else {
+        // Aquí puedes manejar otros tipos de errores si lo deseas
+        toast.error(
+          "Ocurrió un error inesperado. Por favor, intenta nuevamente.",
+          {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+            },
+          }
+        );
+      }
     }
   };
 
@@ -465,7 +537,43 @@ function Personas() {
       setFechaBautismo("");
       setNuevoRol(""); // Reiniciar el rol al cerrar el modal
     } catch (error) {
-      console.error("Error al agregar tarjeta: ", error);
+      // Verifica si el error es el relacionado con permisos insuficientes
+      if (error.code === "permission-denied") {
+        toast.error(
+          "No tienes los permisos necesarios para agregar nuevas tarjetas. Por favor, contacta al supervisor.",
+          {
+            position: "bottom-center",
+            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            },
+          }
+        );
+      } else {
+        // Aquí puedes manejar otros tipos de errores si lo deseas
+        toast.error(
+          "Ocurrió un error inesperado. Por favor, intenta nuevamente.",
+          {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+            },
+          }
+        );
+      }
     }
   };
 
@@ -526,25 +634,43 @@ function Personas() {
         setPersonas(personas.filter((persona) => persona.id !== id));
       }
     } catch (error) {
-      console.error("Error al eliminar la tarjeta: ", error);
-
-      // Mostrar notificación de error
-      toast.error(
-        "Error al eliminar la tarjeta. Por favor, intenta de nuevo.",
-        {
-          position: "bottom-center",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: darkMode ? "dark" : "light",
-          style: {
-            border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
-          },
-        }
-      );
+      // Verifica si el error es el relacionado con permisos insuficientes
+      if (error.code === "permission-denied") {
+        toast.error(
+          "No tienes los permisos necesarios para eliminar tarjetas. Por favor, contacta al supervisor.",
+          {
+            position: "bottom-center",
+            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            },
+          }
+        );
+      } else {
+        // Aquí puedes manejar otros tipos de errores si lo deseas
+        toast.error(
+          "Ocurrió un error inesperado. Por favor, intenta nuevamente.",
+          {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+            },
+          }
+        );
+      }
     }
   };
 

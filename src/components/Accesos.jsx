@@ -11,7 +11,7 @@ function Accesos() {
   const navigate = useNavigate();
   const { darkMode } = useDarkMode();
   const [uid, setUid] = useState("");
-  const [role, setRole] = useState("admin");
+  const [role, setRole] = useState("Administrador");
 
   const handleAssignRole = async (e) => {
     e.preventDefault();
@@ -56,7 +56,7 @@ function Accesos() {
       );
 
       setUid(""); // Limpiar el campo UID
-      setRole("admin"); // Restablecer el valor del rol
+      setRole("Administrador"); // Restablecer el valor del rol
     } catch (error) {
       console.error("Error al asignar rol:", error);
       toast.error(
@@ -97,7 +97,7 @@ function Accesos() {
         onSubmit={handleAssignRole}
         className="p-4 border rounded flex flex-col justify-center items-center gap-4"
       >
-        <h2 className="text-xl font-bold">Acceso a Admin</h2>
+        <h2 className="text-xl font-bold">Asignar Roles</h2>
         <div className="flex flex-col">
           <label htmlFor="uidUser" className="font-semibold">
             UID Usuario
@@ -122,8 +122,10 @@ function Accesos() {
             value={role}
             onChange={(e) => setRole(e.target.value)}
           >
-            <option value="admin">Admin</option>
-            <option value="user">User</option>
+            <option value="Administrador">Administrador</option>
+            <option value="Gestor">Gestor</option>
+            <option value="Editor">Editor</option>
+            <option value="Espectador">Espectador</option>
             {/* Puedes agregar más roles si los necesitas */}
           </select>
         </div>

@@ -127,19 +127,39 @@ const SubirExcel = ({ selectedYear, congregacionId, db }) => {
           });
           console.log("Si se pudo");
         } catch (error) {
-          toast.error(`No se pudo subir el archivo de Excel: ${error}`, {
-            position: "bottom-center",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            draggable: true,
-            progress: undefined,
-            theme: darkMode ? "dark" : "light",
-            style: {
-              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
-            },
-          });
-          console.error("No se pudo:", error);
+          // Verifica si el error es el relacionado con permisos insuficientes
+          if (error.code === "permission-denied") {
+            toast.error(
+              "No tienes los permisos necesarios para subir información. Por favor, contacta al supervisor.",
+              {
+                position: "bottom-center",
+                autoClose: 5000, // El mensaje permanecerá 5 segundos
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: darkMode ? "dark" : "light",
+                style: {
+                  border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+                },
+              }
+            );
+          } else {
+            toast.error(`No se pudo subir el archivo de Excel: ${error}`, {
+              position: "bottom-center",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              draggable: true,
+              progress: undefined,
+              theme: darkMode ? "dark" : "light",
+              style: {
+                border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+              },
+            });
+            console.error("No se pudo:", error);
+          }
         } finally {
           setLoading(false); // Ocultar modal de carga
         }

@@ -108,20 +108,43 @@ const Papelera = () => {
         setPersonasEliminadas(personasEliminadas.filter((p) => p.id !== id));
       }
     } catch (error) {
-      console.log("Error al restaurar la persona: ", error);
-      toast.error("Error al restaurar la persona.", {
-        position: "bottom-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: darkMode ? "dark" : "light",
-        style: {
-          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
-        },
-      });
+      // Verifica si el error es el relacionado con permisos insuficientes
+      if (error.code === "permission-denied") {
+        toast.error(
+          "No tienes los permisos necesarios para restaurar tarjetas. Por favor, contacta al supervisor.",
+          {
+            position: "bottom-center",
+            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            },
+          }
+        );
+      } else {
+        // Aquí puedes manejar otros tipos de errores si lo deseas
+        toast.error(
+          "Error al restaurar tarjeta. Por favor, intenta nuevamente.",
+          {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+            },
+          }
+        );
+      }
     }
   };
 
@@ -181,20 +204,43 @@ const Papelera = () => {
         setPersonasEliminadas(personasEliminadas.filter((p) => p.id !== id));
       }
     } catch (error) {
-      console.log("Error al eliminar permanentemente la persona: ", error);
-      toast.error("Error al eliminar la persona.", {
-        position: "bottom-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: darkMode ? "dark" : "light",
-        style: {
-          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
-        },
-      });
+      // Verifica si el error es el relacionado con permisos insuficientes
+      if (error.code === "permission-denied") {
+        toast.error(
+          "No tienes los permisos necesarios para eliminar tarjetas permanentemente. Por favor, contacta al supervisor.",
+          {
+            position: "bottom-center",
+            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            },
+          }
+        );
+      } else {
+        // Aquí puedes manejar otros tipos de errores si lo deseas
+        toast.error(
+          "Error al eliminar la tarjeta permanentemente. Por favor, intenta nuevamente.",
+          {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: darkMode ? "dark" : "light",
+            style: {
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+            },
+          }
+        );
+      }
     }
   };
 
