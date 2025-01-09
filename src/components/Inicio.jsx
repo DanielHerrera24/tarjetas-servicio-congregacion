@@ -92,6 +92,9 @@ function Inicio() {
           supervisor para que se te otorgue acceso.
         </p>
         <p className={`text-lg mb-4 ${darkMode ? "text-white" : "text-black"}`}>
+          Si te haz registrado avisa a tu supervisor para que te brinde acceso.
+        </p>
+        <p className={`text-lg mb-4 ${darkMode ? "text-white" : "text-black"}`}>
           Recarga la página o vuelve a iniciar sesión si es necesario.
         </p>
         <button

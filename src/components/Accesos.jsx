@@ -11,7 +11,7 @@ function Accesos() {
   const navigate = useNavigate();
   const { darkMode } = useDarkMode();
   const [uid, setUid] = useState("");
-  const [role, setRole] = useState("Administrador");
+  const [role, setRole] = useState("selecciona");
 
   const handleAssignRole = async (e) => {
     e.preventDefault();
@@ -56,7 +56,7 @@ function Accesos() {
       );
 
       setUid(""); // Limpiar el campo UID
-      setRole("Administrador"); // Restablecer el valor del rol
+      setRole("selecciona"); // Restablecer el valor del rol
     } catch (error) {
       console.error("Error al asignar rol:", error);
       toast.error(
@@ -93,6 +93,7 @@ function Accesos() {
         </button>
       </div>
       <ToastContainer />
+      <AssignCustomClaim />
       <form
         onSubmit={handleAssignRole}
         className="p-4 border rounded flex flex-col justify-center items-center gap-4"
@@ -122,6 +123,7 @@ function Accesos() {
             value={role}
             onChange={(e) => setRole(e.target.value)}
           >
+            <option value="selecciona">Selecciona el rol</option>
             <option value="Administrador">Administrador</option>
             <option value="Gestor">Gestor</option>
             <option value="Editor">Editor</option>
@@ -136,7 +138,6 @@ function Accesos() {
           Asignar Rol
         </button>
       </form>
-      <AssignCustomClaim />
     </div>
   );
 }

@@ -81,7 +81,7 @@ function Register() {
         nombre: user.name,
         email: user.email,
         congregacion: congregacionFinal,
-        role: "espectador",
+        role: "Espectador",
       });
 
       // Enviar el correo de bienvenida
@@ -205,7 +205,7 @@ function Register() {
               </option>
               <option value="sur">Congregación Sur</option>
               <option value="primavera">Congregación Primavera</option>
-              <option value="libertad">Congregación Libertad</option>
+              <option value="del valle">Congregación Del Valle</option>
               <option value="otra">Otra Congregación</option>
             </select>
 
