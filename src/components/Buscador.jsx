@@ -131,7 +131,7 @@ const Buscador = ({ selectedYear }) => {
                     key={result.id}
                     to={`/${result.congregacionId}/grupos/${result.grupoId}`}
                     className={`block py-2 hover:bg-gray-200 border-b-2 ${index === 0 ? 'mt-8' : ''}`}
-                    state={selectedYear}
+                    state={{selectedYear}}
                   >
                     {result.nombre}
                   </Link>
