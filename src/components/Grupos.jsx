@@ -32,6 +32,7 @@ import { IoClose } from "react-icons/io5";
 import TutorialPersonasExcel from "./TutorialPersonasExcel";
 import CopiarIDsModal from "./CopiarIDsModal";
 import { useAuth } from "../context/AuthContext";
+import Buscador from "./Buscador";
 
 function Grupos() {
   const navigate = useNavigate();
@@ -599,7 +600,7 @@ function Grupos() {
           {(role === "Administrador" ||
             role === "Gestor" ||
             role === "Espectador") && (
-            <div className="mb-4">
+            <div className="mb-2">
               {/* Botón para abrir el modal */}
               <button
                 onClick={openModal}
@@ -684,6 +685,8 @@ function Grupos() {
               )}
             </div>
           )}
+
+          <Buscador selectedYear={selectedYear} />
 
           {/* Lista de Grupos con Animaciones */}
           <ul className="flex flex-wrap justify-center gap-2 sm:gap-4 sm:gap-y-8 gap-y-2">
