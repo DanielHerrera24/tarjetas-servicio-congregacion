@@ -5,12 +5,14 @@ import { collection, getDocs } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import { db } from "../firebase"; // Asegúrate de importar correctamente tu instancia de Firestore
 import { FaSearch } from "react-icons/fa";
+import { useDarkMode } from "../context/DarkModeContext";
 
 const Buscador = ({ selectedYear }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false); // Obtiene el año seleccionado
   const [isFocused, setIsFocused] = useState(false); // Estado para controlar el enfoque del input
+  const { darkMode } = useDarkMode();
 
   const handleSearch = async (term) => {
     if (term.length < 3) {
@@ -112,26 +114,46 @@ const Buscador = ({ selectedYear }) => {
 
       {/* Mostrar mensaje solo cuando el input esté enfocado y el término sea menor a 3 */}
       {isFocused && searchTerm.length < 3 && (
-        <div className="resultados-modal absolute bg-white text-black rounded-b-2xl border shadow-lg w-full max-h-60 md:max-h-80 overflow-y-auto z-50">
+        <div
+          className={`resultados-modal absolute rounded-b-2xl border shadow-sm w-full max-h-60 md:max-h-80 overflow-y-auto z-50  ${
+            darkMode
+              ? "bg-[#303030] text-white shadow-gray-600"
+              : "bg-[#f3f3f3] text-black"
+          }`}
+        >
           <p className="text-center py-1 px-1">Introduce 3 caracteres</p>
         </div>
       )}
 
       {/* Mostrar resultados agrupados */}
       {searchTerm.length >= 3 && (
-        <div className="resultados-modal absolute bg-white text-black rounded-b-2xl border shadow-lg mt-2 w-full max-h-60 md:max-h-80 overflow-y-auto z-50">
+        <div
+          className={`resultados-modal absolute rounded-b-2xl border shadow-lg mt-0 w-full max-h-60 md:max-h-80 overflow-y-auto z-50  ${
+            darkMode
+              ? "bg-[#303030] text-white shadow-gray-600"
+              : "bg-[#f3f3f3] text-black"
+          }`}
+        >
           {loading ? (
-            <p className="text-center p-2">Cargando...</p>
+            <p className="text-center p-2">Cargando tarjetas...</p>
           ) : Object.keys(gruposAgrupados).length > 0 ? (
             Object.keys(gruposAgrupados).map((grupo) => (
               <div key={grupo} className="p-1">
-                <p className="font-bold px-4 bg-blue-500 text-white rounded-r-xl absolute">{grupo}</p>
+                <p className="font-bold px-4 bg-blue-500 text-white rounded-r-xl absolute">
+                  {grupo}
+                </p>
                 {gruposAgrupados[grupo].map((result, index) => (
                   <Link
                     key={result.id}
                     to={`/${result.congregacionId}/grupos/${result.grupoId}`}
-                    className={`block py-2 hover:bg-gray-200 border-b-2 ${index === 0 ? 'mt-8' : ''}`}
-                    state={{selectedYear}}
+                    className={`block py-2 border-b-2  ${
+                    darkMode
+                      ? "hover:bg-gray-600"
+                      : "hover:bg-gray-300"
+                  } ${
+                      index === 0 ? "mt-7" : ""
+                    }`}
+                    state={{ selectedYear }}
                   >
                     {result.nombre}
                   </Link>

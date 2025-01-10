@@ -552,11 +552,11 @@ function Grupos() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="año-de-servicio flex flex-wrap items-center justify-between mb-4"
+            className="año-de-servicio flex flex-wrap items-center justify-between mb-2"
           >
             <label
               htmlFor="year-select"
-              className="mr-4 text-lg font-medium mb-2 sm:mb-0"
+              className="mr-4 text-lg font-medium sm:mb-0"
             >
               Año de servicio:
             </label>
@@ -744,7 +744,7 @@ function Grupos() {
               ) : (
                 <>
                   <div
-                    className={`p-3 rounded-lg shadow-xl mt-4 ${
+                    className={`p-3 mb-20 rounded-lg shadow-xl mt-4 ${
                       darkMode
                         ? "bg-[#303030] text-white shadow-gray-600"
                         : "bg-[#f3f3f3] text-black"
