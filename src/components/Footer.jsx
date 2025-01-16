@@ -1,13 +1,23 @@
+import { useDarkMode } from "../context/DarkModeContext";
+
 /* eslint-disable react/prop-types */
 function Footer({ onOpenPrivacyModal }) {
+  const { darkMode } = useDarkMode();
+
   return (
-    <footer className="bg-gray-800 text-white py-2 text-center w-full fixed bottom-0 left-0">
+    <footer
+      className={`bg-gray-800 py-2 text-center w-full -bottom-20 left-0 sm:absolute border-t ${
+        darkMode
+          ? "bg-gray-800 border-white"
+          : "bg-gray-200 border-black"
+      }`}
+    >
       <p className="text-sm">
         © {new Date().getFullYear()} GestSur. Todos los derechos reservados.
       </p>
       <button
         onClick={onOpenPrivacyModal}
-        className="text-blue-400 hover:underline"
+        className="text-blue-500 hover:underline"
       >
         Aviso de Privacidad
       </button>

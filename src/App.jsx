@@ -25,7 +25,7 @@ function App() {
     <>
       <Nav />
       <main
-        className={`flex justify-center min-h-[80vh] pt-14 ${
+        className={`flex justify-center min-h-[100vh] pt-14 ${
           darkMode ? "bg-[#1F1F1F] text-white" : "bg-white text-black"
         }`}
       >
