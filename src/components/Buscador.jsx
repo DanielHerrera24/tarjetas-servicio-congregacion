@@ -14,6 +14,12 @@ const Buscador = ({ selectedYear }) => {
   const [isFocused, setIsFocused] = useState(false); // Estado para controlar el enfoque del input
   const { darkMode } = useDarkMode();
 
+  const normalizeText = (text) =>
+    text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+
   const handleSearch = async (term) => {
     if (term.length < 3) {
       setResults([]);
@@ -36,6 +42,8 @@ const Buscador = ({ selectedYear }) => {
 
       const coincidencias = [];
 
+      const normalizedTerm = normalizeText(term); // Normaliza el término de búsqueda
+
       for (const congregacionDoc of congregacionesSnapshot.docs) {
         console.log("Procesando congregación:", congregacionDoc.id);
 
@@ -55,7 +63,9 @@ const Buscador = ({ selectedYear }) => {
 
           hermanosSnapshot.forEach((doc) => {
             const hermanoData = doc.data();
-            if (hermanoData.nombre.toLowerCase().includes(term)) {
+            const normalizedNombre = normalizeText(hermanoData.nombre); // Normaliza el nombre del hermano
+
+            if (normalizedNombre.includes(normalizedTerm)) {
               coincidencias.push({
                 id: doc.id,
                 nombre: hermanoData.nombre,
@@ -147,13 +157,9 @@ const Buscador = ({ selectedYear }) => {
                     key={result.id}
                     to={`/${result.congregacionId}/grupos/${result.grupoId}`}
                     className={`block py-2 border-b-2  ${
-                    darkMode
-                      ? "hover:bg-gray-600"
-                      : "hover:bg-gray-300"
-                  } ${
-                      index === 0 ? "mt-7" : ""
-                    }`}
-                    state={{ selectedYear }}
+                      darkMode ? "hover:bg-gray-600" : "hover:bg-gray-300"
+                    } ${index === 0 ? "mt-7" : ""}`}
+                    state={{ selectedYear, searchTerm }}
                   >
                     {result.nombre}
                   </Link>

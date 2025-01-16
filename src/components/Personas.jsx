@@ -674,6 +674,14 @@ function Personas() {
     }
   };
 
+  // Pasar value de Buscador de grupos al value del buscador de Personas
+  useEffect(() => {
+    // Si el state tiene un searchTerm, lo asignamos al campo de búsqueda
+    if (location.state?.searchTerm) {
+      setSearchTerm(location.state.searchTerm);
+    }
+  }, [location.state]);
+
   const filteredPersonas = personas.filter((persona) => {
     const matchSearchTerm = persona.nombre
       .toLowerCase()
