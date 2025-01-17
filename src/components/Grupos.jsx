@@ -986,7 +986,7 @@ function Grupos() {
               </motion.h3>
               <input
                 type="number"
-                placeholder="Año a agregar"
+                placeholder="20XX"
                 value={yearToAdd}
                 onChange={(e) => setYearToAdd(e.target.value)}
                 className="text-black border p-2 mb-4 w-full rounded"

@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
@@ -28,6 +29,8 @@ export function AuthProvider({ children }) {
 
   const login = (email, password) =>
     signInWithEmailAndPassword(auth, email, password);
+
+  const resetPassword = (email) => sendPasswordResetEmail(auth, email); // Nueva función para restablecer contraseña
 
   const logout = () => {
     setRole(null); // Restablecer el rol al cerrar sesión
@@ -63,7 +66,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <authContext.Provider value={{ signup, login, user, role, logout, loading }}>
+    <authContext.Provider value={{ signup, login, resetPassword, user, role, logout, loading }}>
       {children}
     </authContext.Provider>
   );

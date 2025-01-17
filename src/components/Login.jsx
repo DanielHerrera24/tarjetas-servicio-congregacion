@@ -87,7 +87,9 @@ function Login() {
       </h2>
       <div
         className={`relative rounded-lg shadow-2xl p-8 max-w-sm w-full ${
-          darkMode ? "bg-[#303030] text-white shadow-gray-600" : "bg-[#f3f3f3] text-black"
+          darkMode
+            ? "bg-[#303030] text-white shadow-gray-600"
+            : "bg-[#f3f3f3] text-black"
         }`}
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Inicia Sesión</h2>
@@ -140,14 +142,22 @@ function Login() {
               Iniciar Sesión
             </button>
           </form>
-          <div className="pt-4 flex justify-between gap-2">
-            <span className="">¿No tienes una cuenta?</span>
+          <div className="pt-4 flex flex-col justify-between gap-2">
             <Link
-              to="/register"
-              className="text-blue-500 border-b border-blue-400 hover:text-blue-700 hover:border-blue-700"
+              to="/olvidaste-tu-contrasena"
+              className="text-blue-500 hover:text-blue-700 text-left"
             >
-              Regístrate
+              ¿Olvidaste tu contraseña?
             </Link>
+            <div className="flex gap-2">
+              <span>¿No tienes una cuenta?</span>
+              <Link
+                to="/register"
+                className="text-blue-500 border-b border-blue-400 hover:text-blue-700 hover:border-blue-700"
+              >
+                Regístrate
+              </Link>
+            </div>
           </div>
         </div>
       </div>

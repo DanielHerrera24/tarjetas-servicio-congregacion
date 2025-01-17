@@ -15,6 +15,7 @@ import { useDarkMode } from "./context/DarkModeContext";
 import Accesos from "./components/Accesos";
 import { useState } from "react";
 import Footer from "./components/Footer";
+import ForgotPassword from "./components/ForgotPassword";
 
 function App() {
   const { darkMode } = useDarkMode();
@@ -93,6 +94,7 @@ function App() {
                   }
                 />
                 <Route path="/register" element={<Register />} />
+                <Route path="/olvidaste-tu-contrasena" element={<ForgotPassword />} />
                 <Route path="/login" element={<Login />} />
               </Routes>
             </AuthProvider>
