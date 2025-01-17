@@ -12,9 +12,6 @@ function Footer({ onOpenPrivacyModal }) {
           : "bg-gray-200 border-black"
       }`}
     >
-      <p className="text-sm">
-        © {new Date().getFullYear()} GestSur. Todos los derechos reservados.
-      </p>
       <button
         onClick={onOpenPrivacyModal}
         className="text-blue-500 hover:underline"

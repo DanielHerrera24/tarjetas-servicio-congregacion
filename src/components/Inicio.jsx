@@ -153,6 +153,7 @@ function Inicio() {
         {role === "Administrador" && (
           <Link
             to={`/${congregacion}/accesos`}
+            state={{congregacion}}
             className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
           >
             <span>Accesos</span>
