@@ -14,6 +14,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaArrowLeft } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
+import RoleInfoModal from "./RoleInfoModal";
 
 function Accesos() {
   const navigate = useNavigate();
@@ -23,7 +24,8 @@ function Accesos() {
   const [selectedRole, setSelectedRole] = useState(""); // Rol actual del usuario seleccionado
   const [newRole, setNewRole] = useState("selecciona"); // Nuevo rol a asignar
   const location = useLocation();
-    const { congregacion } = location.state || {};
+  const { congregacion } = location.state || {};
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -48,7 +50,7 @@ function Accesos() {
     };
 
     fetchUsers();
-  }, []);
+  }, [congregacion]);
 
   const handleUserSelect = (uid) => {
     setSelectedUid(uid);
@@ -146,6 +148,13 @@ function Accesos() {
         className="p-4 border rounded flex flex-col justify-center items-center gap-4"
       >
         <h2 className="text-xl font-bold">Asignar Roles</h2>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          type="button"
+          className="bg-orange-500 hover:bg-orange-700 text-white px-4 py-2 rounded"
+        >
+          Información de Roles
+        </button>
         <div className="flex flex-col">
           <label htmlFor="userSelect" className="font-semibold">
             Seleccionar Usuario
@@ -168,7 +177,24 @@ function Accesos() {
 
         {selectedRole && (
           <div className="flex flex-col">
-            <p className="font-semibold">Rol Actual: {selectedRole}</p>
+            <p className="font-semibold">
+              Rol Actual:{" "}
+              <span
+                className={`${
+                  selectedRole === "Administrador"
+                    ? "text-red-500"
+                    : selectedRole === "Gestor"
+                    ? "text-blue-500"
+                    : selectedRole === "Editor"
+                    ? "text-green-500"
+                    : selectedRole === "Espectador"
+                    ? "text-yellow-500"
+                    : "text-gray-500"
+                }`}
+              >
+                {selectedRole}
+              </span>
+            </p>
           </div>
         )}
 
@@ -183,11 +209,24 @@ function Accesos() {
             value={newRole}
             onChange={(e) => setNewRole(e.target.value)}
           >
-            <option value="selecciona">Selecciona el rol</option>
-            <option value="Administrador">Administrador</option>
-            <option value="Gestor">Gestor</option>
-            <option value="Editor">Editor</option>
-            <option value="Espectador">Espectador</option>
+            <option value="selecciona" className="bg-white text-gray-500">
+              Selecciona el rol
+            </option>
+            <option value="Administrador" className="bg-red-100 text-red-500">
+              Administrador
+            </option>
+            <option value="Gestor" className="bg-blue-100 text-blue-500">
+              Gestor
+            </option>
+            <option value="Editor" className="bg-green-100 text-green-500">
+              Editor
+            </option>
+            <option
+              value="Espectador"
+              className="bg-yellow-100 text-yellow-500"
+            >
+              Espectador
+            </option>
           </select>
         </div>
 
@@ -198,6 +237,11 @@ function Accesos() {
           Asignar Rol
         </button>
       </form>
+
+      <RoleInfoModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
