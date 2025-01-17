@@ -15,6 +15,7 @@ import { SyncLoader } from "react-spinners";
 import { useParams } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { useDarkMode } from "../context/DarkModeContext";
+import { useAuth } from "../context/AuthContext";
 
 const Papelera = () => {
   const { grupoId, congregacionId } = useParams();
@@ -22,6 +23,7 @@ const Papelera = () => {
   const [loadingPapelera, setLoadingPapelera] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar la visibilidad del modal
   const { darkMode } = useDarkMode();
+  const { role } = useAuth();
 
   useEffect(() => {
     const fetchPersonasEliminadas = async () => {
@@ -294,14 +296,18 @@ const Papelera = () => {
                       >
                         Restaurar
                       </button>
-                      <button
-                        onClick={() =>
-                          handlePermanentDelete(persona.id, persona.nombre)
-                        }
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-900"
-                      >
-                        Eliminar
-                      </button>
+                      {(role === "Administrador" ||
+                        role === "Gestor" ||
+                        role === "Espectador") && (
+                        <button
+                          onClick={() =>
+                            handlePermanentDelete(persona.id, persona.nombre)
+                          }
+                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-900"
+                        >
+                          Eliminar
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))
