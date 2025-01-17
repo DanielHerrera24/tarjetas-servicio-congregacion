@@ -15,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { FaArrowLeft } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import RoleInfoModal from "./RoleInfoModal";
+import { useAuth } from "../context/AuthContext";
 
 function Accesos() {
   const navigate = useNavigate();
@@ -26,16 +27,28 @@ function Accesos() {
   const location = useLocation();
   const { congregacion } = location.state || {};
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user, role, loading } = useAuth(); // Obtener el usuario y el rol del contexto
 
+  // Asegurarnos de que el usuario esté cargado y autenticado antes de realizar la consulta
   useEffect(() => {
     const fetchUsers = async () => {
+      if (!user) return; // Si no hay usuario autenticado, no hacer nada
+
       try {
         const db = getFirestore();
-        const userCongregationId = congregacion; // Reemplaza con el ID de la congregación actual
-        const usersQuery = query(
-          collection(db, "usuarios"),
-          where("congregacion", "==", userCongregationId)
-        );
+        let usersQuery;
+
+        // Si el usuario es el administrador o tiene el rol adecuado, consulta todas las congregaciones
+        if (user.uid === "5lrX1feVP7hNqcPpSV3akWkimuG3" || role === "admin") {
+          // Administrador puede ver todas las congregaciones
+          usersQuery = collection(db, "usuarios");
+        } else {
+          // Consultar solo los usuarios de la congregación correspondiente
+          usersQuery = query(
+            collection(db, "usuarios"),
+            where("congregacion", "==", congregacion)
+          );
+        }
 
         const querySnapshot = await getDocs(usersQuery);
         const fetchedUsers = querySnapshot.docs.map((doc) => ({
@@ -49,8 +62,10 @@ function Accesos() {
       }
     };
 
-    fetchUsers();
-  }, [congregacion]);
+    if (!loading) {
+      fetchUsers();
+    }
+  }, [user, role, congregacion, loading]); // Dependemos del selectedUid también para permitir el acceso a todos los usuarios
 
   const handleUserSelect = (uid) => {
     setSelectedUid(uid);
@@ -127,7 +142,7 @@ function Accesos() {
 
   return (
     <div
-      className={`sm:flex gap-3 mt-4 ${darkMode ? "text-white" : "text-black"}`}
+      className={`sm:flex gap-3 my-4 ${darkMode ? "text-white" : "text-black"}`}
     >
       <div>
         <button

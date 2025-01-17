@@ -16,6 +16,7 @@ import Accesos from "./components/Accesos";
 import { useState } from "react";
 import Footer from "./components/Footer";
 import ForgotPassword from "./components/ForgotPassword";
+import Cuenta from "./components/Cuenta";
 
 function App() {
   const { darkMode } = useDarkMode();
@@ -50,6 +51,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Accesos />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/cuenta"
+                  element={
+                    <ProtectedRoute>
+                      <Cuenta />
                     </ProtectedRoute>
                   }
                 />

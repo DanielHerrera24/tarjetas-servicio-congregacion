@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { SyncLoader } from "react-spinners";
-import { FaSignOutAlt, FaUsers } from "react-icons/fa";
+import { FaKey, FaSignOutAlt, FaUserCircle, FaUsers } from "react-icons/fa";
 import { useDarkMode } from "../context/DarkModeContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase"; // Asegúrate de importar tu configuración de Firestore
@@ -156,9 +156,17 @@ function Inicio() {
             state={{congregacion}}
             className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
           >
+            <FaKey />
             <span>Accesos</span>
           </Link>
         )}
+        <Link
+          to="/cuenta"
+          className="bg-purple-500 hover:bg-purple-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
+        >
+          <FaUserCircle />
+          <span>Mi Cuenta</span>
+        </Link>
 
         {/* Botón de cerrar sesión */}
         <button
