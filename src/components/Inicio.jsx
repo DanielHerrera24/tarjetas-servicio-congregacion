@@ -123,9 +123,25 @@ function Inicio() {
         </span>
         !
       </h1>
-      <h2 className="text-xl font-bold text-blue-500 mb-4">
+      <h2
+        className={`text-xl font-bold mb-4 ${
+          darkMode ? "text-white" : "text-black"
+        }`}
+      >
         Rol:{" "}
-        <span className={`${darkMode ? "text-white" : "text-black"}`}>
+        <span
+          className={`${
+            role === "Administrador"
+              ? "text-red-500"
+              : role === "Gestor"
+              ? "text-blue-500"
+              : role === "Editor"
+              ? "text-green-500"
+              : role === "Espectador"
+              ? "text-yellow-500"
+              : "text-gray-500"
+          }`}
+        >
           {role}
         </span>
       </h2>
@@ -153,7 +169,7 @@ function Inicio() {
         {role === "Administrador" && (
           <Link
             to={`/${congregacion}/accesos`}
-            state={{congregacion}}
+            state={{ congregacion }}
             className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
           >
             <FaKey />

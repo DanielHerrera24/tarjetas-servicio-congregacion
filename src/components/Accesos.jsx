@@ -96,8 +96,10 @@ function Accesos() {
       const userRef = doc(db, "usuarios", selectedUid);
       await setDoc(userRef, { role: newRole }, { merge: true });
 
+      const userName = users.find((user) => user.uid === selectedUid)?.nombre || "Usuario desconocido";
+
       toast.success(
-        `Rol '${newRole}' asignado exitosamente al usuario '${selectedUid}'.`,
+        `Rol: "${newRole}" asignado exitosamente al usuario: "${userName}".`,
         {
           position: "bottom-center",
           autoClose: 3000,

@@ -61,7 +61,7 @@ export function ProtectedRoute({ children }) {
           }`}
         >
           <h2 className="text-2xl font-bold mb-6">
-            No tienes acceso a esta sección.
+            No tienes acceso a esta aplicación.
           </h2>
           {error && <p>{error}</p>}
           <button
