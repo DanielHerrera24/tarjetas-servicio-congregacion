@@ -39,7 +39,7 @@ function Accesos() {
         let usersQuery;
 
         // Si el usuario es el administrador o tiene el rol adecuado, consulta todas las congregaciones
-        if (user.uid === "5lrX1feVP7hNqcPpSV3akWkimuG3" || role === "admin") {
+        if (user.uid === "pbmZW6cLgARZw8Ogv6jWXV2Zcdx1" || role === "admin") {
           // Administrador puede ver todas las congregaciones
           usersQuery = collection(db, "usuarios");
         } else {
