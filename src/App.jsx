@@ -17,6 +17,7 @@ import { useState } from "react";
 import Footer from "./components/Footer";
 import ForgotPassword from "./components/ForgotPassword";
 import Cuenta from "./components/Cuenta";
+import AsistenciaApp from "./components/AsistenciaApp";
 
 function App() {
   const { darkMode } = useDarkMode();
@@ -63,6 +64,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/:congregacionId/asistencia"
+                  element={
+                    <ProtectedRoute>
+                      <AsistenciaApp />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/:congregacionId/grupos"
                   element={
                     <ProtectedRoute>
@@ -103,7 +112,10 @@ function App() {
                   }
                 />
                 <Route path="/register" element={<Register />} />
-                <Route path="/olvidaste-tu-contrasena" element={<ForgotPassword />} />
+                <Route
+                  path="/olvidaste-tu-contrasena"
+                  element={<ForgotPassword />}
+                />
                 <Route path="/login" element={<Login />} />
               </Routes>
             </AuthProvider>

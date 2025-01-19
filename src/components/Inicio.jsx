@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { SyncLoader } from "react-spinners";
-import { FaKey, FaSignOutAlt, FaUserCircle, FaUsers } from "react-icons/fa";
+import { FaAddressCard, FaKey, FaSignOutAlt, FaUserCircle, FaUsers } from "react-icons/fa";
 import { useDarkMode } from "../context/DarkModeContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase"; // Asegúrate de importar tu configuración de Firestore
@@ -116,13 +116,16 @@ function Inicio() {
           : "bg-[#f3f3f3] text-black"
       }`}
     >
-      <h1 className="text-2xl font-bold text-blue-500 mb-1">
+      <h1 className="text-2xl font-bold text-blue-500">
         ¡Bienvenido{" "}
         <span className={`${darkMode ? "text-white" : "text-black"}`}>
           {usuarioDatos ? usuarioDatos.nombre : ""}
         </span>
         !
       </h1>
+      <h2 className="text-xl font-bold">
+        Congregación {congregacionCapitalizada}
+      </h2>
       <h2
         className={`text-xl font-bold mb-4 ${
           darkMode ? "text-white" : "text-black"
@@ -157,14 +160,24 @@ function Inicio() {
             to={`/${congregacion}/grupos`}
             className="bg-green-500 hover:bg-green-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
           >
-            <FaUsers className="text-white" />
-            <span>Congregación {congregacionCapitalizada}</span>
+            <FaAddressCard className="text-white" />
+            <span>Tarjetas</span>
           </Link>
         ) : (
           // Mostrar error si no tiene congregación asignada
           <p className="text-red-500">
             {error || "No tienes acceso asignado."}
           </p>
+        )}
+        {role === "Administrador" && (
+          <Link
+            to={`/${congregacion}/asistencia`}
+            state={{ congregacion }}
+            className="bg-yellow-500 hover:bg-yellow-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
+          >
+            <FaUsers className="text-white" />
+            <span>Asistencia</span>
+          </Link>
         )}
         {role === "Administrador" && (
           <Link
