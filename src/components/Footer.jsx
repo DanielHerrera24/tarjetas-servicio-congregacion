@@ -6,7 +6,7 @@ function Footer({ onOpenPrivacyModal }) {
 
   return (
     <footer
-      className={`bg-gray-800 py-2 text-center w-full sm:sticky -bottom-20 left-0 border-t xl:border-x ${
+      className={`py-2 text-center w-full sm:sticky -bottom-20 left-0 border-t xl:border-x ${
         darkMode
           ? "bg-gray-800 border-white"
           : "bg-gray-200 border-black"

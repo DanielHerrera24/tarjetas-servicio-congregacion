@@ -22,7 +22,8 @@ function AsistenciaApp() {
       const [, fecha, usuario, mensaje] = match;
       if (
         mensaje.toLowerCase().includes("asistencia") ||
-        mensaje.toLowerCase().includes("total")
+        mensaje.toLowerCase().includes("total") ||
+        mensaje.toLowerCase().includes("asistente")
       ) {
         resultados.push({ fecha, usuario, mensaje: mensaje.trim() });
       }
@@ -67,8 +68,18 @@ function AsistenciaApp() {
 
   // Nombres de los meses
   const nombresMeses = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
   ];
 
   // Obtener los meses únicos y ordenarlos de Enero a Diciembre
@@ -77,9 +88,19 @@ function AsistenciaApp() {
     .filter((value, index, self) => self.indexOf(value) === index) // Eliminar duplicados
     .sort((a, b) => a - b); // Ordenar de Enero a Diciembre
 
+  const obtenerClasePorDia = (fecha) => {
+    const [day, month, year] = fecha.split("/");
+    const dayOfWeek = new Date(`${month}/${day}/${year}`).getDay();
+
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      return darkMode ? "bg-orange-600" : "bg-orange-200"; // Fines de semana
+    }
+    return darkMode ? "bg-green-600" : "bg-green-200"; // Entre semana
+  };
+
   return (
     <div
-      className={`p-4 relative ${
+      className={`p-4 mb-6 relative ${
         darkMode
           ? "bg-[#303030] text-white shadow-gray-600"
           : "bg-[#f3f3f3] text-black"
@@ -104,7 +125,9 @@ function AsistenciaApp() {
         type="file"
         accept=".txt"
         onChange={manejarCargaArchivo}
-        className="mb-4 border p-2 rounded"
+        className={`mb-4 border p-2 rounded ${
+          darkMode ? "border-white" : "border-black"
+        }`}
       />
 
       {/* Filtro por año */}
@@ -148,50 +171,62 @@ function AsistenciaApp() {
           className="p-2 border rounded text-black"
         >
           <option value="">Todos los meses</option>
-          {mesesUnicosOrdenados
-            .map((month, index) => (
-              <option key={index} value={month}>
-                {nombresMeses[parseInt(month) - 1]} {/* Mostrar nombre del mes */}
-              </option>
-            ))}
+          {mesesUnicosOrdenados.map((month, index) => (
+            <option key={index} value={month}>
+              {nombresMeses[parseInt(month) - 1]} {/* Mostrar nombre del mes */}
+            </option>
+          ))}
         </select>
+      </div>
+
+      {/* Leyenda de colores */}
+      <div className="mb-4">
+        <p className="text-sm">
+          <span
+            className={`inline-block border w-4 h-4 mr-2 ${
+              darkMode
+                ? "bg-orange-600 border-white"
+                : "bg-orange-200 border-black"
+            }`}
+          ></span>
+          Fines de semana
+        </p>
+        <p className="text-sm">
+          <span
+            className={`inline-block border w-4 h-4 mr-2 ${
+              darkMode
+                ? "bg-green-600 border-white"
+                : "bg-green-200 border-black"
+            }`}
+          ></span>
+          Días entre semana
+        </p>
       </div>
 
       {/* Mostrar resultados */}
       {filteredMensajes.length > 0 ? (
-        <table className="w-full border-collapse border border-gray-400">
-          <thead>
-            <tr className={`${darkMode ? "bg-gray-700" : "bg-gray-200"}`}>
-              <th className="border border-gray-400 p-2">Fecha</th>
-              <th className="border border-gray-400 p-2">Usuario</th>
-              <th className="border border-gray-400 p-2">Mensaje</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredMensajes.map((mensaje, index) => (
-              <tr
-                key={index}
-                className={`${
-                  index % 2 === 0
-                    ? darkMode
-                      ? "bg-gray-800"
-                      : "bg-white"
-                    : darkMode
-                    ? "bg-gray-700"
-                    : "bg-gray-100"
-                }`}
-              >
-                <td className="border border-gray-400 p-2">{mensaje.fecha}</td>
-                <td className="border border-gray-400 p-2">
-                  {mensaje.usuario}
-                </td>
-                <td className="border border-gray-400 p-2">
-                  {mensaje.mensaje}
-                </td>
+        <div className="overflow-x-auto max-w-[700px] ml-4 sm:ml-0">
+          <table className="w-full border-collapse border border-gray-400">
+            <thead>
+              <tr className={`${darkMode ? "bg-gray-700" : "bg-gray-200"}`}>
+                <th className="border border-gray-400 p-2">Fecha</th>
+                <th className="border border-gray-400 p-2">Mensaje</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredMensajes.map((mensaje, index) => (
+                <tr key={index} className={obtenerClasePorDia(mensaje.fecha)}>
+                  <td className="border border-gray-400 p-2">
+                    {mensaje.fecha}
+                  </td>
+                  <td className="border border-gray-400 p-2">
+                    {mensaje.mensaje}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p className="mt-4">Carga un archivo para procesar los mensajes.</p>
       )}
