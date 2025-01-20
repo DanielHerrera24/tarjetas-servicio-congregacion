@@ -99,6 +99,21 @@ function AsistenciaApp() {
     return darkMode ? "bg-green-600" : "bg-green-200"; // Entre semana
   };
 
+  const obtenerNombreDia = (fecha) => {
+    const [day, month, year] = fecha.split("/");
+    const date = new Date(`${month}/${day}/${year}`);
+    const nombresDias = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+    ];
+    return nombresDias[date.getDay()]; // Obtiene el nombre del día según el índice
+  };
+
   return (
     <div
       className={`p-4 mb-6 relative flex flex-col items-center gap-4 ${
@@ -228,10 +243,14 @@ function AsistenciaApp() {
             <tbody>
               {filteredMensajes.map((mensaje, index) => (
                 <tr key={index} className={obtenerClasePorDia(mensaje.fecha)}>
-                  <td className="border border-gray-400 p-2">
+                  <td className="border border-gray-400 p-2 text-sm">
                     {mensaje.fecha}
+                    <div className="text-xs">
+                      {obtenerNombreDia(mensaje.fecha)}
+                    </div>{" "}
+                    {/* Mostrar el nombre del día */}
                   </td>
-                  <td className="border border-gray-400 p-2">
+                  <td className="border border-gray-400 p-2 text-sm">
                     {mensaje.mensaje}
                   </td>
                 </tr>
