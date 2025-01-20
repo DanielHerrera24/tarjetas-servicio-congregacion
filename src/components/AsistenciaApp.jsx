@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useDarkMode } from "../context/DarkModeContext";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaWhatsapp } from "react-icons/fa";
+import TutorialAsistencia from "./TutorialAsistencia";
 
 function AsistenciaApp() {
   const [mensajes, setMensajes] = useState([]);
@@ -100,7 +101,7 @@ function AsistenciaApp() {
 
   return (
     <div
-      className={`p-4 mb-6 relative ${
+      className={`p-4 mb-6 relative flex flex-col items-center gap-4 ${
         darkMode
           ? "bg-[#303030] text-white shadow-gray-600"
           : "bg-[#f3f3f3] text-black"
@@ -118,20 +119,31 @@ function AsistenciaApp() {
           <FaArrowLeft size={24} />
         </button>
       </div>
-      <h1 className="text-2xl font-bold mb-4">Registro de Asistencias</h1>
+      <h1 className="text-2xl font-bold">Registro de Asistencias</h1>
 
+      <div className="absolute top-20 left-0">
+        <TutorialAsistencia />
+      </div>
       {/* Carga de archivo */}
       <input
+        id="subir-chat"
         type="file"
         accept=".txt"
         onChange={manejarCargaArchivo}
-        className={`mb-4 border p-2 rounded ${
-          darkMode ? "border-white" : "border-black"
-        }`}
+        className="hidden"
       />
 
+      {/* Botón personalizado */}
+      <label
+        htmlFor="subir-chat" // Vincula el botón con el input
+        className="subir-chat bg-green-500 text-white flex items-center justify-center w-36 gap-2 px-4 py-2 rounded-md cursor-pointer hover:bg-green-700"
+      >
+        Subir Chat
+        <FaWhatsapp color="white" />
+      </label>
+
       {/* Filtro por año */}
-      <div className="mb-4">
+      <div className="filtro-año">
         <label htmlFor="year" className="mr-2">
           Filtrar por año:
         </label>
@@ -142,7 +154,7 @@ function AsistenciaApp() {
             setSelectedYear(e.target.value);
             filtrarPorAnioYMes(e.target.value, selectedMonth); // Filtrar por año y mes
           }}
-          className="p-2 border rounded text-black"
+          className="p-2 border border-blue-500 rounded text-black"
         >
           <option value="">Todos los años</option>
           {mensajes
@@ -157,7 +169,7 @@ function AsistenciaApp() {
       </div>
 
       {/* Filtro por mes */}
-      <div className="mb-4">
+      <div className="filtro-mes">
         <label htmlFor="month" className="mr-2">
           Filtrar por mes:
         </label>
@@ -168,7 +180,7 @@ function AsistenciaApp() {
             setSelectedMonth(e.target.value);
             filtrarPorAnioYMes(selectedYear, e.target.value); // Filtrar por mes y año
           }}
-          className="p-2 border rounded text-black"
+          className="p-2 border border-blue-500 rounded text-black"
         >
           <option value="">Todos los meses</option>
           {mesesUnicosOrdenados.map((month, index) => (
@@ -180,8 +192,8 @@ function AsistenciaApp() {
       </div>
 
       {/* Leyenda de colores */}
-      <div className="mb-4">
-        <p className="text-sm">
+      <div>
+        <p className="text-sm text-left">
           <span
             className={`inline-block border w-4 h-4 mr-2 ${
               darkMode
@@ -191,7 +203,7 @@ function AsistenciaApp() {
           ></span>
           Fines de semana
         </p>
-        <p className="text-sm">
+        <p className="text-sm text-left">
           <span
             className={`inline-block border w-4 h-4 mr-2 ${
               darkMode
@@ -205,7 +217,7 @@ function AsistenciaApp() {
 
       {/* Mostrar resultados */}
       {filteredMensajes.length > 0 ? (
-        <div className="overflow-x-auto max-w-[700px] ml-4 sm:ml-0">
+        <div className="overflow-x-auto max-w-[700px]">
           <table className="w-full border-collapse border border-gray-400">
             <thead>
               <tr className={`${darkMode ? "bg-gray-700" : "bg-gray-200"}`}>
