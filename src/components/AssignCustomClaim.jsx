@@ -61,32 +61,41 @@ const AssignCustomClaim = () => {
   };
 
   const assignClaim = async () => {
-    if (!selectedUser) {
-      setErrorMessage("Por favor, selecciona un usuario y define un claim.");
+    if (!selectedUser || !congregacionId) {
+      setErrorMessage(
+        "Por favor, selecciona un usuario que tenga su id de congregación."
+      );
       return;
     }
 
     try {
-      const tokenUrl = `https://us-central1-your-project.cloudfunctions.net/assignCustomClaim`;
-
-      const response = await fetch(tokenUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${await getAuth().currentUser.getIdToken(
-            true
-          )}`,
-        },
-        body: JSON.stringify({
-          uid: selectedUser,
-        }),
-      });
+      const token = await getAuth().currentUser.getIdToken(true);
+      const response = await fetch(
+        "https://us-central1-tarjetas-congregacion-sur.cloudfunctions.net/assignCustomClaim",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Usar el token de autorización
+          },
+          body: JSON.stringify({
+            uid: selectedUser,
+            congregacionId: congregacionId,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Error al asignar claim: ${response.statusText}`);
       }
 
-      setSuccessMessage("Claim asignado correctamente.");
+      // Obtener el nombre del usuario seleccionado para mostrarlo en el mensaje de éxito
+      const selectedUserData = users.find((user) => user.id === selectedUser);
+      setSuccessMessage(
+        `Acceso a ${
+          selectedUserData ? selectedUserData.nombre : "usuario desconocido"
+        } correctamente.`
+      );
       setErrorMessage("");
     } catch (error) {
       console.error("Error: ", error);
@@ -95,8 +104,12 @@ const AssignCustomClaim = () => {
   };
 
   return (
-    <div className={`p-4 max-w-lg mx-auto shadow-md border rounded-lg ${darkMode ? "text-white" : "text-black"}`}>
-      <h1 className="text-2xl font-bold mb-4">Asignar Custom Claim</h1>
+    <div
+      className={`p-4 max-w-lg mx-auto shadow-md border rounded-lg ${
+        darkMode ? "text-white" : "text-black"
+      }`}
+    >
+      <h1 className="text-2xl font-bold mb-4">Dar acceso a la App</h1>
 
       <div className="mb-4">
         <label htmlFor="user" className="block font-medium">
@@ -118,10 +131,7 @@ const AssignCustomClaim = () => {
       </div>
 
       <div className="mb-4">
-        <label
-          htmlFor="congregacion"
-          className="block font-medium"
-        >
+        <label htmlFor="congregacion" className="block font-medium">
           Congregación ID:
         </label>
         <input
@@ -142,7 +152,7 @@ const AssignCustomClaim = () => {
         onClick={assignClaim}
         className="w-auto bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
       >
-        Asignar Claim
+        Dar Acceso
       </button>
     </div>
   );

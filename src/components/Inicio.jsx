@@ -37,7 +37,6 @@ function Inicio() {
           const usuarioSnapshot = await getDoc(usuarioRef);
           if (usuarioSnapshot.exists()) {
             setUsuarioDatos(usuarioSnapshot.data());
-            console.log(user); // Almacena los datos del usuario (nombre, etc.)
           } else {
             console.log("No se encontraron datos del usuario.");
           }
@@ -110,7 +109,7 @@ function Inicio() {
 
   return (
     <div
-      className={`rounded-lg shadow-xl p-6 max-w-md w-full text-center ${
+      className={`rounded-lg shadow-xl p-6 mb-16 max-w-md w-full text-center ${
         darkMode
           ? "bg-[#303030] text-white shadow-gray-600"
           : "bg-[#f3f3f3] text-black"
