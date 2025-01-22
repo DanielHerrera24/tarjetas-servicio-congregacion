@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { db } from "../firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, collection, getDocs } from "firebase/firestore";
 import emailjs from "@emailjs/browser"; // Importa EmailJS
 import { useDarkMode } from "../context/DarkModeContext";
 
@@ -22,6 +22,25 @@ function Register() {
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false); // Estado del checkbox
   const [showPrivacyModal, setShowPrivacyModal] = useState(false); // Estado del modal
   const { darkMode } = useDarkMode();
+  const [congregaciones, setCongregaciones] = useState([]);
+
+  // Obtener las congregaciones desde Firebase
+  useEffect(() => {
+    const fetchCongregaciones = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "congregaciones"));
+        const congregacionesArray = querySnapshot.docs.map((doc) => ({
+          id: doc.id, // ID del documento
+          nombre: doc.data().nombre, // Campo 'nombre'
+        }));
+        setCongregaciones(congregacionesArray);
+      } catch (error) {
+        console.error("Error al obtener las congregaciones:", error);
+      }
+    };
+
+    fetchCongregaciones();
+  }, []);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -72,19 +91,27 @@ function Register() {
       const userCredential = await signup(user.email, user.password);
       const uid = userCredential.user.uid;
 
-      // Guardar información en Firestore
-      const congregacionFinal =
-        user.congregacion === "otra"
-          ? user.otraCongregacion
-          : user.congregacion;
+      // Determinar la congregación final
+      const isOtra = user.congregacion === "otra";
+      const congregacionId = isOtra
+        ? user.otraCongregacion.replace(/\s+/g, "-").toLowerCase() // Reemplazar espacios por guiones
+        : user.congregacion;
 
+      // Guardar el usuario en Firestore
       await setDoc(doc(db, "usuarios", uid), {
-        uid: uid, // Asegúrate de usar el uid obtenido de userCredential
+        uid: uid,
         nombre: user.name,
         email: user.email,
-        congregacion: congregacionFinal,
+        congregacion: congregacionId,
         role: "Espectador",
       });
+
+      // Si es una nueva congregación, agregarla a la colección de congregaciones
+      if (isOtra) {
+        await setDoc(doc(db, "congregaciones", congregacionId), {
+          nombre: user.otraCongregacion, // Nombre original sin guiones
+        });
+      }
 
       // Enviar el correo de bienvenida
       sendEmail(uid);
@@ -196,7 +223,7 @@ function Register() {
                     ...user,
                     congregacion: "otra",
                     otraCongregacion: "",
-                  }); // Inicializa "otraCongregacion"
+                  });
                 }
               }}
               className="text-black mt-1 block w-full px-3 py-2 mb-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -205,9 +232,15 @@ function Register() {
               <option value="" disabled>
                 -- Selecciona una congregación --
               </option>
-              <option value="sur">Congregación Sur</option>
-              <option value="primavera">Congregación Primavera</option>
-              <option value="del valle">Congregación Del Valle</option>
+              {congregaciones.map((congregacion) => (
+                <option
+                  key={congregacion.id}
+                  value={congregacion.id}
+                  className="text-black"
+                >
+                  Congregación {congregacion.nombre}
+                </option>
+              ))}
               <option value="otra">Otra Congregación</option>
             </select>
 
@@ -225,7 +258,7 @@ function Register() {
                   id="otra-congregacion"
                   name="otraCongregacion"
                   placeholder="sur"
-                  value={user.otraCongregacion || ""} // Maneja el valor de "otraCongregacion"
+                  value={user.otraCongregacion || ""}
                   onChange={(e) =>
                     setUser({
                       ...user,
@@ -333,13 +366,10 @@ function Register() {
                 <strong>Retención de datos:</strong> Los datos se almacenan
                 hasta que decidas eliminar tu cuenta.
               </li>
-              <li>
-                <strong>Alcance geográfico:</strong> Este Aviso de Privacidad se
-                aplica exclusivamente a usuarios en México.
-              </li>
             </ul>
             <p className="text-sm mb-4">
-              Si tienes preguntas o deseas más información, contacta a tu supervisor.
+              Si tienes preguntas o deseas más información, contacta a tu
+              supervisor.
             </p>
             <button
               onClick={() => setShowPrivacyModal(false)}

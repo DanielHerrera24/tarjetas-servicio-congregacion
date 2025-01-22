@@ -11,7 +11,6 @@ function Inicio() {
   const { user, logout, role, loading } = useAuth();
   const [congregacion, setCongregacion] = useState(null); // Almacena la congregación del usuario
   const [usuarioDatos, setUsuarioDatos] = useState(null); // Almacena la información del usuario (nombre, etc.)
-  const [error, setError] = useState(null);
   const [usuarioTieneAcceso, setUsuarioTieneAcceso] = useState(null); // Estado para verificar acceso
   const { darkMode } = useDarkMode();
 
@@ -25,8 +24,19 @@ function Inicio() {
 
           // Verificar si el usuario tiene un custom claim de 'congregacionId'
           if (claims.congregacionId) {
-            setCongregacion(claims.congregacionId); // Si tiene un custom claim, se asigna la congregación
+            const congregacionId = claims.congregacionId;
             setUsuarioTieneAcceso(true);
+
+            // Obtener los datos de la congregación desde Firestore
+            const congregacionRef = doc(db, "congregaciones", congregacionId);
+            const congregacionSnapshot = await getDoc(congregacionRef);
+
+            if (congregacionSnapshot.exists()) {
+              setCongregacion(congregacionSnapshot.data().nombre); // Asignar el nombre de la congregación
+            } else {
+              console.log("No se encontraron datos de la congregación.");
+              setCongregacion(null);
+            }
           } else {
             // Si no tiene el custom claim, se indica que no tiene acceso
             setUsuarioTieneAcceso(false);
@@ -45,7 +55,6 @@ function Inicio() {
             "Error al obtener custom claims o datos de usuario:",
             e
           );
-          setError("Ocurrió un error al verificar tu acceso.");
           setUsuarioTieneAcceso(false);
         }
       }
@@ -123,7 +132,7 @@ function Inicio() {
         !
       </h1>
       <h2 className="text-xl font-bold">
-        Congregación {congregacionCapitalizada}
+        Congregación <span className="text-purple-500">{congregacionCapitalizada}</span>
       </h2>
       <h2
         className={`text-xl font-bold mb-4 ${
@@ -154,7 +163,7 @@ function Inicio() {
 
       <div className="flex flex-col space-y-4">
         {/* Mostrar el botón si hay una congregación asignada */}
-        {congregacion ? (
+        {role ? (
           <Link
             to={`/${congregacion}/grupos`}
             className="bg-green-500 hover:bg-green-700 text-white text-lg font-bold py-3 px-6 rounded shadow-lg flex items-center justify-center space-x-2 transition-colors duration-300"
@@ -165,7 +174,6 @@ function Inicio() {
         ) : (
           // Mostrar error si no tiene congregación asignada
           <p className="text-red-500">
-            {error || "No tienes acceso asignado."}
           </p>
         )}
         {role === "Administrador" && (
