@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { db } from "../firebase"; // Asegúrate de importar correctamente tu instancia de Firestore
 import { FaSearch } from "react-icons/fa";
 import { useDarkMode } from "../context/DarkModeContext";
@@ -13,6 +13,7 @@ const Buscador = ({ selectedYear }) => {
   const [loading, setLoading] = useState(false); // Obtiene el año seleccionado
   const [isFocused, setIsFocused] = useState(false); // Estado para controlar el enfoque del input
   const { darkMode } = useDarkMode();
+  const { congregacionId } = useParams();
 
   const normalizeText = (text) =>
     text
@@ -21,6 +22,12 @@ const Buscador = ({ selectedYear }) => {
       .toLowerCase();
 
   const handleSearch = async (term) => {
+    if (!congregacionId) {
+      console.error("Error: congregacionId no está definido.");
+      console.log(congregacionId);
+      return;
+    }
+
     if (term.length < 3) {
       setResults([]);
       console.log("Término demasiado corto para buscar.");
@@ -32,38 +39,24 @@ const Buscador = ({ selectedYear }) => {
     setLoading(true);
 
     try {
-      const gruposCollection = collection(db, "congregaciones");
-      const congregacionesSnapshot = await getDocs(gruposCollection);
-
-      console.log(
-        "Cantidad de congregaciones encontradas:",
-        congregacionesSnapshot.size
-      );
+      // Filtrar por congregación específica
+  const gruposCollection = collection(db, `congregaciones/${congregacionId}/grupos`);
+  const gruposSnapshot = await getDocs(gruposCollection);
 
       const coincidencias = [];
-
       const normalizedTerm = normalizeText(term); // Normaliza el término de búsqueda
 
-      for (const congregacionDoc of congregacionesSnapshot.docs) {
-        console.log("Procesando congregación:", congregacionDoc.id);
+      for (const grupoDoc of gruposSnapshot.docs) {
+        const grupoData = grupoDoc.data(); // Obtener datos del grupo
+        const hermanosCollection = collection(grupoDoc.ref, "hermanos");
+        const hermanosSnapshot = await getDocs(hermanosCollection);
 
-        const gruposCollection = collection(congregacionDoc.ref, "grupos");
-        const gruposSnapshot = await getDocs(gruposCollection);
+        hermanosSnapshot.forEach((doc) => {
+          const hermanoData = doc.data();
 
-        console.log(
-          `Congregación ${congregacionDoc.id} tiene ${gruposSnapshot.size} grupos.`
-        );
-
-        for (const grupoDoc of gruposSnapshot.docs) {
-          console.log("Procesando grupo:", grupoDoc.id);
-
-          const grupoData = grupoDoc.data(); // Obtener los datos del grupo, incluido el nombre
-          const hermanosCollection = collection(grupoDoc.ref, "hermanos");
-          const hermanosSnapshot = await getDocs(hermanosCollection);
-
-          hermanosSnapshot.forEach((doc) => {
-            const hermanoData = doc.data();
-            const normalizedNombre = normalizeText(hermanoData.nombre); // Normaliza el nombre del hermano
+          // Verifica que el nombre exista y sea una cadena antes de continuar
+          if (hermanoData.nombre && typeof hermanoData.nombre === "string") {
+            const normalizedNombre = normalizeText(hermanoData.nombre);
 
             if (normalizedNombre.includes(normalizedTerm)) {
               coincidencias.push({
@@ -71,11 +64,16 @@ const Buscador = ({ selectedYear }) => {
                 nombre: hermanoData.nombre,
                 grupoId: grupoDoc.id,
                 grupoNombre: grupoData.nombre, // Añadir el nombre del grupo
-                congregacionId: congregacionDoc.id,
+                congregacionId,
               });
             }
-          });
-        }
+          } else {
+            console.warn(
+              "Nombre inválido en los datos del hermano:",
+              hermanoData
+            );
+          }
+        });
       }
 
       if (coincidencias.length === 0) {
