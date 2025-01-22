@@ -144,7 +144,7 @@ function Accesos() {
 
   return (
     <div
-      className={`sm:flex gap-3 my-4 ${darkMode ? "text-white" : "text-black"}`}
+      className={`sm:flex sm:flex-row flex flex-col gap-4 mb-4 ${darkMode ? "text-white" : "text-black"}`}
     >
       <div>
         <button
@@ -164,7 +164,7 @@ function Accesos() {
         onSubmit={handleAssignRole}
         className="p-4 border rounded flex flex-col justify-center items-center gap-4"
       >
-        <h2 className="text-xl font-bold">Asignar Roles</h2>
+        <h2 className="text-2xl font-bold">Asignar Roles</h2>
         <button
           onClick={() => setIsModalOpen(true)}
           type="button"

@@ -124,7 +124,7 @@ const AssignCustomClaim = () => {
           <option value="">Seleccione un usuario</option>
           {users.map((user) => (
             <option key={user.id} value={user.id}>
-              {user.email} ({user.nombre || "Sin nombre"})
+              {user.nombre || "Sin nombre"}
             </option>
           ))}
         </select>
