@@ -4,8 +4,10 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../context/AuthContext";
 import { useLocation } from "react-router-dom";
+import { useDarkMode } from "../context/DarkModeContext";
 
 const AssignCustomClaim = () => {
+  const { darkMode } = useDarkMode();
   const [users, setUsers] = useState([]); // Lista de usuarios de Firebase
   const [selectedUser, setSelectedUser] = useState(""); // Usuario seleccionado
   const [congregacionId, setCongregacionId] = useState(""); // Congregación seleccionada automáticamente
@@ -59,7 +61,7 @@ const AssignCustomClaim = () => {
   };
 
   const assignClaim = async () => {
-    if (!selectedUser ) {
+    if (!selectedUser) {
       setErrorMessage("Por favor, selecciona un usuario y define un claim.");
       return;
     }
@@ -93,18 +95,18 @@ const AssignCustomClaim = () => {
   };
 
   return (
-    <div className="p-4 max-w-lg mx-auto bg-white shadow-md rounded-lg">
+    <div className={`p-4 max-w-lg mx-auto shadow-md border rounded-lg ${darkMode ? "text-white" : "text-black"}`}>
       <h1 className="text-2xl font-bold mb-4">Asignar Custom Claim</h1>
 
       <div className="mb-4">
-        <label htmlFor="user" className="block text-gray-700 font-medium">
+        <label htmlFor="user" className="block font-medium">
           Seleccionar Usuario:
         </label>
         <select
           id="user"
           value={selectedUser}
           onChange={handleUserSelect}
-          className="w-full mt-2 p-2 border rounded-md"
+          className="w-full mt-2 p-2 border rounded-md text-black"
         >
           <option value="">Seleccione un usuario</option>
           {users.map((user) => (
@@ -118,7 +120,7 @@ const AssignCustomClaim = () => {
       <div className="mb-4">
         <label
           htmlFor="congregacion"
-          className="block text-gray-700 font-medium"
+          className="block font-medium"
         >
           Congregación ID:
         </label>
@@ -127,7 +129,7 @@ const AssignCustomClaim = () => {
           id="congregacion"
           value={congregacionId}
           disabled
-          className="w-full mt-2 p-2 border rounded-md bg-gray-100 cursor-not-allowed"
+          className="w-full mt-2 p-2 border rounded-md text-black bg-gray-300 cursor-not-allowed"
         />
       </div>
 
@@ -138,7 +140,7 @@ const AssignCustomClaim = () => {
 
       <button
         onClick={assignClaim}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+        className="w-auto bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
       >
         Asignar Claim
       </button>
