@@ -5,14 +5,13 @@ import { db } from "../firebase";
 import { useAuth } from "../context/AuthContext";
 import { useLocation } from "react-router-dom";
 import { useDarkMode } from "../context/DarkModeContext";
+import { toast } from "react-toastify";
 
 const AssignCustomClaim = () => {
   const { darkMode } = useDarkMode();
   const [users, setUsers] = useState([]); // Lista de usuarios de Firebase
   const [selectedUser, setSelectedUser] = useState(""); // Usuario seleccionado
   const [congregacionId, setCongregacionId] = useState(""); // Congregación seleccionada automáticamente
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const location = useLocation();
   const { congregacion } = location.state || {};
   const { user, role } = useAuth(); // Obtener el usuario y el rol del contexto
@@ -62,8 +61,19 @@ const AssignCustomClaim = () => {
 
   const assignClaim = async () => {
     if (!selectedUser || !congregacionId) {
-      setErrorMessage(
-        "Por favor, selecciona un usuario que tenga su id de congregación."
+      toast.error(
+        "Por favor, selecciona un usuario que tenga su id de congregación.",
+        {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          draggable: true,
+          theme: darkMode ? "dark" : "light",
+          style: {
+            border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+          },
+        }
       );
       return;
     }
@@ -91,15 +101,35 @@ const AssignCustomClaim = () => {
 
       // Obtener el nombre del usuario seleccionado para mostrarlo en el mensaje de éxito
       const selectedUserData = users.find((user) => user.id === selectedUser);
-      setSuccessMessage(
-        `Acceso a ${
-          selectedUserData ? selectedUserData.nombre : "usuario desconocido"
-        } correctamente.`
-      );
-      setErrorMessage("");
+      toast.success(`Acceso al usuario: "${selectedUserData.nombre}" correctamente".`, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        draggable: true,
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+        },
+      });
+      setSelectedUser("")
+      setCongregacionId("")
     } catch (error) {
       console.error("Error: ", error);
-      setErrorMessage("Hubo un error al asignar el claim.");
+      toast.error(
+        "Error al dar acceso al usuario.",
+        {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          draggable: true,
+          theme: darkMode ? "dark" : "light",
+          style: {
+            border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+          },
+        }
+      );
     }
   };
 
@@ -142,11 +172,6 @@ const AssignCustomClaim = () => {
           className="w-full mt-2 p-2 border rounded-md text-black bg-gray-300 cursor-not-allowed"
         />
       </div>
-
-      {successMessage && (
-        <p className="text-green-600 mb-4">{successMessage}</p>
-      )}
-      {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>}
 
       <button
         onClick={assignClaim}
