@@ -33,6 +33,7 @@ import TutorialPersonasExcel from "./TutorialPersonasExcel";
 import CopiarIDsModal from "./CopiarIDsModal";
 import { useAuth } from "../context/AuthContext";
 import Buscador from "./Buscador";
+import HermanosFaltantes from "./HermanosFaltantes";
 
 function Grupos() {
   const navigate = useNavigate();
@@ -685,6 +686,8 @@ function Grupos() {
               )}
             </div>
           )}
+
+          <HermanosFaltantes congregacionId={congregacionId} />
 
           <Buscador selectedYear={selectedYear} />
 
