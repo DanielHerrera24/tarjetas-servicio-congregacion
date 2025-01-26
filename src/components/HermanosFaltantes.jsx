@@ -93,7 +93,7 @@ const HermanosFaltantes = ({ congregacionId }) => {
 
   return (
     <div>
-      {role === "Gestor" && (
+      {role === "Gestor" || role === "Administrador" && (
         <button
           onClick={fetchHermanosFaltantes}
           disabled={loading}
