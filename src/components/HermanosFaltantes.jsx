@@ -39,22 +39,14 @@ const HermanosFaltantes = ({ congregacionId }) => {
 
         hermanosSnapshot.docs.forEach((hermanoDoc) => {
           const hermanoData = hermanoDoc.data();
-          const { genero, fechaBautismo, fechaNacimiento } = hermanoData;
+          const { fechaBautismo, fechaNacimiento } = hermanoData;
 
-          // Verificar si no debe mostrarse basado en las condiciones de género
-          const noMostrar =
-            genero?.otrasOvejas === false || // "otrasOvejas" es false
-            genero?.otrasOvejas === undefined || // "otrasOvejas" es undefined
-            (genero && Object.keys(genero).length <= 1) || // "genero" tiene solo un campo
-            !genero || // "genero" no tiene nada (null, undefined, objeto vacío)
-            (genero && Object.keys(genero).length === 0); // "genero" es un objeto vacío
-
-          // Filtrar hermanos que cumplen las condiciones de datos faltantes y género
-          if (!noMostrar && (!fechaBautismo || !fechaNacimiento)) {
+          // Agregar a la lista si falta fecha de bautismo o nacimiento
+          if (!fechaBautismo || !fechaNacimiento) {
             faltantes.push({
               id: hermanoDoc.id,
               ...hermanoData,
-              grupo: grupoDoc.id, // Añade el grupo para más contexto.
+              grupo: grupoDoc.id, // Añade el grupo para más contexto
             });
           }
         });
