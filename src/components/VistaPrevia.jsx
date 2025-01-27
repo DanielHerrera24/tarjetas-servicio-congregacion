@@ -132,11 +132,15 @@ function VistaPrevia() {
     }
 
     const element = document.getElementById("content-to-print");
+    if (!element || !element.innerHTML.trim()) {
+      console.error("El contenido no está listo para ser descargado.");
+      return;
+    }
     const opt = {
       margin: [0.2, 0.1, 0.2, 0.1],
       filename: `Tarjetas ${nombreGrupo} ${selectedYear}.pdf`,
-      image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 2, useCORS: true },
+      image: { type: "jpeg", quality: 0.95 },
+      html2canvas: { scale: 1.5, useCORS: true },
       jsPDF: { unit: "in", format: "a4", orientation: "portrait" }, // Formato A4
     };
     html2pdf().from(element).set(opt).save();

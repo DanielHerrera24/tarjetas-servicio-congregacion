@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { db } from "../firebase"; // Asegúrate de importar tu instancia de Firestore
 import { collection, getDocs } from "firebase/firestore"; // Importa el componente de vista previa si ya existe
-import { motion } from "framer-motion"; // Importa Framer Motion
 import { FaArrowLeft, FaFileDownload } from "react-icons/fa";
 import html2pdf from "html2pdf.js";
 
@@ -88,8 +87,8 @@ const NombramientosHermanos = () => {
       const opt = {
         margin: [0.2, 0.1, 0.2, 0.1],
         filename: `Tarjetas ${nombramientoId} ${selectedYear}.pdf`,
-        image: { type: "jpeg", quality: 1.0 },
-        html2canvas: { scale: 2, useCORS: true },
+        image: { type: "jpeg", quality: 0.95 },
+        html2canvas: { scale: 1.5, useCORS: true },
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" }, // Formato A4
       };
       html2pdf().from(element).set(opt).save();
@@ -98,43 +97,28 @@ const NombramientosHermanos = () => {
 
   return (
     <>
-      <motion.button
+      <button
         onClick={() => navigate(-1)}
         className="hidden sm:block absolute top-2 left-2 bg-white shadow-lg border border-black rounded-full p-3 text-red-500 hover:bg-gray-100 hover:scale-110"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
       >
         <FaArrowLeft size={24} /> {/* Flecha hacia atrás */}
-      </motion.button>
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="bg-white sticky top-0 sm:mt-0 -mt-16 sm:top-12 px-3 py-2 shadow-xl rounded-xl z-20"
-      >
-        <motion.button
+      </button>
+      <div className="bg-white sticky top-0 sm:mt-0 -mt-16 sm:top-12 px-3 py-2 shadow-xl rounded-xl z-20">
+        <button
           onClick={generatePDF}
           className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow-lg transform transition-transform duration-200 hover:scale-105"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
         >
           Descargar en PDF
           <FaFileDownload />
-        </motion.button>
-      </motion.div>
-      <motion.div
+        </button>
+      </div>
+      <div
         id="content-to-print"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
         className="w-full max-w-[1024px] my-0 px-1 text-black"
       >
         {hermanos.map((hermano) => (
-          <motion.li
+          <li
             key={hermano.id}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
             className="persona rounded-md bg-white text-sm flex flex-col mt-8"
           >
             <div className="flex justify-center mb-3">
@@ -370,9 +354,9 @@ const NombramientosHermanos = () => {
                 </tbody>
               </table>
             </div>
-          </motion.li>
+          </li>
         ))}
-      </motion.div>
+      </div>
     </>
   );
 };
