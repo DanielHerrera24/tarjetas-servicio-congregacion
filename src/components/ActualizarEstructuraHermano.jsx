@@ -10,7 +10,7 @@ const ActualizarInfoHermanos = () => {
   const actualizarHermanos = async () => {
     setLoading(true);
     setMensaje("");
-    const congregacionId = "primavera"; // ID de la congregación
+    const congregacionId = "sur"; // ID de la congregación
 
     try {
       const gruposRef = collection(db, "congregaciones", congregacionId, "grupos");
