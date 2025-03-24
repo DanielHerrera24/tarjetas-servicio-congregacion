@@ -17,7 +17,8 @@ import { useState } from "react";
 import Footer from "./components/Footer";
 import ForgotPassword from "./components/ForgotPassword";
 import Cuenta from "./components/Cuenta";
-import AsistenciaApp from "./components/AsistenciaApp";
+// import AsistenciaApp from "./components/AsistenciaApp";
+import ResumenAnual from "./components/ResumenAnual";
 
 function App() {
   const { darkMode } = useDarkMode();
@@ -63,14 +64,14 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route
+                {/* <Route
                   path="/:congregacionId/asistencia"
                   element={
                     <ProtectedRoute>
                       <AsistenciaApp />
                     </ProtectedRoute>
                   }
-                />
+                /> */}
                 <Route
                   path="/:congregacionId/grupos"
                   element={
@@ -108,6 +109,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <VistaPreviaTarjeta />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/:congregacionId/resumenAnual"
+                  element={
+                    <ProtectedRoute>
+                      <ResumenAnual />
                     </ProtectedRoute>
                   }
                 />

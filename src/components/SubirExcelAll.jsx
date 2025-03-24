@@ -84,22 +84,22 @@ const SubirExcel = ({ selectedYear, congregacionId, db }) => {
                     };
                   }
 
-                  // Asignar los valores correspondientes
-                  if (campo === "Participó") {
-                    nuevoRegistro[selectedYear][mesLowerCase].participacion =
-                      hermano[key] === "Si";
-                  } else if (campo === "Estudios") {
-                    nuevoRegistro[selectedYear][mesLowerCase].cursos =
-                      parseInt(hermano[key], 10) || 0;
-                  } else if (campo === "PrecursorAux") {
-                    nuevoRegistro[selectedYear][mesLowerCase].precursor =
-                      hermano[key] === "Si";
-                  } else if (campo === "Horas") {
-                    nuevoRegistro[selectedYear][mesLowerCase].horas =
-                      parseInt(hermano[key], 10) || 0;
-                  } else if (campo === "Notas") {
-                    nuevoRegistro[selectedYear][mesLowerCase].notas =
-                      hermano[key] || "";
+                  switch (campo) {
+                    case "Participó":
+                      nuevoRegistro[selectedYear][mesLowerCase].participacion = hermano[key] === "Si";
+                      break;
+                    case "Estudios":
+                      nuevoRegistro[selectedYear][mesLowerCase].cursos = parseInt(hermano[key], 10) || 0;
+                      break;
+                    case "PrecursorAux":
+                      nuevoRegistro[selectedYear][mesLowerCase].precursor = hermano[key] === "Si";
+                      break;
+                    case "Horas":
+                      nuevoRegistro[selectedYear][mesLowerCase].horas = parseInt(hermano[key], 10) || 0;
+                      break;
+                    case "Notas":
+                      nuevoRegistro[selectedYear][mesLowerCase].notas = hermano[key] || "";
+                      break;
                   }
                 }
               });

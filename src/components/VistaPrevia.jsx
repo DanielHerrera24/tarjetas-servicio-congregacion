@@ -13,6 +13,7 @@ import html2pdf from "html2pdf.js";
 import "../App.css";
 import { FaArrowLeft, FaFileDownload } from "react-icons/fa";
 import { useDarkMode } from "../context/DarkModeContext";
+import { SyncLoader } from "react-spinners";
 
 function VistaPrevia() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ function VistaPrevia() {
   const [personas, setPersonas] = useState([]);
   const [nombreGrupo, setNombreGrupo] = useState("");
   const { darkMode } = useDarkMode();
+  const [loading, setLoading] = useState(true);
 
   // Extraer datos del state
   const { selectedYear, filterAnciano, filterRegular, filterMinisterial } =
@@ -42,19 +44,38 @@ function VistaPrevia() {
           grupoId,
           "hermanos"
         );
-        const q = query(personasCollection, where("isDeleted", "==", false));
-        const personasSnapshot = await getDocs(q);
-        const personaList = personasSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-          genero: doc.data().genero || {},
-          registros: doc.data().registros || {},
-          totalHoras: Object.values(
-            doc.data().registros?.[selectedYear] || {}
-          ).reduce((acc, registro) => acc + (registro.horas || 0), 0),
-        }));
 
-        // Filtrado basado en los filtros aplicados
+        // Query para obtener solo personas no eliminadas en el año seleccionado
+        const q = query(
+          personasCollection,
+          where(`registros.${selectedYear}.isDeleted`, "==", false)
+        );
+        
+        const personasSnapshot = await getDocs(q);
+        const personaList = personasSnapshot.docs.map((doc) => {
+          const data = doc.data();
+          const registroAnual = data.registros?.[selectedYear] || {};
+          
+          return {
+            id: doc.id,
+            nombre: data.nombre,
+            fechaNacimiento: data.fechaNacimiento,
+            fechaBautismo: data.fechaBautismo,
+            genero: registroAnual.genero || {},
+            anciano: registroAnual.anciano || false,
+            ministerial: registroAnual.ministerial || false,
+            regular: registroAnual.regular || false,
+            especial: registroAnual.especial || false,
+            misionero: registroAnual.misionero || false,
+            rol: registroAnual.rol || "Miembro",
+            registros: data.registros || {},
+            totalHoras: Object.values(registroAnual || {})
+              .filter(val => typeof val === 'object' && val.horas)
+              .reduce((acc, val) => acc + (Number(val.horas) || 0), 0)
+          };
+        });
+
+        // Aplicar filtros
         let filteredPersonas = personaList;
 
         if (filterAnciano) {
@@ -75,7 +96,7 @@ function VistaPrevia() {
           );
         }
 
-        // Ordenar personas: Sup y Aux al principio
+        // Ordenar personas: Sup y Aux al principio, luego por nombre
         const superintendente = filteredPersonas.filter(
           (persona) => persona.rol === "Sup"
         );
@@ -84,12 +105,14 @@ function VistaPrevia() {
         );
         const miembros = filteredPersonas.filter(
           (persona) => !["Sup", "Aux"].includes(persona.rol)
-        );
+        ).sort((a, b) => a.nombre.localeCompare(b.nombre));
 
         // Establecer el estado con Sup y Aux al principio
         setPersonas([...superintendente, ...auxiliar, ...miembros]);
       } catch (error) {
-        console.log("Error al obtener las personas: ", error);
+        console.error("Error al obtener las personas: ", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -105,14 +128,14 @@ function VistaPrevia() {
 
   // Función para obtener el nombre del grupo desde Firestore
   const fetchGrupoNombre = useCallback(async () => {
+    if (!grupoId || !congregacionId) return;
+    
     try {
       const grupoDoc = await getDoc(
         doc(db, "congregaciones", congregacionId, "grupos", grupoId)
       );
       if (grupoDoc.exists()) {
         setNombreGrupo(grupoDoc.data().nombre);
-      } else {
-        console.error("El grupo no existe.");
       }
     } catch (error) {
       console.error("Error al obtener el nombre del grupo: ", error);
@@ -121,10 +144,8 @@ function VistaPrevia() {
 
   // Llama a fetchGrupoNombre cuando el grupoId cambie
   useEffect(() => {
-    if (grupoId) {
-      fetchGrupoNombre();
-    }
-  }, [grupoId, fetchGrupoNombre]);
+    fetchGrupoNombre();
+  }, [fetchGrupoNombre]);
 
   const generatePDF = () => {
     if (!nombreGrupo || !selectedYear) {
@@ -136,6 +157,7 @@ function VistaPrevia() {
       console.error("El contenido no está listo para ser descargado.");
       return;
     }
+
     const opt = {
       margin: [0.2, 0.1, 0.2, 0.1],
       filename: `Tarjetas ${nombreGrupo} ${selectedYear}.pdf`,
@@ -143,8 +165,25 @@ function VistaPrevia() {
       html2canvas: { scale: 1.5, useCORS: true },
       jsPDF: { unit: "in", format: "a4", orientation: "portrait" }, // Formato A4
     };
+    
     html2pdf().from(element).set(opt).save();
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <SyncLoader color="#3B82F6" />
+      </div>
+    );
+  }
+
+  if (!selectedYear || !nombreGrupo) {
+    return (
+      <div className="text-center p-4">
+        <p className="text-red-500">Error: Información del grupo no disponible</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -158,6 +197,7 @@ function VistaPrevia() {
       >
         <FaArrowLeft size={24} /> {/* Flecha hacia atrás */}
       </button>
+
       <div
         className={`border sticky top-0 sm:mt-0 -mt-16 sm:top-12 px-3 py-2 shadow-xl rounded-xl z-20 ${
           darkMode
@@ -173,6 +213,7 @@ function VistaPrevia() {
           <FaFileDownload />
         </button>
       </div>
+
       <div
         id="content-to-print"
         className="w-full max-w-[1024px] my-0 px-1 text-black bg-white"
@@ -214,7 +255,7 @@ function VistaPrevia() {
                     readOnly
                     className="mt-3"
                   />
-                  <label className="mr-14">Hombre</label>
+                  <label className="mr-16">Hombre</label>
                   <input
                     type="checkbox"
                     checked={persona.genero?.mujer || false}
@@ -317,10 +358,10 @@ function VistaPrevia() {
                     </th>
                     <th className="w-40 pb-2 border-r border-black text-center text-pretty align-middle mt-0 pt-0">
                       <p className="-mt-1"> Horas </p>
-                      <p className="font-semibold text-pretty">
+                      <p className="font-normal text-pretty">
                         (Si es precursor o misionero que
                       </p>
-                      <p className="font-semibold text-pretty">
+                      <p className="font-normal text-pretty">
                         sirve en el campo)
                       </p>
                     </th>

@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+/* eslint-disable react/prop-types */
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   collection,
   deleteDoc,
@@ -66,6 +73,10 @@ function Personas() {
   const [filterAnciano, setFilterAnciano] = useState(false);
   const filterMenuRef = useRef(null); // Referencia para el menú de filtros
   const { darkMode } = useDarkMode();
+  const [showRegularModal, setShowRegularModal] = useState(false);
+  const [regularStartDate, setRegularStartDate] = useState("");
+  const [tempPersonaId, setTempPersonaId] = useState(null);
+  const [regularDateUpdated, setRegularDateUpdated] = useState(false);
 
   useEffect(() => {
     if (!grupoId) {
@@ -100,36 +111,48 @@ function Personas() {
         );
 
         // Crear una consulta para solo obtener personas no eliminadas
-        const q = query(personasCollection, where("isDeleted", "==", false));
+        const q = query(
+          personasCollection,
+          where(`registros.${selectedYear}.isDeleted`, "==", false)
+        );
         const personasSnapshot = await getDocs(q);
 
         const personaList = personasSnapshot.docs.map((doc) => {
           const personaData = doc.data();
           const totalHorasPorAno = {};
 
-          // Calcular total de horas por año
+          // Calcular total de horas por año con validación adicional
           Object.keys(personaData.registros || {}).forEach((year) => {
             const registrosPorAno = personaData.registros[year];
-            const totalHoras = Object.values(registrosPorAno).reduce(
-              (acc, registro) => acc + (registro.horas || 0),
-              0
-            );
+            // Solo considerar propiedades que son objetos y tienen la propiedad 'horas'
+            const totalHoras = Object.values(registrosPorAno || {})
+              .filter((registro) => registro && typeof registro === "object")
+              .reduce((acc, registro) => {
+                // Asegurarse de que 'horas' sea un número válido
+                const horas = Number(registro.horas) || 0;
+                return acc + horas;
+              }, 0);
             totalHorasPorAno[year] = totalHoras;
           });
 
           return {
             id: doc.id,
-            ...personaData,
-            genero: personaData.genero || {},
+            nombre: personaData.nombre,
+            fechaNacimiento: personaData.fechaNacimiento,
+            fechaBautismo: personaData.fechaBautismo,
             registros: personaData.registros || {},
-            totalHorasPorAno: totalHorasPorAno, // Añade totalHorasPorAno al objeto de la persona
-            totalHoras: totalHorasPorAno[selectedYear] || "", // Obtén el totalHoras del año seleccionado
+            totalHorasPorAno,
+            totalHoras: totalHorasPorAno[selectedYear] || 0,
           };
         });
 
         // Verificar si ya hay un Sup o Aux en la lista de personas
-        const supExists = personaList.some((persona) => persona.rol === "Sup");
-        const auxExists = personaList.some((persona) => persona.rol === "Aux");
+        const supExists = personaList.some(
+          (persona) => persona.registros?.[selectedYear]?.rol === "Sup"
+        );
+        const auxExists = personaList.some(
+          (persona) => persona.registros?.[selectedYear]?.rol === "Aux"
+        );
 
         // Actualizar los estados de Sup y Aux
         setYaHaySup(supExists);
@@ -137,11 +160,14 @@ function Personas() {
 
         // Ordenar personas: Sup y Aux al principio
         const superintendente = personaList.filter(
-          (persona) => persona.rol === "Sup"
+          (persona) => persona.registros?.[selectedYear]?.rol === "Sup"
         );
-        const auxiliar = personaList.filter((persona) => persona.rol === "Aux");
+        const auxiliar = personaList.filter(
+          (persona) => persona.registros?.[selectedYear]?.rol === "Aux"
+        );
         const miembros = personaList.filter(
-          (persona) => !["Sup", "Aux"].includes(persona.rol)
+          (persona) =>
+            !["Sup", "Aux"].includes(persona.registros?.[selectedYear]?.rol)
         );
 
         // Establecer el estado con Sup y Aux al principio
@@ -149,7 +175,7 @@ function Personas() {
       } catch (error) {
         console.log("Error al obtener las tarjetas: ", error);
       } finally {
-        setLoading(false); // Termina el loading cuando los datos se han cargado
+        setLoading(false);
       }
     };
 
@@ -206,6 +232,51 @@ function Personas() {
       }
 
       const personaData = currentDocSnap.data();
+      const personaRol = personaData.registros?.[selectedYear]?.rol;
+
+      // Si la persona es Sup o Aux, verificar el grupo destino
+      if (personaRol === "Sup" || personaRol === "Aux") {
+        // Obtener todas las personas del grupo destino
+        const destinationGroupRef = collection(
+          db,
+          "congregaciones",
+          congregacionId,
+          "grupos",
+          selectedGroup,
+          "hermanos"
+        );
+        const destinationSnapshot = await getDocs(destinationGroupRef);
+
+        // Verificar si ya existe un Sup o Aux en el grupo destino
+        const hasSupOrAux = destinationSnapshot.docs.some((doc) => {
+          const data = doc.data();
+          const rol = data.registros?.[selectedYear]?.rol;
+          return (
+            (personaRol === "Sup" && rol === "Sup") ||
+            (personaRol === "Aux" && rol === "Aux")
+          );
+        });
+
+        if (hasSupOrAux) {
+          toast.error(
+            `No es posible mover la persona porque ya existe un ${
+              personaRol === "Sup" ? "Superintendente" : "Auxiliar"
+            } en el grupo destino.`,
+            {
+              position: "bottom-center",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              theme: darkMode ? "dark" : "light",
+              style: {
+                border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+              },
+            }
+          );
+          setMoveLoading(false);
+          return;
+        }
+      }
 
       // Verificar si el grupo destino existe
       const newGrupoDocRef = doc(
@@ -219,52 +290,76 @@ function Personas() {
       );
       const newGrupoDocSnap = await getDoc(newGrupoDocRef);
       if (newGrupoDocSnap.exists()) {
-        console.error("La persona ya existe en el grupo destino.");
+        toast.error("La persona ya existe en el grupo destino.", {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          theme: darkMode ? "dark" : "light",
+          style: {
+            border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+          },
+        });
         setMoveLoading(false);
         return;
       }
 
+      // Preparar los datos para el nuevo documento
+      const dataToMove = {
+        nombre: personaData.nombre,
+        fechaNacimiento: personaData.fechaNacimiento,
+        fechaBautismo: personaData.fechaBautismo,
+        registros: {
+          [selectedYear]: {
+            ...(personaData.registros?.[selectedYear] || {}),
+            isDeleted: false,
+          },
+        },
+      };
+
       // Agregar la persona al nuevo grupo
-      await setDoc(newGrupoDocRef, personaData);
+      await setDoc(newGrupoDocRef, dataToMove);
 
       // Eliminar la persona del grupo actual
       await deleteDoc(currentDocRef);
 
-      toast.success(`Tarjeta movida al ${selectedGroup} exitosamente.`, {
-        position: "bottom-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        draggable: true,
-        progress: undefined,
-        theme: darkMode ? "dark" : "light",
-        style: {
-          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
-        },
-      });
-      setPersonas(personas.filter((persona) => persona.id !== movingPersonId)); // Actualizar la lista local
-      setMoveModalIsOpen(false); // Cierra el modal de mover persona
+      toast.success(
+        `Tarjeta movida al grupo exitosamente para el año ${selectedYear}.`,
+        {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          draggable: true,
+          progress: undefined,
+          theme: darkMode ? "dark" : "light",
+          style: {
+            border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+          },
+        }
+      );
+
+      // Actualizar la lista local
+      setPersonas(personas.filter((persona) => persona.id !== movingPersonId));
+      setMoveModalIsOpen(false);
     } catch (error) {
-      // Verifica si el error es el relacionado con permisos insuficientes
       if (error.code === "permission-denied") {
         toast.error(
           "No tienes los permisos necesarios para mover grupos. Por favor, contacta al supervisor.",
           {
             position: "bottom-center",
-            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
-            progress: undefined,
             theme: darkMode ? "dark" : "light",
             style: {
-              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
             },
           }
         );
       } else {
-        // Aquí puedes manejar otros tipos de errores si lo deseas
         toast.error(
           "Ocurrió un error inesperado. Por favor, intenta nuevamente.",
           {
@@ -272,9 +367,6 @@ function Personas() {
             autoClose: 3000,
             hideProgressBar: true,
             closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
             theme: darkMode ? "dark" : "light",
             style: {
               border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
@@ -283,7 +375,7 @@ function Personas() {
         );
       }
     } finally {
-      setMoveLoading(false); // Termina el estado de carga
+      setMoveLoading(false);
     }
   };
 
@@ -383,9 +475,15 @@ function Personas() {
         if (persona.id === personaId) {
           return {
             ...persona,
-            genero: {
-              ...persona.genero,
-              [field]: value,
+            registros: {
+              ...persona.registros,
+              [selectedYear]: {
+                ...(persona.registros[selectedYear] || {}),
+                genero: {
+                  ...(persona.registros[selectedYear]?.genero || {}),
+                  [field]: value,
+                },
+              },
             },
           };
         }
@@ -408,22 +506,31 @@ function Personas() {
         personaId
       );
 
-      // Asegúrate de que todos los campos estén definidos y actualizados
-      await updateDoc(personaRef, {
+      // Global data
+      const globalData = {
         nombre: persona.nombre || "",
         fechaNacimiento: persona.fechaNacimiento || "",
         fechaBautismo: persona.fechaBautismo || "",
-        genero: persona.genero,
-        anciano: persona.anciano || false,
-        ministerial: persona.ministerial || false,
-        regular: persona.regular || false,
-        especial: persona.especial || false,
-        misionero: persona.misionero || false,
-        registros: {
-          ...persona.registros,
-          [selectedYear]: persona.registros[selectedYear] || {},
+        totalHorasPorAno: persona.totalHorasPorAno || {},
+      };
+
+      // Year-specific data
+      const yearData = {
+        [`registros.${selectedYear}`]: {
+          ...(persona.registros?.[selectedYear] || {}),
+          genero: persona.registros?.[selectedYear]?.genero || {},
+          anciano: persona.registros?.[selectedYear]?.anciano || false,
+          ministerial: persona.registros?.[selectedYear]?.ministerial || false,
+          regular: persona.registros?.[selectedYear]?.regular || false,
+          especial: persona.registros?.[selectedYear]?.especial || false,
+          misionero: persona.registros?.[selectedYear]?.misionero || false,
         },
-        [`totalHorasPorAño.${selectedYear}`]: persona.totalHoras || 0,
+      };
+
+      // Update in Firestore
+      await updateDoc(personaRef, {
+        ...globalData,
+        ...yearData,
       });
 
       toast.success("Cambios guardados exitosamente.", {
@@ -482,11 +589,15 @@ function Personas() {
   // Función para agregar una nueva persona
   const agregarPersona = async () => {
     try {
-      const id = nuevoNombre.replace(/\s+/g, "-").toLowerCase(); // Reemplaza espacios por guiones y convierte a minúsculas
+      const id = nuevoNombre.replace(/\s+/g, "-").toLowerCase();
 
       // Verifica si ya hay un Sup o Aux en el grupo
-      const yaHaySup = personas.some((persona) => persona.rol === "Sup");
-      const yaHayAux = personas.some((persona) => persona.rol === "Aux");
+      const yaHaySup = personas.some(
+        (persona) => persona.registros?.[selectedYear]?.rol === "Sup"
+      );
+      const yaHayAux = personas.some(
+        (persona) => persona.registros?.[selectedYear]?.rol === "Aux"
+      );
 
       // Si el rol no es Sup ni Aux, será Miembro automáticamente
       let rol = "";
@@ -500,10 +611,18 @@ function Personas() {
         nombre: nuevoNombre,
         fechaNacimiento: fechaNacimiento,
         fechaBautismo: fechaBautismo,
-        genero: {},
-        registros: {},
-        isDeleted: false,
-        rol: rol || "Miembro", // Si no es Sup o Aux, será Miembro
+        registros: {
+          [selectedYear]: {
+            genero: {},
+            isDeleted: false,
+            rol: rol || "Miembro",
+            anciano: false,
+            ministerial: false,
+            regular: false,
+            especial: false,
+            misionero: false,
+          },
+        },
       };
 
       const newDocRef = doc(
@@ -526,7 +645,7 @@ function Personas() {
         progress: undefined,
         theme: darkMode ? "dark" : "light",
         style: {
-          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
         },
       });
 
@@ -535,15 +654,14 @@ function Personas() {
       setNuevoNombre("");
       setFechaNacimiento("");
       setFechaBautismo("");
-      setNuevoRol(""); // Reiniciar el rol al cerrar el modal
+      setNuevoRol("");
     } catch (error) {
-      // Verifica si el error es el relacionado con permisos insuficientes
       if (error.code === "permission-denied") {
         toast.error(
           "No tienes los permisos necesarios para agregar nuevas tarjetas. Por favor, contacta al supervisor.",
           {
             position: "bottom-center",
-            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: true,
@@ -551,12 +669,11 @@ function Personas() {
             progress: undefined,
             theme: darkMode ? "dark" : "light",
             style: {
-              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
             },
           }
         );
       } else {
-        // Aquí puedes manejar otros tipos de errores si lo deseas
         toast.error(
           "Ocurrió un error inesperado. Por favor, intenta nuevamente.",
           {
@@ -613,7 +730,9 @@ function Personas() {
           "hermanos",
           id
         );
-        await updateDoc(personaDoc, { isDeleted: true });
+        await updateDoc(personaDoc, {
+          [`registros.${selectedYear}.isDeleted`]: true,
+        });
 
         // Mostrar notificación de éxito
         toast.success("Tarjeta eliminada y movida a la papelera.", {
@@ -715,6 +834,351 @@ function Personas() {
       document.removeEventListener("touchstart", handleClickOutside); // Limpiar el listener
     };
   }, [filterMenuRef]);
+
+  // Add this function to handle role changes
+  const handleRoleChange = async (personaId, field, value) => {
+    try {
+      const personaRef = doc(
+        db,
+        "congregaciones",
+        congregacionId,
+        "grupos",
+        grupoId,
+        "hermanos",
+        personaId
+      );
+
+      const updatedPersonas = personas.map((persona) => {
+        if (persona.id === personaId) {
+          return {
+            ...persona,
+            registros: {
+              ...persona.registros,
+              [selectedYear]: {
+                ...(persona.registros[selectedYear] || {}),
+                [field]: value,
+              },
+            },
+          };
+        }
+        return persona;
+      });
+
+      setPersonas(updatedPersonas);
+
+      // Update in Firestore
+      await updateDoc(personaRef, {
+        [`registros.${selectedYear}.${field}`]: value,
+      });
+    } catch (error) {
+      console.error("Error updating role:", error);
+    }
+  };
+
+  // Add this function to handle role changes
+  const handleRolChange = async (personaId, newRol) => {
+    try {
+      const personaRef = doc(
+        db,
+        "congregaciones",
+        congregacionId,
+        "grupos",
+        grupoId,
+        "hermanos",
+        personaId
+      );
+
+      await updateDoc(personaRef, {
+        [`registros.${selectedYear}.rol`]: newRol,
+      });
+
+      // Actualizar el estado local
+      setPersonas((prevPersonas) =>
+        prevPersonas.map((p) => {
+          if (p.id === personaId) {
+            return {
+              ...p,
+              registros: {
+                ...p.registros,
+                [selectedYear]: {
+                  ...p.registros[selectedYear],
+                  rol: newRol,
+                },
+              },
+            };
+          }
+          return p;
+        })
+      );
+
+      // Actualizar estados de yaHaySup y yaHayAux
+      const updatedPersonas = personas.map((p) =>
+        p.id === personaId
+          ? {
+              ...p,
+              registros: {
+                ...p.registros,
+                [selectedYear]: { ...p.registros[selectedYear], rol: newRol },
+              },
+            }
+          : p
+      );
+
+      setYaHaySup(
+        updatedPersonas.some((p) => p.registros?.[selectedYear]?.rol === "Sup")
+      );
+      setYaHayAux(
+        updatedPersonas.some((p) => p.registros?.[selectedYear]?.rol === "Aux")
+      );
+
+      toast.success(`Rol actualizado exitosamente`, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        theme: darkMode ? "dark" : "light",
+      });
+    } catch (error) {
+      console.error("Error al actualizar el rol:", error);
+      toast.error("Error al actualizar el rol", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        theme: darkMode ? "dark" : "light",
+      });
+    }
+  };
+
+  const RolButton = React.memo(
+    ({ persona, selectedYear, onRolChange, personas }) => {
+      const currentRol = persona.registros?.[selectedYear]?.rol;
+      const { darkMode } = useDarkMode();
+      const [yaHaySup, setYaHaySup] = useState(false);
+      const [yaHayAux, setYaHayAux] = useState(false);
+      const [rolesChecked, setRolesChecked] = useState(false);
+
+      const checkExistingRoles = useMemo(() => {
+        const hasSup = personas.some(
+          (p) =>
+            p.id !== persona.id && p.registros?.[selectedYear]?.rol === "Sup"
+        );
+        const hasAux = personas.some(
+          (p) =>
+            p.id !== persona.id && p.registros?.[selectedYear]?.rol === "Aux"
+        );
+        return { hasSup, hasAux };
+      }, [personas, selectedYear, persona.id]); // Remove personas from dependencies
+
+      useEffect(() => {
+        setYaHaySup(checkExistingRoles.hasSup);
+        setYaHayAux(checkExistingRoles.hasAux);
+        setRolesChecked(true);
+      }, [checkExistingRoles, rolesChecked]);
+
+      const handleRolClick = useCallback(async () => {
+        let newRol = null;
+        let action = "";
+
+        if (!currentRol || currentRol === "Miembro") {
+          // Preparar las opciones disponibles
+          const options = {};
+          if (!yaHaySup) options["Sup"] = "Superintendente";
+          if (!yaHayAux) options["Aux"] = "Auxiliar";
+
+          // Si no hay roles disponibles, mostrar mensaje
+          if (Object.keys(options).length === 0) {
+            await Swal.fire({
+              title: "No hay roles disponibles",
+              text: "Ya existe un Superintendente y un Auxiliar en este grupo",
+              icon: "info",
+              confirmButtonText: "Aceptar",
+              customClass: {
+                popup: darkMode ? "swal-dark" : "",
+              },
+            });
+            return;
+          }
+
+          // Mostrar opciones disponibles
+          const result = await Swal.fire({
+            title: `Seleccionar rol para ${persona.nombre}`,
+            input: "select",
+            inputOptions: options,
+            inputPlaceholder: "Selecciona un rol",
+            showCancelButton: true,
+            confirmButtonText: "Asignar",
+            cancelButtonText: "Cancelar",
+            customClass: {
+              popup: darkMode ? "swal-dark" : "",
+            },
+          });
+
+          if (result.isConfirmed) {
+            newRol = result.value;
+            action = "asignar";
+          }
+        } else if (currentRol === "Sup" || currentRol === "Aux") {
+          // Si ya tiene rol Sup o Aux, confirmar remover
+          const result = await Swal.fire({
+            title: `¿Deseas remover el cargo de ${
+              currentRol === "Sup" ? "Superintendente" : "Auxiliar"
+            } a ${persona.nombre}?`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí",
+            cancelButtonText: "Cancelar",
+            customClass: {
+              popup: darkMode ? "swal-dark" : "",
+            },
+          });
+
+          if (result.isConfirmed) {
+            action = "remover";
+          }
+        }
+
+        if (action === "asignar" && newRol) {
+          onRolChange(persona.id, newRol);
+        } else if (action === "remover") {
+          onRolChange(persona.id, "Miembro"); // Cambiar a "miembro" en lugar de null
+        }
+      }, [
+        currentRol,
+        darkMode,
+        persona.nombre,
+        persona.id,
+        yaHaySup,
+        yaHayAux,
+        onRolChange,
+      ]);
+
+      // Si ya existen tanto Sup como Aux, no mostrar el botón
+      if (yaHaySup && yaHayAux) {
+        return null;
+      }
+
+      // Determinar el texto y estilo del botón
+      let buttonText = "";
+      let buttonClass = "";
+
+      if (currentRol === "Sup" || currentRol === "Aux") {
+        buttonText =
+          currentRol === "Sup" ? "Remover Superintendente" : "Remover Auxiliar";
+        buttonClass = "bg-red-500 hover:bg-red-700";
+      } else {
+        buttonText = "Asignar Sup/Aux";
+        buttonClass = "bg-blue-500 hover:bg-blue-700";
+      }
+
+      return (
+        <button
+          onClick={handleRolClick}
+          className={`${buttonClass} text-white text-md px-3 py-1 mb-1 rounded ml-0`}
+        >
+          {buttonText}
+        </button>
+      );
+    },
+    (prevProps, nextProps) => {
+      // Custom comparison function for React.memo
+      return (
+        prevProps.persona.registros?.[prevProps.selectedYear]?.rol ===
+          nextProps.persona.registros?.[nextProps.selectedYear]?.rol &&
+        prevProps.selectedYear === nextProps.selectedYear &&
+        prevProps.personas === nextProps.personas
+      );
+    }
+  );
+
+  // Add display name for debugging
+  RolButton.displayName = "RolButton";
+
+  const handleRegularPrecursorChange = (personaId, checked) => {
+    if (checked) {
+      setTempPersonaId(personaId);
+      setShowRegularModal(true);
+    } else {
+      Promise.all([
+        handleRoleChange(personaId, "regular", false),
+        handleRoleChange(personaId, "regularStartDate", null),
+        handleRoleChange(personaId, "regularStartMonth", null),
+      ]).then(() => {
+        setRegularDateUpdated(true); // Trigger the re-render
+      });
+    }
+  };
+
+  const handleRegularDateConfirm = () => {
+    if (regularStartDate) {
+      const date = new Date(regularStartDate + "T00:00:00");
+      const month = date
+        .toLocaleString("es-ES", { month: "long" })
+        .toLowerCase();
+
+      Promise.all([
+        handleRoleChange(tempPersonaId, "regular", true),
+        handleRoleChange(tempPersonaId, "regularStartDate", regularStartDate),
+        handleRoleChange(tempPersonaId, "regularStartMonth", month),
+      ]).then(() => {
+        setShowRegularModal(false);
+        setRegularStartDate("");
+        setTempPersonaId(null);
+        setRegularDateUpdated(true); // Trigger the re-render
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (regularDateUpdated) {
+      const fetchPersonas = async () => {
+        try {
+          const personasRef = collection(
+            db,
+            "congregaciones",
+            congregacionId,
+            "grupos",
+            grupoId,
+            "hermanos"
+          );
+          const personasSnapshot = await getDocs(personasRef);
+          const personasData = personasSnapshot.docs.map((doc) => {
+            const personaData = doc.data();
+            const totalHorasPorAno = {};
+
+            // Calcular total de horas por año con validación adicional
+            Object.keys(personaData.registros || {}).forEach((year) => {
+              const registrosPorAno = personaData.registros[year];
+              // Solo considerar propiedades que son objetos y tienen la propiedad 'horas'
+              const totalHoras = Object.values(registrosPorAno || {})
+                .filter((registro) => registro && typeof registro === "object")
+                .reduce((acc, registro) => {
+                  // Asegurarse de que 'horas' sea un número válido
+                  const horas = Number(registro.horas) || 0;
+                  return acc + horas;
+                }, 0);
+              totalHorasPorAno[year] = totalHoras;
+            });
+
+            return {
+              id: doc.id,
+              ...personaData,
+              totalHorasPorAno,
+              totalHoras: totalHorasPorAno[selectedYear] || 0,
+            };
+          });
+          setPersonas(personasData);
+        } catch (error) {
+          console.error("Error fetching personas:", error);
+        }
+      };
+
+      fetchPersonas();
+      setRegularDateUpdated(false);
+    }
+  }, [regularDateUpdated, congregacionId, grupoId, selectedYear]);
 
   return (
     <>
@@ -876,17 +1340,25 @@ function Personas() {
                         : "bg-white border-black text-black hover:bg-gray-200"
                     }`}
                   >
-                    <p className="text-lg text-left text-pretty font-medium">
-                      {(persona.rol === "Sup" || persona.rol === "Aux") && (
-                        <span>({persona.rol}) </span>
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center">
+                        <p className="text-lg text-left text-pretty font-medium">
+                          {(persona.registros?.[selectedYear]?.rol === "Sup" ||
+                            persona.registros?.[selectedYear]?.rol ===
+                              "Aux") && (
+                            <span>
+                              ({persona.registros[selectedYear].rol}){" "}
+                            </span>
+                          )}
+                          {persona.nombre}
+                        </p>
+                      </div>
+                      {openId === persona.id ? (
+                        <FaChevronUp className="text-blue-500" />
+                      ) : (
+                        <FaChevronDown className="text-blue-500" />
                       )}
-                      {persona.nombre}
-                    </p>
-                    {openId === persona.id ? (
-                      <FaChevronUp className="text-blue-500" />
-                    ) : (
-                      <FaChevronDown className="text-blue-500" />
-                    )}
+                    </div>
                   </div>
                   {openId === persona.id && (
                     <div
@@ -899,9 +1371,16 @@ function Personas() {
                       <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-2 sm:gap-0">
                         <div className="flex flex-col items-start gap-1 sm:w-[315px] md:w-[415px]">
                           {/* Nombre */}
+                          <RolButton
+                            persona={persona}
+                            selectedYear={selectedYear}
+                            onRolChange={handleRolChange}
+                            personas={personas}
+                          />
                           <div className="flex items-center w-full lg:w-[480px]">
                             <label className="text-md font-bold">Nombre:</label>
                             <input
+                              disabled
                               type="text"
                               placeholder="Perez Juan"
                               value={persona.nombre}
@@ -913,7 +1392,7 @@ function Personas() {
                                   e.target.value
                                 )
                               }
-                              className="text-black border border-gray-300 rounded-md p-1 ml-1 w-full"
+                              className="border border-gray-300 rounded-md p-1 ml-1 w-full"
                             />
                           </div>
                           {/* Fecha de Nacimiento */}
@@ -962,7 +1441,10 @@ function Personas() {
                           <div className="flex flex-wrap gap-2">
                             <input
                               type="checkbox"
-                              checked={persona.genero?.hombre || false}
+                              checked={
+                                persona.registros?.[selectedYear]?.genero
+                                  ?.hombre || false
+                              }
                               onChange={(e) =>
                                 handleCheckboxChange(
                                   persona.id,
@@ -974,7 +1456,10 @@ function Personas() {
                             <span className="mr-10">Hombre</span>
                             <input
                               type="checkbox"
-                              checked={persona.genero?.mujer || false}
+                              checked={
+                                persona.registros?.[selectedYear]?.genero
+                                  ?.mujer || false
+                              }
                               onChange={(e) =>
                                 handleCheckboxChange(
                                   persona.id,
@@ -989,7 +1474,10 @@ function Personas() {
                           <div className="flex flex-wrap gap-2">
                             <input
                               type="checkbox"
-                              checked={persona.genero?.otrasOvejas || false}
+                              checked={
+                                persona.registros?.[selectedYear]?.genero
+                                  ?.otrasOvejas || false
+                              }
                               onChange={(e) =>
                                 handleCheckboxChange(
                                   persona.id,
@@ -1001,7 +1489,10 @@ function Personas() {
                             <span className="mr-2">Otras Ovejas</span>
                             <input
                               type="checkbox"
-                              checked={persona.genero?.ungido || false}
+                              checked={
+                                persona.registros?.[selectedYear]?.genero
+                                  ?.ungido || false
+                              }
                               onChange={(e) =>
                                 handleCheckboxChange(
                                   persona.id,
@@ -1019,14 +1510,15 @@ function Personas() {
                         <div className="flex gap-2 items-center">
                           <input
                             type="checkbox"
-                            checked={persona.anciano || false}
+                            checked={
+                              persona.registros?.[selectedYear]?.anciano ||
+                              false
+                            }
                             onChange={(e) =>
-                              setPersonas(
-                                personas.map((p) =>
-                                  p.id === persona.id
-                                    ? { ...p, anciano: e.target.checked }
-                                    : p
-                                )
+                              handleRoleChange(
+                                persona.id,
+                                "anciano",
+                                e.target.checked
                               )
                             }
                           />
@@ -1036,14 +1528,15 @@ function Personas() {
                         <div className="flex gap-2 items-center">
                           <input
                             type="checkbox"
-                            checked={persona.ministerial || false}
+                            checked={
+                              persona.registros?.[selectedYear]?.ministerial ||
+                              false
+                            }
                             onChange={(e) =>
-                              setPersonas(
-                                personas.map((p) =>
-                                  p.id === persona.id
-                                    ? { ...p, ministerial: e.target.checked }
-                                    : p
-                                )
+                              handleRoleChange(
+                                persona.id,
+                                "ministerial",
+                                e.target.checked
                               )
                             }
                           />
@@ -1053,31 +1546,43 @@ function Personas() {
                         <div className="flex gap-2 items-center">
                           <input
                             type="checkbox"
-                            checked={persona.regular || false}
+                            checked={
+                              persona.registros?.[selectedYear]
+                                ?.regularStartDate || false
+                            }
                             onChange={(e) =>
-                              setPersonas(
-                                personas.map((p) =>
-                                  p.id === persona.id
-                                    ? { ...p, regular: e.target.checked }
-                                    : p
-                                )
+                              handleRegularPrecursorChange(
+                                persona.id,
+                                e.target.checked
                               )
                             }
                           />
                           <span>Precursor Regular</span>
+                          {persona.registros?.[selectedYear]
+                            ?.regularStartDate && (
+                            <span className="text-sm text-orange-500">
+                              (Desde:{" "}
+                              {new Date(
+                                persona.registros[selectedYear]
+                                  .regularStartDate + "T00:00:00"
+                              ).toLocaleDateString()}
+                              )
+                            </span>
+                          )}
                         </div>
                         {/* Precursor Especial */}
                         <div className="flex gap-2 items-center">
                           <input
                             type="checkbox"
-                            checked={persona.especial || false}
+                            checked={
+                              persona.registros?.[selectedYear]?.especial ||
+                              false
+                            }
                             onChange={(e) =>
-                              setPersonas(
-                                personas.map((p) =>
-                                  p.id === persona.id
-                                    ? { ...p, especial: e.target.checked }
-                                    : p
-                                )
+                              handleRoleChange(
+                                persona.id,
+                                "especial",
+                                e.target.checked
                               )
                             }
                           />
@@ -1087,14 +1592,15 @@ function Personas() {
                         <div className="flex gap-2 items-center">
                           <input
                             type="checkbox"
-                            checked={persona.misionero || false}
+                            checked={
+                              persona.registros?.[selectedYear]?.misionero ||
+                              false
+                            }
                             onChange={(e) =>
-                              setPersonas(
-                                personas.map((p) =>
-                                  p.id === persona.id
-                                    ? { ...p, misionero: e.target.checked }
-                                    : p
-                                )
+                              handleRoleChange(
+                                persona.id,
+                                "misionero",
+                                e.target.checked
                               )
                             }
                           />
@@ -1534,10 +2040,18 @@ function Personas() {
                             className="text-black border border-gray-300 p-2 rounded transition-colors duration-200"
                           >
                             <option value="">Selecciona un Rol</option>
-                            {!yaHaySup && (
-                              <option value="Sup">Superintendente</option>
-                            )}
-                            {!yaHayAux && <option value="Aux">Auxiliar</option>}
+                            {!personas.some(
+                              (persona) =>
+                                persona.registros?.[selectedYear]?.rol ===
+                                  "Sup" &&
+                                !persona.registros?.[selectedYear]?.isDeleted
+                            ) && <option value="Sup">Superintendente</option>}
+                            {!personas.some(
+                              (persona) =>
+                                persona.registros?.[selectedYear]?.rol ===
+                                  "Aux" &&
+                                !persona.registros?.[selectedYear]?.isDeleted
+                            ) && <option value="Aux">Auxiliar</option>}
                           </select>
                         </label>
                       )}
@@ -1555,6 +2069,70 @@ function Personas() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {showRegularModal && (
+              <motion.div
+                className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <motion.div
+                  className={`border rounded-lg p-6 max-w-md relative shadow-lg ${
+                    darkMode
+                      ? "bg-[#1f1f1f] border-white text-white"
+                      : "bg-white border-black text-black"
+                  }`}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                >
+                  <button
+                    className="absolute top-4 right-4"
+                    onClick={() => {
+                      setShowRegularModal(false);
+                      setRegularStartDate("");
+                      setTempPersonaId(null);
+                    }}
+                  >
+                    <IoClose size={30} className="hover:text-red-500" />
+                  </button>
+
+                  <h2 className="text-xl font-semibold mb-4">
+                    Fecha de Inicio como Precursor Regular
+                  </h2>
+
+                  <div className="mb-4">
+                    <input
+                      type="date"
+                      value={regularStartDate}
+                      onChange={(e) => setRegularStartDate(e.target.value)}
+                      className="w-full border border-gray-300 rounded-md p-2 text-black"
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={handleRegularDateConfirm}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                      disabled={!regularStartDate}
+                    >
+                      Confirmar
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowRegularModal(false);
+                        setRegularStartDate("");
+                        setTempPersonaId(null);
+                      }}
+                      className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
           </div>
         </>
       )}

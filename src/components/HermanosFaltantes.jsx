@@ -5,6 +5,7 @@ import Modal from "./Modal"; // Importa un componente Modal si ya tienes uno, o 
 import { useAuth } from "../context/AuthContext";
 import { db } from "../firebase";
 import { useDarkMode } from "../context/DarkModeContext";
+import { MdGroupRemove } from "react-icons/md";
 
 const HermanosFaltantes = ({ congregacionId }) => {
   const [hermanosFaltantes, setHermanosFaltantes] = useState([]);
@@ -89,9 +90,10 @@ const HermanosFaltantes = ({ congregacionId }) => {
         <button
           onClick={fetchHermanosFaltantes}
           disabled={loading}
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          className="flex items-center gap-2 bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600"
         >
-          {loading ? "Buscando..." : "Mostrar Hermanos Faltantes"}
+          <MdGroupRemove />
+          {loading ? "Buscando..." : "Hermanos Faltantes"}
         </button>
       )}
 

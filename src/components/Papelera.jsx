@@ -12,7 +12,7 @@ import { db } from "../firebase";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { SyncLoader } from "react-spinners";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { useDarkMode } from "../context/DarkModeContext";
 import { useAuth } from "../context/AuthContext";
@@ -24,6 +24,8 @@ const Papelera = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar la visibilidad del modal
   const { darkMode } = useDarkMode();
   const { role } = useAuth();
+  const location = useLocation();
+  const { selectedYear } = location.state || {};
 
   useEffect(() => {
     const fetchPersonasEliminadas = async () => {
@@ -37,7 +39,11 @@ const Papelera = () => {
           "hermanos"
         );
 
-        const q = query(papeleraCollection, where("isDeleted", "==", true));
+        // Query for documents where the current year is marked as deleted
+        const q = query(
+          papeleraCollection,
+          where(`registros.${selectedYear}.isDeleted`, "==", true)
+        );
         const snapshot = await getDocs(q);
 
         const eliminadas = snapshot.docs.map((doc) => ({
@@ -54,13 +60,13 @@ const Papelera = () => {
     };
 
     fetchPersonasEliminadas();
-  }, [congregacionId, grupoId, personasEliminadas]);
+  }, [congregacionId, grupoId, selectedYear]);
 
   const handleRestore = async (id, nombre) => {
     try {
       const result = await Swal.fire({
         title: `¿Quieres restaurar a ${nombre}?`,
-        text: "La persona será movida de la papelera de nuevo al grupo.",
+        text: `La persona será restaurada para el año ${selectedYear}.`,
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -91,9 +97,12 @@ const Papelera = () => {
           id
         );
 
-        await updateDoc(personaRef, { isDeleted: false });
+        // Update only the isDeleted flag for the current year
+        await updateDoc(personaRef, {
+          [`registros.${selectedYear}.isDeleted`]: false
+        });
 
-        toast.success(`Tarjeta de ${nombre} restaurada exitosamente.`, {
+        toast.success(`Tarjeta de ${nombre} restaurada exitosamente para el año ${selectedYear}.`, {
           position: "bottom-center",
           autoClose: 3000,
           hideProgressBar: true,
@@ -103,7 +112,7 @@ const Papelera = () => {
           progress: undefined,
           theme: darkMode ? "dark" : "light",
           style: {
-            border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
           },
         });
         setIsModalOpen(false);
@@ -255,7 +264,7 @@ const Papelera = () => {
           darkMode ? "bg-gray-800 border border-white" : "bg-[#ffffff]"
         }`}
       >
-        Ver Papelera
+        Ver Papelera {selectedYear}
         <FaTrash />
       </button>
 
@@ -270,7 +279,9 @@ const Papelera = () => {
             }`}
           >
             <div className="p-4">
-              <h2 className="text-lg font-bold mb-4">Tarjetas Eliminadas</h2>
+              <h2 className="text-lg font-bold mb-4">
+                Tarjetas Eliminadas - Año {selectedYear}
+              </h2>
 
               {loadingPapelera ? (
                 <div className="flex justify-center items-center">

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import {
@@ -19,6 +20,7 @@ import {
   FaUserCheck,
   FaUsers,
   FaUserTie,
+  FaCog,
 } from "react-icons/fa";
 import { SyncLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
@@ -34,6 +36,79 @@ import CopiarIDsModal from "./CopiarIDsModal";
 import { useAuth } from "../context/AuthContext";
 import Buscador from "./Buscador";
 import HermanosFaltantes from "./HermanosFaltantes";
+import ExportButton from "./ExportButton";
+import ActualizarInfoHermanos from "./ActualizarEstructuraHermano";
+
+function AdvancedOptions({ openModal, congregacionId, role, darkMode }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      {(role === "Administrador" ||
+        role === "Espectador") && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ${
+            isOpen ? "rounded-b-none" : ""
+          }`}
+        >
+          <FaCog
+            className={`transform ${
+              isOpen ? "rotate-90" : ""
+            } transition-transform duration-200`}
+          />
+          Opciones Avanzadas
+        </button>
+      )}
+
+      {isOpen && (
+        <div
+          className={`flex flex-col justify-center items-center absolute bottom-10 -right-6 z-50 w-64 py-2 mt-0 rounded-t-xl shadow-xl border-2 space-y-2 ${
+            darkMode
+              ? "bg-[#1f1f1f] border-white text-white"
+              : "bg-white border-gray-200 text-black"
+          }`}
+        >
+        <ExportButton
+          onClose={() => setIsOpen(false)}
+          className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+        />
+          {(role === "Administrador" ||
+            role === "Gestor" ||
+            role === "Espectador") && (
+            <div className="flex flex-col gap-2 items-center">
+              <button
+                onClick={() => {
+                  openModal();
+                  setIsOpen(false);
+                }}
+                className="text-left px-4 py-2 rounded bg-purple-500 hover:bg-purple-700 text-white flex items-center justify-center gap-2"
+              >
+                <FaFileUpload />
+                Subir Información
+              </button>
+              <HermanosFaltantes congregacionId={congregacionId} />
+            </div>
+          )}
+
+          <Link
+            to={`/${congregacionId}/resumenAnual`}
+            className="rounded px-4 py-2 bg-gray-500 hover:bg-gray-700 text-white flex items-center justify-center gap-2"
+            onClick={() => setIsOpen(false)}
+          >
+            <FaUsers />
+            Resumen Anual
+          </Link>
+
+          <ActualizarInfoHermanos
+            onClose={() => setIsOpen(false)}
+            className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Grupos() {
   const navigate = useNavigate();
@@ -157,6 +232,8 @@ function Grupos() {
       let ancianoCount = 0;
       let totalCount = 0;
 
+      const currentYear = selectedYear.toString(); // Get the currently selected year
+
       for (const grupoDoc of gruposSnapshot.docs) {
         const hermanosCollection = collection(
           db,
@@ -170,11 +247,17 @@ function Grupos() {
 
         hermanosSnapshot.docs.forEach((hermanoDoc) => {
           const hermanoData = hermanoDoc.data();
-          totalCount++; // Incrementa el conteo total por cada documento encontrado.
+          totalCount++; // Increment total count
 
-          if (hermanoData.regular) precursorCount++;
-          if (hermanoData.ministerial) ministerialCount++;
-          if (hermanoData.anciano) ancianoCount++;
+          // Check if registros and the current year exist
+          if (hermanoData.registros && hermanoData.registros[currentYear]) {
+            const yearData = hermanoData.registros[currentYear];
+
+            // Check appointments from the new structure
+            if (yearData.regular) precursorCount++;
+            if (yearData.ministerial) ministerialCount++;
+            if (yearData.anciano) ancianoCount++;
+          }
         });
       }
 
@@ -186,6 +269,16 @@ function Grupos() {
       setTotalTarjetas(totalCount); // Actualiza el estado del total de tarjetas.
     } catch (error) {
       console.error("Error al contar hermanos:", error.message, error.code);
+      toast.error("Error al obtener los nombramientos", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        theme: darkMode ? "dark" : "light",
+        style: {
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
+        },
+      });
     } finally {
       setLoadingCounts(false);
     }
@@ -271,7 +364,7 @@ function Grupos() {
           progress: undefined,
           theme: darkMode ? "dark" : "light",
           style: {
-            border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+            border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
           },
         });
         return;
@@ -290,8 +383,33 @@ function Grupos() {
         const personasSnapshot = await getDocs(grupoDocRef);
         const updatePromises = personasSnapshot.docs.map((doc) => {
           const personaRef = doc.ref;
+
+          // Create blank template data for the new year
+          const blankTemplateData = {
+            isDeleted: false,
+            rol: "Miembro",
+            genero: {},
+            anciano: false,
+            ministerial: false,
+            regular: false,
+            especial: false,
+            misionero: false,
+            septiembre: {},
+            octubre: {},
+            noviembre: {},
+            diciembre: {},
+            enero: {},
+            febrero: {},
+            marzo: {},
+            abril: {},
+            mayo: {},
+            junio: {},
+            julio: {},
+            agosto: {},
+          };
+
           return updateDoc(personaRef, {
-            [`registros.${year}`]: {}, // Agrega el nuevo año de registros vacío
+            [`registros.${year}`]: blankTemplateData,
           });
         });
 
@@ -307,18 +425,18 @@ function Grupos() {
         progress: undefined,
         theme: darkMode ? "dark" : "light",
         style: {
-          border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+          border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
         },
       });
-      setYearToAdd(""); // Resetea el año a agregar
+      setYearToAdd("");
+      setShowYearModal(false);
     } catch (error) {
-      // Verifica si el error es el relacionado con permisos insuficientes
       if (error.code === "permission-denied") {
         toast.error(
           "No tienes los permisos necesarios para añadir año de servicio. Por favor, contacta al supervisor.",
           {
             position: "bottom-center",
-            autoClose: 5000, // El mensaje permanecerá 5 segundos
+            autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: true,
@@ -326,12 +444,11 @@ function Grupos() {
             progress: undefined,
             theme: darkMode ? "dark" : "light",
             style: {
-              border: darkMode ? "1px solid #ffffff" : "1px solid #000000", // Borde blanco en modo oscuro
+              border: darkMode ? "1px solid #ffffff" : "1px solid #000000",
             },
           }
         );
       } else {
-        // Aquí puedes manejar otros tipos de errores si lo deseas
         toast.error(
           "Error al añadir año de servicio. Por favor, intenta nuevamente.",
           {
@@ -587,30 +704,29 @@ function Grupos() {
             {(role === "Administrador" ||
               role === "Gestor" ||
               role === "Espectador") && (
-              <motion.button
-                onClick={() => setShowDeleteModal(true)}
-                className="eliminar-grupo bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Eliminar Grupo
-              </motion.button>
+              <>
+                <motion.button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="eliminar-grupo bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Eliminar Grupo
+                </motion.button>
+              </>
             )}
           </div>
 
+          <AdvancedOptions
+            openModal={openModal}
+            congregacionId={congregacionId}
+            role={role}
+            darkMode={darkMode}
+          />
           {(role === "Administrador" ||
             role === "Gestor" ||
             role === "Espectador") && (
-            <div className="mb-2">
-              {/* Botón para abrir el modal */}
-              <button
-                onClick={openModal}
-                className="informacion bg-purple-500 hover:bg-purple-700 text-white flex items-center gap-2 font-bold py-2 px-4 rounded"
-              >
-                Subir información
-                <FaFileUpload />
-              </button>
-
+            <>
               {/* Modal */}
               {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
@@ -684,10 +800,8 @@ function Grupos() {
                   </div>
                 </div>
               )}
-            </div>
+            </>
           )}
-
-          <HermanosFaltantes congregacionId={congregacionId} />
 
           <Buscador selectedYear={selectedYear} />
 
@@ -994,15 +1108,7 @@ function Grupos() {
                 onChange={(e) => setYearToAdd(e.target.value)}
                 className="text-black border p-2 mb-4 w-full rounded"
               />
-              <div className="flex justify-end gap-2">
-                <motion.button
-                  onClick={() => setShowYearModal(false)}
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Cancelar
-                </motion.button>
+              <div className="flex flex-row-reverse justify-end gap-2">
                 <motion.button
                   onClick={handleAddYear}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -1010,6 +1116,17 @@ function Grupos() {
                   whileTap={{ scale: 0.95 }}
                 >
                   Agregar
+                </motion.button>
+                <motion.button
+                  onClick={() => {
+                    setShowYearModal(false);
+                    setYearToAdd("");
+                  }}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Cancelar
                 </motion.button>
               </div>
             </motion.div>

@@ -11,6 +11,9 @@ function VistaPreviaTarjeta() {
   const selectedYear = location.state?.selectedYear;
   const { darkMode } = useDarkMode();
 
+  // Get the year-specific data
+  const yearData = persona.registros?.[selectedYear] || {};
+
   const generatePDF = () => {
     const element = document.getElementById("content-to-print");
     const opt = {
@@ -78,14 +81,14 @@ function VistaPreviaTarjeta() {
             <div className="flex flex-wrap gap-1">
               <input
                 type="checkbox"
-                checked={persona.genero?.hombre || false}
+                checked={yearData.genero?.hombre || false}
                 readOnly
                 className="mt-3"
               />
               <label className="mr-[61px]">Hombre</label>
               <input
                 type="checkbox"
-                checked={persona.genero?.mujer || false}
+                checked={yearData.genero?.mujer || false}
                 readOnly
                 className="mt-3"
               />
@@ -94,14 +97,14 @@ function VistaPreviaTarjeta() {
             <div className="flex flex-wrap gap-1">
               <input
                 type="checkbox"
-                checked={persona.genero?.otrasOvejas || false}
+                checked={yearData.genero?.otrasOvejas || false}
                 readOnly
                 className="mt-3"
               />
               <label className="mr-7">Otras Ovejas</label>
               <input
                 type="checkbox"
-                checked={persona.genero?.ungido || false}
+                checked={yearData.genero?.ungido || false}
                 readOnly
                 className="mt-3"
               />
@@ -113,7 +116,7 @@ function VistaPreviaTarjeta() {
           <div className="flex gap-1 items-start">
             <input
               type="checkbox"
-              checked={persona.anciano || false}
+              checked={yearData.anciano || false}
               readOnly
               className="mt-3"
             />
@@ -122,7 +125,7 @@ function VistaPreviaTarjeta() {
           <div className="flex gap-1 items-start">
             <input
               type="checkbox"
-              checked={persona.ministerial || false}
+              checked={yearData.ministerial || false}
               readOnly
               className="mt-3"
             />
@@ -131,7 +134,7 @@ function VistaPreviaTarjeta() {
           <div className="flex gap-1 items-start">
             <input
               type="checkbox"
-              checked={persona.regular || false}
+              checked={yearData.regular || false}
               readOnly
               className="mt-3"
             />
@@ -140,7 +143,7 @@ function VistaPreviaTarjeta() {
           <div className="flex gap-1 items-start">
             <input
               type="checkbox"
-              checked={persona.especial || false}
+              checked={yearData.especial || false}
               readOnly
               className="mt-3"
             />
@@ -149,7 +152,7 @@ function VistaPreviaTarjeta() {
           <div className="flex gap-1 items-start justify-center w-40">
             <input
               type="checkbox"
-              checked={persona.misionero || false}
+              checked={yearData.misionero || false}
               readOnly
               className="mt-3"
             />
@@ -185,10 +188,10 @@ function VistaPreviaTarjeta() {
                 </th>
                 <th className="w-40 pb-2 border-r border-black text-center text-pretty align-middle mt-0 pt-0">
                   <p className="-mt-1"> Horas </p>
-                  <p className="font-semibold text-pretty">
+                  <p className="font-normal text-pretty">
                     (Si es precursor o misionero que
                   </p>
-                  <p className="font-semibold text-pretty">
+                  <p className="font-normal text-pretty">
                     sirve en el campo)
                   </p>
                 </th>
@@ -211,51 +214,48 @@ function VistaPreviaTarjeta() {
                 "junio",
                 "julio",
                 "agosto",
-              ].map((mes) => (
-                <tr
-                  key={mes}
-                  className="hover:bg-gray-100 text-center text-black"
-                >
-                  <td className="border-r border-b border-l-2 border-black whitespace-nowrap text-left pl-1 align-middle pb-2">
-                    {mes.charAt(0).toUpperCase() + mes.slice(1)}
-                  </td>
-                  <td className="border-r border-b border-black whitespace-nowrap align-middle">
-                    <input
-                      type="checkbox"
-                      checked={
-                        persona.registros?.[selectedYear]?.[mes]
-                          ?.participacion || false
-                      }
-                      readOnly
-                    />
-                  </td>
-                  <td className="border-r border-b border-black whitespace-nowrap align-middle pb-2">
-                    <span className="w-full block">
-                      {persona.registros?.[selectedYear]?.[mes]?.cursos || ""}
-                    </span>
-                  </td>
-                  <td className="border-r border-b border-black whitespace-nowrap align-middle">
-                    <input
-                      type="checkbox"
-                      checked={
-                        persona.registros?.[selectedYear]?.[mes]?.precursor ||
-                        false
-                      }
-                      readOnly
-                    />
-                  </td>
-                  <td className="border-r border-b border-black whitespace-nowrap align-middle pb-2">
-                    <span className="w-full block">
-                      {persona.registros?.[selectedYear]?.[mes]?.horas || ""}
-                    </span>
-                  </td>
-                  <td className="border-r-2 border-b border-black whitespace-nowrap align-middle pb-2">
-                    <span className="w-full block">
-                      {persona.registros?.[selectedYear]?.[mes]?.notas || ""}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              ].map((mes) => {
+                const mesData = yearData[mes] || {};
+                return (
+                  <tr
+                    key={mes}
+                    className="hover:bg-gray-100 text-center text-black"
+                  >
+                    <td className="border-r border-b border-l-2 border-black whitespace-nowrap text-left pl-1 align-middle pb-2">
+                      {mes.charAt(0).toUpperCase() + mes.slice(1)}
+                    </td>
+                    <td className="border-r border-b border-black whitespace-nowrap align-middle">
+                      <input
+                        type="checkbox"
+                        checked={mesData.participacion || false}
+                        readOnly
+                      />
+                    </td>
+                    <td className="border-r border-b border-black whitespace-nowrap align-middle pb-2">
+                      <span className="w-full block">
+                        {mesData.cursos || ""}
+                      </span>
+                    </td>
+                    <td className="border-r border-b border-black whitespace-nowrap align-middle">
+                      <input
+                        type="checkbox"
+                        checked={mesData.precursor || false}
+                        readOnly
+                      />
+                    </td>
+                    <td className="border-r border-b border-black whitespace-nowrap align-middle pb-2">
+                      <span className="w-full block">
+                        {mesData.horas || ""}
+                      </span>
+                    </td>
+                    <td className="border-r-2 border-b border-black whitespace-nowrap align-middle pb-2">
+                      <span className="w-full block">
+                        {mesData.notas || ""}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
 
               {/* Fila adicional para Totales */}
               <tr className="font-bold text-center border-t border-black text-black">

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { SyncLoader } from "react-spinners";
-import { FaAddressCard, FaKey, FaSignOutAlt, FaUserCircle, FaUsers } from "react-icons/fa";
+import { FaAddressCard, FaKey, FaSignOutAlt, FaUserCircle, /* FaUsers */ } from "react-icons/fa";
 import { useDarkMode } from "../context/DarkModeContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase"; // Asegúrate de importar tu configuración de Firestore
@@ -77,6 +77,15 @@ function Inicio() {
     ? congregacion.charAt(0).toUpperCase() + congregacion.slice(1)
     : null;
 
+  // Show loading until both usuarioDatos and congregacionCapitalizada are available
+  if (!usuarioDatos || !congregacionCapitalizada) {
+    return (
+      <div className="flex justify-center items-center p-4">
+        <SyncLoader color="#3B82F6" />
+      </div>
+    );
+  }
+
   if (usuarioTieneAcceso === null) {
     return (
       <div className="flex justify-center items-center p-4">
@@ -125,14 +134,22 @@ function Inicio() {
       }`}
     >
       <h1 className="text-2xl font-bold text-blue-500">
-        ¡Bienvenido{" "}
-        <span className={`${darkMode ? "text-white" : "text-black"}`}>
-          {usuarioDatos ? usuarioDatos.nombre : ""}
-        </span>
-        !
+        {usuarioDatos && (
+          <>
+            ¡Bienvenido{" "}
+            <span className={`${darkMode ? "text-white" : "text-black"}`}>
+              {usuarioDatos.nombre}
+            </span>
+            !
+          </>
+        )}
       </h1>
       <h2 className="text-xl font-bold">
-        Congregación <span className="text-purple-500">{congregacionCapitalizada}</span>
+        {congregacionCapitalizada && (
+          <>
+            Congregación <span className="text-purple-500">{congregacionCapitalizada}</span>
+          </>
+        )}
       </h2>
       <h2
         className={`text-xl font-bold mb-4 ${
@@ -176,7 +193,7 @@ function Inicio() {
           <p className="text-red-500">
           </p>
         )}
-        {role === "Administrador" && (
+        {/* {role === "Administrador" && (
           <Link
             to={`/${congregacion}/asistencia`}
             state={{ congregacion }}
@@ -185,7 +202,7 @@ function Inicio() {
             <FaUsers className="text-white" />
             <span>Asistencia</span>
           </Link>
-        )}
+        )} */}
         {role === "Administrador" && (
           <Link
             to={`/${congregacion}/accesos`}

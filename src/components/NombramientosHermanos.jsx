@@ -43,23 +43,49 @@ const NombramientosHermanos = () => {
           // Filtrar los hermanos según el nombramiento
           hermanosSnapshot.docs.forEach((hermanoDoc) => {
             const hermanoData = hermanoDoc.data();
+            
+            // Verificar si existen registros para el año seleccionado
+            if (hermanoData.registros && hermanoData.registros[selectedYear]) {
+              const yearData = hermanoData.registros[selectedYear];
 
-            // Comprobar si el hermano tiene el nombramiento correspondiente
-            if (
-              (nombramientoId === "anciano" && hermanoData.anciano) ||
-              (nombramientoId === "ministerial" && hermanoData.ministerial) ||
-              (nombramientoId === "regular" && hermanoData.regular)
-            ) {
-              // Acceder directamente a las horas para el año seleccionado (si existe)
-              const totalHoras =
-                hermanoData.totalHorasPorAño[selectedYear] || 0; // Usar 0 si no hay datos para el año
+              // Comprobar si el hermano tiene el nombramiento correspondiente en el año seleccionado
+              if (
+                (nombramientoId === "anciano" && yearData.anciano) ||
+                (nombramientoId === "ministerial" && yearData.ministerial) ||
+                (nombramientoId === "regular" && yearData.regular)
+              ) {
+                // Calcular total de horas del año
+                const meses = [
+                  "septiembre", "octubre", "noviembre", "diciembre",
+                  "enero", "febrero", "marzo", "abril",
+                  "mayo", "junio", "julio", "agosto"
+                ];
 
-              // Agregar los datos del hermano con el total de horas correspondiente
-              hermanosFiltrados.push({
-                id: hermanoDoc.id,
-                ...hermanoData,
-                totalHoras, // Agregar totalHoras al objeto
-              });
+                let totalHoras = 0;
+                meses.forEach(mes => {
+                  if (yearData[mes] && yearData[mes].horas) {
+                    totalHoras += yearData[mes].horas;
+                  }
+                });
+
+                // Agregar los datos del hermano con el total de horas correspondiente
+                hermanosFiltrados.push({
+                  id: hermanoDoc.id,
+                  nombre: hermanoData.nombre,
+                  fechaNacimiento: hermanoData.fechaNacimiento,
+                  fechaBautismo: hermanoData.fechaBautismo,
+                  genero: yearData.genero || {},
+                  anciano: yearData.anciano || false,
+                  ministerial: yearData.ministerial || false,
+                  regular: yearData.regular || false,
+                  especial: yearData.especial || false,
+                  misionero: yearData.misionero || false,
+                  registros: {
+                    [selectedYear]: yearData // Include all year data including monthly records
+                  },
+                  totalHoras
+                });
+              }
             }
           });
         }
