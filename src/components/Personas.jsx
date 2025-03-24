@@ -805,11 +805,21 @@ function Personas() {
     const matchSearchTerm = persona.nombre
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    const matchRegular = filterRegular ? persona.regular === true : true;
-    const matchMinisterial = filterMinisterial
-      ? persona.ministerial === true
+      
+    // Check appointments for the selected year
+    const yearRegistros = persona.registros?.[selectedYear] || {};
+    
+    const matchRegular = filterRegular 
+      ? yearRegistros.regular === true 
       : true;
-    const matchAnciano = filterAnciano ? persona.anciano === true : true;
+      
+    const matchMinisterial = filterMinisterial
+      ? yearRegistros.ministerial === true
+      : true;
+      
+    const matchAnciano = filterAnciano 
+      ? yearRegistros.anciano === true 
+      : true;
 
     // Devolver solo las personas que cumplen con todos los filtros
     return matchSearchTerm && matchRegular && matchMinisterial && matchAnciano;
