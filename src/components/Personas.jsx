@@ -77,6 +77,8 @@ function Personas() {
   const [regularStartDate, setRegularStartDate] = useState("");
   const [tempPersonaId, setTempPersonaId] = useState(null);
   const [regularDateUpdated, setRegularDateUpdated] = useState(false);
+  const [isEndDateModal, setIsEndDateModal] = useState(false);
+  const [regularEndDate, setRegularEndDate] = useState("");
 
   useEffect(() => {
     if (!grupoId) {
@@ -1107,37 +1109,57 @@ function Personas() {
   RolButton.displayName = "RolButton";
 
   const handleRegularPrecursorChange = (personaId, checked) => {
+    setTempPersonaId(personaId);
     if (checked) {
-      setTempPersonaId(personaId);
+      setIsEndDateModal(false);
       setShowRegularModal(true);
+      handleRoleChange(personaId, "regular", true);
     } else {
-      Promise.all([
-        handleRoleChange(personaId, "regular", false),
-        handleRoleChange(personaId, "regularStartDate", null),
-        handleRoleChange(personaId, "regularStartMonth", null),
-      ]).then(() => {
-        setRegularDateUpdated(true); // Trigger the re-render
-      });
+      // When unchecking, immediately set regular to false
+      handleRoleChange(personaId, "regular", false);
+      setIsEndDateModal(true);
+      setShowRegularModal(true);
     }
   };
 
   const handleRegularDateConfirm = () => {
-    if (regularStartDate) {
-      const date = new Date(regularStartDate + "T00:00:00");
-      const month = date
-        .toLocaleString("es-ES", { month: "long" })
-        .toLowerCase();
+    if (isEndDateModal) {
+      if (regularEndDate) {
+        const date = new Date(regularEndDate + "T00:00:00");
+        const month = date
+          .toLocaleString("es-ES", { month: "long" })
+          .toLowerCase();
 
-      Promise.all([
-        handleRoleChange(tempPersonaId, "regular", true),
-        handleRoleChange(tempPersonaId, "regularStartDate", regularStartDate),
-        handleRoleChange(tempPersonaId, "regularStartMonth", month),
-      ]).then(() => {
-        setShowRegularModal(false);
-        setRegularStartDate("");
-        setTempPersonaId(null);
-        setRegularDateUpdated(true); // Trigger the re-render
-      });
+        Promise.all([
+          // Don't set regular to false when adding end date
+          handleRoleChange(tempPersonaId, "regularEndDate", regularEndDate),
+          handleRoleChange(tempPersonaId, "regularEndMonth", month),
+        ]).then(() => {
+          setShowRegularModal(false);
+          setRegularEndDate("");
+          setTempPersonaId(null);
+          setRegularDateUpdated(true);
+          setIsEndDateModal(false);
+        });
+      }
+    } else {
+      if (regularStartDate) {
+        const date = new Date(regularStartDate + "T00:00:00");
+        const month = date
+          .toLocaleString("es-ES", { month: "long" })
+          .toLowerCase();
+
+        Promise.all([
+          handleRoleChange(tempPersonaId, "regular", true),
+          handleRoleChange(tempPersonaId, "regularStartDate", regularStartDate),
+          handleRoleChange(tempPersonaId, "regularStartMonth", month),
+        ]).then(() => {
+          setShowRegularModal(false);
+          setRegularStartDate("");
+          setTempPersonaId(null);
+          setRegularDateUpdated(true);
+        });
+      }
     }
   };
 
@@ -1556,16 +1578,8 @@ function Personas() {
                         <div className="flex gap-2 items-center">
                           <input
                             type="checkbox"
-                            checked={
-                              persona.registros?.[selectedYear]
-                                ?.regularStartDate || false
-                            }
-                            onChange={(e) =>
-                              handleRegularPrecursorChange(
-                                persona.id,
-                                e.target.checked
-                              )
-                            }
+                            checked={persona.registros?.[selectedYear]?.regular || false}
+                            onChange={(e) => handleRegularPrecursorChange(persona.id, e.target.checked)}
                           />
                           <span>Precursor Regular</span>
                           {persona.registros?.[selectedYear]
@@ -1576,7 +1590,11 @@ function Personas() {
                                 persona.registros[selectedYear]
                                   .regularStartDate + "T00:00:00"
                               ).toLocaleDateString()}
-                              )
+                              {persona.registros[selectedYear]?.regularEndDate && 
+                                ` - Hasta: ${new Date(
+                                  persona.registros[selectedYear].regularEndDate + "T00:00:00"
+                                ).toLocaleDateString()}`
+                              })
                             </span>
                           )}
                         </div>
@@ -2102,21 +2120,30 @@ function Personas() {
                     onClick={() => {
                       setShowRegularModal(false);
                       setRegularStartDate("");
+                      setRegularEndDate("");
                       setTempPersonaId(null);
+                      setIsEndDateModal(false);
                     }}
                   >
                     <IoClose size={30} className="hover:text-red-500" />
                   </button>
 
                   <h2 className="text-xl font-semibold mb-4">
-                    Fecha de Inicio como Precursor Regular
+                    {isEndDateModal 
+                      ? "Fecha en que dejó de ser Precursor Regular"
+                      : "Fecha de Inicio como Precursor Regular"
+                    }
                   </h2>
 
                   <div className="mb-4">
                     <input
                       type="date"
-                      value={regularStartDate}
-                      onChange={(e) => setRegularStartDate(e.target.value)}
+                      value={isEndDateModal ? regularEndDate : regularStartDate}
+                      onChange={(e) => 
+                        isEndDateModal 
+                          ? setRegularEndDate(e.target.value)
+                          : setRegularStartDate(e.target.value)
+                      }
                       className="w-full border border-gray-300 rounded-md p-2 text-black"
                     />
                   </div>
@@ -2125,7 +2152,7 @@ function Personas() {
                     <button
                       onClick={handleRegularDateConfirm}
                       className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                      disabled={!regularStartDate}
+                      disabled={isEndDateModal ? !regularEndDate : !regularStartDate}
                     >
                       Confirmar
                     </button>
@@ -2133,7 +2160,9 @@ function Personas() {
                       onClick={() => {
                         setShowRegularModal(false);
                         setRegularStartDate("");
+                        setRegularEndDate("");
                         setTempPersonaId(null);
+                        setIsEndDateModal(false);
                       }}
                       className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"
                     >
